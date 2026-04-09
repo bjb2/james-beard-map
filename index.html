@@ -381,6 +381,34 @@
     /* ── Popup ── */
     .jb-popup { min-width: 220px; max-width: 280px; }
 
+    .popup-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin: 0 -20px 10px;
+      padding: 0 20px;
+    }
+    .popup-tab-btn {
+      font-family: sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 12px 6px 0;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--white-faint);
+      cursor: pointer;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .popup-tab-btn.active {
+      color: var(--white);
+      border-bottom-color: var(--orange);
+    }
+    .popup-tab-content { display: none; }
+    .popup-tab-content.active { display: block; }
+
     .jb-popup .popup-header {
       background: var(--black);
       margin: -14px -20px 12px;
@@ -1079,6 +1107,14 @@ function invalidateCommunityCache(restaurantKey) {
   communityCache.delete(restaurantKey);
 }
 
+function switchPopupTab(tab) {
+  document.querySelectorAll('.popup-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.popup-tab-content').forEach(d => d.classList.toggle('active', d.dataset.tab === tab));
+  if (tab === 'community' && currentPopupKey) {
+    loadAndRenderCommunity(currentPopupKey);
+  }
+}
+
 async function loadAndRenderCommunity(restaurantKey) {
   const el = document.getElementById('comm-section');
   if (!el) return;
@@ -1331,15 +1367,11 @@ function initMap() {
 
   map.addLayer(markerCluster);
 
-  // Load community data when a popup opens
+  // Track which restaurant's popup is open for community tab lazy-load
   map.on('popupopen', (e) => {
-    const popup = e.popup;
-    // Find the marker this popup belongs to and get its loc
-    const marker = popup._source;
-    if (!marker || !marker.options?.loc) return;
-    const rkey = favKey(marker.options.loc.awards[0]);
-    currentPopupKey = rkey;
-    loadAndRenderCommunity(rkey);
+    const marker = e.popup._source;
+    if (!marker?.options?.loc) return;
+    currentPopupKey = favKey(marker.options.loc.awards[0]);
   });
 
   // Legend
@@ -1762,35 +1794,46 @@ function buildPopup(loc) {
       </div>`;
     }
 
-    html += `<div class="popup-body">`;
+    html += `<div class="popup-body">
+      <div class="popup-tabs">
+        <button class="popup-tab-btn active" data-tab="info"      onclick="switchPopupTab('info')">Info</button>
+        <button class="popup-tab-btn"        data-tab="community" onclick="switchPopupTab('community')">Community</button>
+      </div>`;
 
-    // Closed banner
+    // ── Info tab ──────────────────────────────────────────────────────────
+    html += `<div class="popup-tab-content active" data-tab="info">`;
+
     if (a.businessStatus === 'CLOSED_PERMANENTLY') {
       html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
     } else if (a.businessStatus === 'CLOSED_TEMPORARILY') {
       html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
     }
 
-    // Michelin badge
     html += `<div style="margin-bottom:8px;">${michelinBadge(a.michelinAward)}`;
     if (a.greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
     html += `</div>`;
 
-    // Price / cuisine
     const meta = [];
     if (a.price)   meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
     if (a.cuisine) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisine)}</span>`);
     if (meta.length) html += `<div style="font-family:sans-serif;font-size:0.78rem;margin-bottom:8px;">${meta.join(' · ')}</div>`;
 
-    // Links
     const links = [];
     if (mapsUrl)       links.push(`<a href="${escHtml(mapsUrl)}"       target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
     if (a.website)     links.push(`<a href="${escHtml(a.website)}"     target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
     if (a.michelinUrl) links.push(`<a href="${escHtml(a.michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
     if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
 
-    html += `<div id="comm-section"><div style="font-family:sans-serif;font-size:0.7rem;color:var(--white-faint);margin-top:8px;">Loading…</div></div>`;
-    html += buildCommButtons(favKey(a));
+    html += `</div>`;
+
+    // ── Community tab ─────────────────────────────────────────────────────
+    html += `<div class="popup-tab-content" data-tab="community">
+      <div id="comm-section" style="min-height:60px;">
+        <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div>
+      </div>
+      ${buildCommButtons(favKey(a))}
+    </div>`;
+
     html += `</div></div>`;
     return html;
   }
@@ -1852,27 +1895,31 @@ function buildPopup(loc) {
     </div>`;
   }
 
-  html += `<div class="popup-body">`;
+  html += `<div class="popup-body">
+    <div class="popup-tabs">
+      <button class="popup-tab-btn active" data-tab="info"      onclick="switchPopupTab('info')">Info</button>
+      <button class="popup-tab-btn"        data-tab="community" onclick="switchPopupTab('community')">Community</button>
+    </div>`;
+
+  // ── Info tab ────────────────────────────────────────────────────────────
+  html += `<div class="popup-tab-content active" data-tab="info">`;
 
   if (description) {
     html += `<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-family:sans-serif;margin-bottom:8px;line-height:1.4;font-style:italic;">${escHtml(description.substring(0, 160))}…</div>`;
   }
 
-  // Michelin badge (cross-matched or co-located Michelin record)
   if (michelinAward) {
     html += `<div style="margin-bottom:8px;">${michelinBadge(michelinAward)}`;
     if (greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
     html += `</div>`;
   }
 
-  // Closed status from Google Places (Michelin records) or Yelp
   if (businessStatus === 'CLOSED_PERMANENTLY' || yelpDetail?.isClosed) {
     html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
   } else if (businessStatus === 'CLOSED_TEMPORARILY') {
     html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
   }
 
-  // Yelp rating / price
   if (yelpDetail) {
     const parts = [];
     if (yelpDetail.rating) parts.push(`<span style="color:#FEA219;font-weight:700;">⭐ ${yelpDetail.rating}</span>`);
@@ -1880,7 +1927,6 @@ function buildPopup(loc) {
     if (parts.length) html += `<div style="display:flex;align-items:center;gap:8px;font-family:sans-serif;font-size:0.8rem;margin-bottom:8px;">${parts.join(' · ')}</div>`;
   }
 
-  // Action links
   const links = [];
   if (mapsUrl) links.push(`<a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
   if (website) links.push(`<a href="${escHtml(website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
@@ -1889,7 +1935,6 @@ function buildPopup(loc) {
   if (michelinUrl) links.push(`<a href="${escHtml(michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
   if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
 
-  // JBF awards list
   html += `<div class="popup-awards-list">`;
   for (const [restaurant, { awards: rawards, meta }] of byRestaurant) {
     rawards.sort((a, b) => b.year - a.year);
@@ -1914,9 +1959,17 @@ function buildPopup(loc) {
     if (rawards.length > 4) html += `<div class="popup-award-meta">+${rawards.length - 4} more…</div>`;
     html += `</div>`;
   }
+  html += `</div>`;  // popup-awards-list
+  html += `</div>`;  // info tab
 
-  html += `<div id="comm-section"><div style="font-family:sans-serif;font-size:0.7rem;color:var(--white-faint);margin-top:8px;">Loading…</div></div>`;
-  html += buildCommButtons(favKey(firstMeta));
+  // ── Community tab ─────────────────────────────────────────────────────
+  html += `<div class="popup-tab-content" data-tab="community">
+    <div id="comm-section" style="min-height:60px;">
+      <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Loading community notes…</div>
+    </div>
+    ${buildCommButtons(favKey(firstMeta))}
+  </div>`;
+
   html += `</div></div></div>`;
   return html;
 }
