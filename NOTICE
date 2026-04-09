@@ -1,0 +1,17 @@
+Delectable
+Copyright 2026 Bryan Bartley
+
+This product includes data from the following sources:
+
+  James Beard Foundation Awards (https://www.jamesbeard.org/awards)
+  Restaurant & Chef category, 1991–present.
+
+  Michelin Guide restaurant data curated by Jerry Ng
+  (https://github.com/ngshiheng/michelin-my-maps)
+  Licensed under CC BY-NC 4.0.
+
+  Geocoding powered by OpenStreetMap Nominatim and Photon.
+
+Any redistribution or derivative work must retain this NOTICE file
+and provide clear attribution to the original author (Bryan Bartley)
+and the above data sources.

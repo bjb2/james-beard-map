@@ -4,7 +4,7 @@ An interactive map of James Beard Foundation Restaurant & Chef Award nominees an
 
 **[View the map →](https://bjb2.github.io/james-beard-map/)**
 
-![Awards](https://img.shields.io/badge/awards-10%2C800%2B-FEA219?style=flat-square) ![Restaurants](https://img.shields.io/badge/restaurants-4%2C900%2B-FEA219?style=flat-square) ![License](https://img.shields.io/badge/license-MIT-white?style=flat-square)
+![Awards](https://img.shields.io/badge/awards-10%2C800%2B-FEA219?style=flat-square) ![Restaurants](https://img.shields.io/badge/restaurants-4%2C900%2B-FEA219?style=flat-square) ![License](https://img.shields.io/badge/license-Apache%202.0-white?style=flat-square)
 
 ---
 
@@ -61,6 +61,8 @@ Geocoding caches (`data/city-cache.json`, `data/restaurant-cache.json`, etc.) ar
 
 ## License
 
-MIT — see [LICENSE](LICENSE)
+Apache 2.0 — see [LICENSE](LICENSE) and [NOTICE](NOTICE)
+
+Any redistribution or derivative work must retain the NOTICE file with attribution to the original author and data sources.
 
 Award data © James Beard Foundation. This project is not affiliated with or endorsed by the James Beard Foundation.
