@@ -1036,6 +1036,253 @@ function buildCommButtons(restaurantKey) {
   </div>`;
 }
 
+// ── Community data (tags + dish notes) ──────────────────────────────────────
+const communityCache = new Map(); // restaurantKey → {tags, dishNotes, myTagVotes, myDishVotes}
+let currentPopupKey = null;
+
+const SUGGESTED_TAGS = [
+  'Outdoor seating', 'Bar seating', 'Counter seating',
+  'Tasting menu', 'À la carte', 'Reservations required', 'Walk-ins welcome',
+  'Good for groups', 'Romantic', 'BYOB', 'Natural wine', 'Open late', 'Brunch',
+  'Vegetarian-friendly', 'Vegan options', 'Michelin experience',
+];
+
+async function fetchCommunityData(restaurantKey) {
+  if (communityCache.has(restaurantKey)) return communityCache.get(restaurantKey);
+
+  const [tagsRes, notesRes] = await Promise.all([
+    sb.from('tags_ranked').select('*').eq('restaurant_key', restaurantKey),
+    sb.from('dish_notes_ranked').select('*').eq('restaurant_key', restaurantKey),
+  ]);
+
+  let myTagVotes = new Set(), myDishVotes = new Set();
+  if (currentUser) {
+    const [tv, dv] = await Promise.all([
+      sb.from('tag_votes').select('tag_id').eq('user_id', currentUser.id),
+      sb.from('dish_note_votes').select('dish_note_id').eq('user_id', currentUser.id),
+    ]);
+    if (tv.data) myTagVotes  = new Set(tv.data.map(r => r.tag_id));
+    if (dv.data) myDishVotes = new Set(dv.data.map(r => r.dish_note_id));
+  }
+
+  const data = {
+    tags: tagsRes.data || [],
+    dishNotes: notesRes.data || [],
+    myTagVotes,
+    myDishVotes,
+  };
+  communityCache.set(restaurantKey, data);
+  return data;
+}
+
+function invalidateCommunityCache(restaurantKey) {
+  communityCache.delete(restaurantKey);
+}
+
+async function loadAndRenderCommunity(restaurantKey) {
+  const el = document.getElementById('comm-section');
+  if (!el) return;
+  const data = await fetchCommunityData(restaurantKey);
+  if (document.getElementById('comm-section')) {
+    document.getElementById('comm-section').innerHTML = renderCommunitySection(restaurantKey, data);
+  }
+}
+
+function renderCommunitySection(restaurantKey, data) {
+  const ek = encodeURIComponent(restaurantKey);
+  const { tags, dishNotes, myTagVotes, myDishVotes } = data;
+  let html = '';
+
+  // ── Tags ──────────────────────────────────────────────────────────────────
+  html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">`;
+  html += `<div style="font-family:sans-serif;font-size:0.7rem;font-weight:700;color:var(--white-faint);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Tags</div>`;
+
+  if (tags.length > 0) {
+    html += `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;">`;
+    for (const tag of tags) {
+      const voted = myTagVotes.has(tag.id);
+      const col   = voted ? 'var(--orange)' : 'var(--white-faint)';
+      const bg    = voted ? 'var(--orange-dim)' : 'transparent';
+      html += `<button onclick="voteTag('${ek}','${tag.id}')"
+        style="font-family:sans-serif;font-size:0.7rem;padding:3px 8px;border-radius:12px;
+               border:1px solid ${col};color:${col};background:${bg};cursor:pointer;transition:all 0.15s;">
+        ${escHtml(tag.label)}${tag.vote_count > 0 ? ` <span style="opacity:0.7;">+${tag.vote_count}</span>` : ''}
+      </button>`;
+    }
+    html += `</div>`;
+  }
+
+  if (currentUser) {
+    html += `<div style="display:flex;gap:5px;align-items:center;">
+      <input id="tag-input-${ek}" placeholder="Add a tag…" list="tag-suggestions-${ek}"
+        style="flex:1;background:var(--black-light);border:1px solid var(--border-light);
+               color:var(--white);font-family:sans-serif;font-size:0.72rem;padding:4px 8px;
+               border-radius:6px;outline:none;"
+        onkeydown="if(event.key==='Enter')addTag('${ek}')">
+      <datalist id="tag-suggestions-${ek}">
+        ${SUGGESTED_TAGS.map(t => `<option value="${escHtml(t)}">`).join('')}
+      </datalist>
+      <button onclick="addTag('${ek}')"
+        style="font-family:sans-serif;font-size:0.7rem;padding:4px 10px;border-radius:6px;
+               border:1px solid var(--border-light);color:var(--white-dim);background:transparent;cursor:pointer;">
+        Add
+      </button>
+    </div>`;
+  } else if (tags.length === 0) {
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);">Sign in to add tags</div>`;
+  }
+
+  html += `</div>`;
+
+  // ── Dish notes ────────────────────────────────────────────────────────────
+  html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">`;
+  html += `<div style="font-family:sans-serif;font-size:0.7rem;font-weight:700;color:var(--white-faint);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">What to order</div>`;
+
+  if (dishNotes.length > 0) {
+    for (const note of dishNotes) {
+      const voted = myDishVotes.has(note.id);
+      const col   = voted ? 'var(--orange)' : 'var(--white-faint)';
+      html += `<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;">
+        <button onclick="voteDishNote('${ek}','${note.id}')"
+          style="font-family:sans-serif;font-size:0.68rem;padding:2px 6px;border-radius:4px;
+                 border:1px solid ${col};color:${col};background:transparent;cursor:pointer;
+                 flex-shrink:0;transition:all 0.15s;">
+          ↑${note.vote_count}
+        </button>
+        <div>
+          <div style="font-family:sans-serif;font-size:0.78rem;color:var(--white);font-weight:600;">${escHtml(note.dish_name)}</div>
+          ${note.note ? `<div style="font-family:sans-serif;font-size:0.7rem;color:var(--white-dim);margin-top:1px;">${escHtml(note.note)}</div>` : ''}
+        </div>
+      </div>`;
+    }
+  }
+
+  if (currentUser) {
+    html += `<div id="dish-form-${ek}" style="margin-top:6px;">
+      <div style="display:flex;gap:5px;align-items:center;">
+        <input id="dish-name-${ek}" placeholder="Dish name…"
+          style="flex:1;background:var(--black-light);border:1px solid var(--border-light);
+                 color:var(--white);font-family:sans-serif;font-size:0.72rem;padding:4px 8px;
+                 border-radius:6px;outline:none;">
+        <button onclick="toggleDishNoteForm('${ek}')"
+          style="font-family:sans-serif;font-size:0.7rem;padding:4px 10px;border-radius:6px;
+                 border:1px solid var(--border-light);color:var(--white-dim);background:transparent;cursor:pointer;">
+          +
+        </button>
+      </div>
+      <div id="dish-extra-${ek}" style="display:none;margin-top:4px;">
+        <input id="dish-note-${ek}" placeholder="Any notes? (optional)"
+          style="width:100%;background:var(--black-light);border:1px solid var(--border-light);
+                 color:var(--white);font-family:sans-serif;font-size:0.72rem;padding:4px 8px;
+                 border-radius:6px;outline:none;margin-bottom:4px;">
+        <button onclick="addDishNote('${ek}')"
+          style="font-family:sans-serif;font-size:0.7rem;padding:4px 12px;border-radius:6px;
+                 border:1px solid var(--orange);color:var(--orange);background:transparent;cursor:pointer;">
+          Save
+        </button>
+      </div>
+    </div>`;
+  } else if (dishNotes.length === 0) {
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);">Sign in to add dish recommendations</div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function toggleDishNoteForm(ek) {
+  const nameEl  = document.getElementById(`dish-name-${ek}`);
+  const extraEl = document.getElementById(`dish-extra-${ek}`);
+  if (!extraEl) return;
+  const showing = extraEl.style.display !== 'none';
+  extraEl.style.display = showing ? 'none' : 'block';
+  if (!showing) nameEl?.focus();
+}
+
+async function addTag(ek) {
+  const restaurantKey = decodeURIComponent(ek);
+  const input = document.getElementById(`tag-input-${ek}`);
+  if (!input) return;
+  const label = input.value.trim();
+  if (!label || label.length > 50) return;
+  input.value = '';
+
+  const { error } = await sb.from('tags').upsert({
+    restaurant_key: restaurantKey,
+    label,
+    created_by: currentUser.id,
+  }, { onConflict: 'restaurant_key,label' });
+
+  if (!error) {
+    invalidateCommunityCache(restaurantKey);
+    await loadAndRenderCommunity(restaurantKey);
+  }
+}
+
+async function voteTag(ek, tagId) {
+  const restaurantKey = decodeURIComponent(ek);
+  const data = communityCache.get(restaurantKey);
+  if (!currentUser) { showAuthNudge(); return; }
+
+  if (data?.myTagVotes.has(tagId)) {
+    data.myTagVotes.delete(tagId);
+    await sb.from('tag_votes').delete().eq('user_id', currentUser.id).eq('tag_id', tagId);
+    const tag = data.tags.find(t => t.id === tagId);
+    if (tag) tag.vote_count = Math.max(0, tag.vote_count - 1);
+  } else {
+    data?.myTagVotes.add(tagId);
+    await sb.from('tag_votes').insert({ user_id: currentUser.id, tag_id: tagId });
+    const tag = data?.tags.find(t => t.id === tagId);
+    if (tag) tag.vote_count++;
+  }
+
+  // Re-render without full refetch
+  if (document.getElementById('comm-section') && data) {
+    document.getElementById('comm-section').innerHTML = renderCommunitySection(restaurantKey, data);
+  }
+}
+
+async function addDishNote(ek) {
+  const restaurantKey = decodeURIComponent(ek);
+  const dishName = document.getElementById(`dish-name-${ek}`)?.value.trim();
+  const dishNote = document.getElementById(`dish-note-${ek}`)?.value.trim();
+  if (!dishName) return;
+
+  const { error } = await sb.from('dish_notes').insert({
+    user_id: currentUser.id,
+    restaurant_key: restaurantKey,
+    dish_name: dishName,
+    note: dishNote || null,
+  });
+
+  if (!error) {
+    invalidateCommunityCache(restaurantKey);
+    await loadAndRenderCommunity(restaurantKey);
+  }
+}
+
+async function voteDishNote(ek, noteId) {
+  const restaurantKey = decodeURIComponent(ek);
+  const data = communityCache.get(restaurantKey);
+  if (!currentUser) { showAuthNudge(); return; }
+
+  if (data?.myDishVotes.has(noteId)) {
+    data.myDishVotes.delete(noteId);
+    await sb.from('dish_note_votes').delete().eq('user_id', currentUser.id).eq('dish_note_id', noteId);
+    const note = data?.dishNotes.find(n => n.id === noteId);
+    if (note) note.vote_count = Math.max(0, note.vote_count - 1);
+  } else {
+    data?.myDishVotes.add(noteId);
+    await sb.from('dish_note_votes').insert({ user_id: currentUser.id, dish_note_id: noteId });
+    const note = data?.dishNotes.find(n => n.id === noteId);
+    if (note) note.vote_count++;
+  }
+
+  if (document.getElementById('comm-section') && data) {
+    document.getElementById('comm-section').innerHTML = renderCommunitySection(restaurantKey, data);
+  }
+}
+
 // ── State ──────────────────────────────────────────────────────────────────
 let allAwards = [];
 let filteredAwards = [];
@@ -1083,6 +1330,17 @@ function initMap() {
   });
 
   map.addLayer(markerCluster);
+
+  // Load community data when a popup opens
+  map.on('popupopen', (e) => {
+    const popup = e.popup;
+    // Find the marker this popup belongs to and get its loc
+    const marker = popup._source;
+    if (!marker || !marker.options?.loc) return;
+    const rkey = favKey(marker.options.loc.awards[0]);
+    currentPopupKey = rkey;
+    loadAndRenderCommunity(rkey);
+  });
 
   // Legend
   const legend = L.control({ position: 'bottomright' });
@@ -1442,10 +1700,11 @@ function updateMap() {
 
     const marker = L.marker([loc.lat, loc.lng], {
       icon: markerIcon(bestStatus, michelinTier),
-      awardStatus: bestStatus
+      awardStatus: bestStatus,
+      loc,
     });
 
-    marker.bindPopup(() => buildPopup(loc), { maxWidth: 320 });
+    marker.bindPopup(() => buildPopup(loc), { maxWidth: 320, maxHeight: 480 });
     markers.push(marker);
   }
 
@@ -1530,6 +1789,7 @@ function buildPopup(loc) {
     if (a.michelinUrl) links.push(`<a href="${escHtml(a.michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
     if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
 
+    html += `<div id="comm-section"><div style="font-family:sans-serif;font-size:0.7rem;color:var(--white-faint);margin-top:8px;">Loading…</div></div>`;
     html += buildCommButtons(favKey(a));
     html += `</div></div>`;
     return html;
@@ -1655,6 +1915,7 @@ function buildPopup(loc) {
     html += `</div>`;
   }
 
+  html += `<div id="comm-section"><div style="font-family:sans-serif;font-size:0.7rem;color:var(--white-faint);margin-top:8px;">Loading…</div></div>`;
   html += buildCommButtons(favKey(firstMeta));
   html += `</div></div></div>`;
   return html;
