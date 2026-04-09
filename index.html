@@ -873,26 +873,20 @@ function normaliseCuisine(raw) {
 // ── Data loading ────────────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const [awardsRes, cuisineRes, yelpRes] = await Promise.all([
+    const [awardsRes, yelpRes] = await Promise.all([
       fetch('./data/awards.json'),
-      fetch('./data/cuisine-cache.json').catch(() => null),
       fetch('./data/yelp-details.json').catch(() => null)
     ]);
     if (!awardsRes.ok) throw new Error(`HTTP ${awardsRes.status}`);
 
     const data = await awardsRes.json();
-    const cuisineCache = cuisineRes?.ok ? await cuisineRes.json() : {};
     const yelpDetails = yelpRes?.ok ? await yelpRes.json() : {};
 
-    // Attach normalised cuisine tags and Yelp details to each award
+    // Cuisine tags are baked into awards.json; attach Yelp details
     allAwards = data.map(a => {
       const key = `${a.restaurant || a.name}|${a.city}|${a.state}`;
-      const raw = cuisineCache[key] || [];
-      const tags = [...new Set(raw.map(normaliseCuisine).filter(Boolean))];
       const yelp = yelpDetails[key] || null;
-      let enriched = tags.length ? { ...a, cuisineTags: tags } : a;
-      if (yelp) enriched = { ...enriched, yelpDetail: yelp };
-      return enriched;
+      return yelp ? { ...a, yelpDetail: yelp } : a;
     });
 
     document.getElementById('loading').style.display = 'none';
