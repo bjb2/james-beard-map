@@ -873,21 +873,11 @@ function normaliseCuisine(raw) {
 // ── Data loading ────────────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const [awardsRes, yelpRes] = await Promise.all([
-      fetch('./data/awards.json'),
-      fetch('./data/yelp-details.json').catch(() => null)
-    ]);
+    const awardsRes = await fetch('./data/awards.json');
     if (!awardsRes.ok) throw new Error(`HTTP ${awardsRes.status}`);
 
-    const data = await awardsRes.json();
-    const yelpDetails = yelpRes?.ok ? await yelpRes.json() : {};
-
-    // Cuisine tags are baked into awards.json; attach Yelp details
-    allAwards = data.map(a => {
-      const key = `${a.restaurant || a.name}|${a.city}|${a.state}`;
-      const yelp = yelpDetails[key] || null;
-      return yelp ? { ...a, yelpDetail: yelp } : a;
-    });
+    // Cuisine tags and Yelp details are baked into awards.json
+    allAwards = await awardsRes.json();
 
     document.getElementById('loading').style.display = 'none';
     initFilters();
