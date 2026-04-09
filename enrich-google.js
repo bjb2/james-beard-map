@@ -1,5 +1,5 @@
 // enrich-google.js
-// Enriches Michelin 2★ and 3★ restaurants with Google Places data:
+// Enriches Michelin 1★, 2★ and 3★ restaurants with Google Places data:
 //   - business_status (OPERATIONAL / CLOSED_PERMANENTLY / CLOSED_TEMPORARILY)
 //   - photo (1 photo reference → fetch actual image URL)
 //   - website (if not already present)
@@ -94,7 +94,7 @@ async function run() {
 
   let targets = awards.filter(r =>
     r.source === 'michelin' &&
-    (r.michelinAward === '3 Stars' || r.michelinAward === '2 Stars')
+    (r.michelinAward === '3 Stars' || r.michelinAward === '2 Stars' || r.michelinAward === '1 Star')
   );
 
   if (TEST_MODE) {

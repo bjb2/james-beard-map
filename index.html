@@ -1022,22 +1022,44 @@ function normaliseCuisine(raw) {
 
 // ── Data loading ────────────────────────────────────────────────────────────
 async function loadData() {
-  try {
-    const awardsRes = await fetch('./data/awards.json');
-    if (!awardsRes.ok) throw new Error(`HTTP ${awardsRes.status}`);
+  const loadingEl = document.getElementById('loading');
+  const loadingSub = loadingEl.querySelector('.loading-sub');
 
-    // Cuisine tags and Yelp details are baked into awards.json
-    allAwards = await awardsRes.json();
+  // Files in priority order: high-value Michelin first, then JBF, then 1★ last
+  const chunks = [
+    { file: './data/awards-p1.json', label: 'Michelin 2★ & 3★' },
+    { file: './data/awards-p2.json', label: 'James Beard awards' },
+    { file: './data/awards-p3.json', label: 'Michelin 1★ & Bib Gourmand' },
+    { file: './data/awards-p4.json', label: 'Michelin Selected' },
+  ];
 
-    document.getElementById('loading').style.display = 'none';
-    initFilters();
-    updateFavCount();
-    if (showFavoritesOnly) document.getElementById('fav-toggle').classList.add('active');
-    applyFilters();
-  } catch (e) {
-    const loading = document.getElementById('loading');
-    loading.querySelector('.loading-text').textContent = 'Failed to load data';
-    loading.querySelector('.loading-sub').textContent = e.message;
+  let firstChunkLoaded = false;
+
+  for (const chunk of chunks) {
+    try {
+      loadingSub.textContent = `Loading ${chunk.label}…`;
+      const res = await fetch(chunk.file);
+      if (!res.ok) throw new Error(`HTTP ${res.status} on ${chunk.file}`);
+      const data = await res.json();
+      allAwards = allAwards.concat(data);
+
+      if (!firstChunkLoaded) {
+        firstChunkLoaded = true;
+        loadingEl.style.display = 'none';
+        initFilters();
+        updateFavCount();
+        if (showFavoritesOnly) document.getElementById('fav-toggle').classList.add('active');
+      } else {
+        // Refresh filters dropdowns with newly available data (years, states, etc.)
+        initFilters();
+      }
+
+      applyFilters();
+    } catch (e) {
+      loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
+      loadingSub.textContent = e.message;
+      return;
+    }
   }
 }
 
@@ -1318,13 +1340,19 @@ function buildPopup(loc) {
   const isPrecise = loc.awards[0].precise && byRestaurant.size === 1;
   const firstMeta = [...byRestaurant.values()][0]?.meta || awards[0];
   const yelpDetail = firstMeta.yelpDetail || null;
-  const img = yelpDetail?.image || firstMeta.image;
-  const website = firstMeta.website;
+
+  // Michelin record co-located at this pin (coord-promoted or originally same location)
+  const michelinRecord = awards.find(a => a.source === 'michelin');
+  const michelinAward   = firstMeta.michelinAward   || michelinRecord?.michelinAward   || null;
+  const michelinUrl     = firstMeta.michelinUrl     || michelinRecord?.michelinUrl     || null;
+  const greenStar       = firstMeta.greenStar       || michelinRecord?.greenStar       || false;
+  const googlePhoto     = michelinRecord?.googlePhoto || null;
+  const businessStatus  = michelinRecord?.businessStatus || null;
+
+  const img = googlePhoto || yelpDetail?.image || firstMeta.image;
+  const website = firstMeta.website || michelinRecord?.website || null;
   const description = firstMeta.description;
   const mapsUrl = firstMeta.mapsUrl || buildFallbackMapsUrl(firstMeta);
-
-  // Michelin data on this restaurant (if cross-matched)
-  const michelinAward = firstMeta.michelinAward || null;
 
   let html = `<div class="jb-popup">`;
 
@@ -1358,19 +1386,25 @@ function buildPopup(loc) {
     html += `<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-family:sans-serif;margin-bottom:8px;line-height:1.4;font-style:italic;">${escHtml(description.substring(0, 160))}…</div>`;
   }
 
-  // Michelin badge (cross-matched restaurants)
+  // Michelin badge (cross-matched or co-located Michelin record)
   if (michelinAward) {
     html += `<div style="margin-bottom:8px;">${michelinBadge(michelinAward)}`;
-    if (firstMeta.greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
+    if (greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
     html += `</div>`;
   }
 
-  // Yelp rating / price / closed bar
+  // Closed status from Google Places (Michelin records) or Yelp
+  if (businessStatus === 'CLOSED_PERMANENTLY' || yelpDetail?.isClosed) {
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
+  } else if (businessStatus === 'CLOSED_TEMPORARILY') {
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
+  }
+
+  // Yelp rating / price
   if (yelpDetail) {
     const parts = [];
     if (yelpDetail.rating) parts.push(`<span style="color:#FEA219;font-weight:700;">⭐ ${yelpDetail.rating}</span>`);
     if (yelpDetail.price)  parts.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(yelpDetail.price)}</span>`);
-    if (yelpDetail.isClosed) parts.push(`<span style="color:#e74c3c;font-weight:700;font-size:0.68rem;letter-spacing:0.04em;">PERMANENTLY CLOSED</span>`);
     if (parts.length) html += `<div style="display:flex;align-items:center;gap:8px;font-family:sans-serif;font-size:0.8rem;margin-bottom:8px;">${parts.join(' · ')}</div>`;
   }
 
@@ -1380,7 +1414,7 @@ function buildPopup(loc) {
   if (website) links.push(`<a href="${escHtml(website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
   if (yelpDetail?.menuUrl) links.push(`<a href="${escHtml(yelpDetail.menuUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📋 Menu</a>`);
   if (yelpDetail?.url) links.push(`<a href="${escHtml(yelpDetail.url)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Yelp</a>`);
-  if (firstMeta.michelinUrl) links.push(`<a href="${escHtml(firstMeta.michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
+  if (michelinUrl) links.push(`<a href="${escHtml(michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
   if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
 
   // JBF awards list
