@@ -7,6 +7,9 @@ data/restaurant-cache.json
 data/name-cache.json
 data/enriched.json
 data/geocache.json
+data/yelp-cache.json
+data/cuisine-cache.json
+data/yelp-details.json
 
 # Logs
 *.log
@@ -16,3 +19,16 @@ rebuild-watcher.log
 # Temp scripts
 patch-us-only.js
 rebuild-after-enrich.js
+test-address.js
+find-addresses.js
+apply-addresses.js
+resolve-addresses.js
+
+# Backups
+data/*.backup.json
+
+# Claude memory
+.claude/
+
+# research
+.key.txt
