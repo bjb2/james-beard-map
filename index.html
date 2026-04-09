@@ -978,17 +978,28 @@ async function toggleVisited(restaurantKey) {
     visitedKeys.delete(restaurantKey);
     await sb.from('visits').delete()
       .eq('user_id', currentUser.id).eq('restaurant_key', restaurantKey);
+    // Hide date picker if open
+    const dp = document.getElementById('visited-date-row');
+    if (dp) dp.remove();
   } else {
     visitedKeys.add(restaurantKey);
     await sb.from('visits').upsert({
-      user_id: currentUser.id, restaurant_key: restaurantKey, visited_on: new Date().toISOString().slice(0,10)
+      user_id: currentUser.id,
+      restaurant_key: restaurantKey,
+      visited_on: new Date().toISOString().slice(0, 10)
     });
+    // Show optional date picker inline
+    showVisitedDatePicker(restaurantKey);
   }
   refreshPopupButtons(restaurantKey);
 }
 
 async function toggleWantToGo(restaurantKey) {
   if (!currentUser) { showAuthNudge(); return; }
+
+  // Ensure Want to Go list exists before writing
+  if (!wantToGoListId) await loadCommunityState();
+  if (!wantToGoListId) { console.warn('Could not create Want to Go list'); return; }
 
   if (wantToGoKeys.has(restaurantKey)) {
     wantToGoKeys.delete(restaurantKey);
@@ -1018,6 +1029,42 @@ function applyCommButtonState(btn, active, labelOff, labelOn, activeColor) {
   btn.style.borderColor = active ? activeColor : 'var(--border-light)';
   btn.style.color       = active ? activeColor : 'var(--white-dim)';
   btn.style.background  = active ? activeColor + '18' : 'transparent';
+}
+
+function showVisitedDatePicker(restaurantKey) {
+  const btn = document.getElementById('comm-visited-btn');
+  if (!btn) return;
+  const ek = encodeURIComponent(restaurantKey);
+  const today = new Date().toISOString().slice(0, 10);
+
+  const row = document.createElement('div');
+  row.id = 'visited-date-row';
+  row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-top:6px;';
+  row.innerHTML = `
+    <input type="date" id="visited-date-input" value="${today}" max="${today}"
+      style="flex:1;background:var(--black-light);border:1px solid var(--border-light);
+             color:var(--white);font-family:sans-serif;font-size:0.72rem;padding:4px 8px;
+             border-radius:6px;outline:none;cursor:pointer;">
+    <button onclick="saveVisitDate(decodeURIComponent('${ek}'))"
+      style="font-family:sans-serif;font-size:0.7rem;padding:4px 10px;border-radius:6px;
+             border:1px solid var(--orange);color:var(--orange);background:transparent;cursor:pointer;">
+      Save
+    </button>
+    <button onclick="document.getElementById('visited-date-row').remove()"
+      style="font-family:sans-serif;font-size:0.7rem;padding:4px 8px;border-radius:6px;
+             border:1px solid var(--border-light);color:var(--white-faint);background:transparent;cursor:pointer;">
+      Skip
+    </button>`;
+  btn.parentElement.after(row);
+}
+
+async function saveVisitDate(restaurantKey) {
+  const input = document.getElementById('visited-date-input');
+  if (!input) return;
+  const date = input.value;
+  await sb.from('visits').update({ visited_on: date })
+    .eq('user_id', currentUser.id).eq('restaurant_key', restaurantKey);
+  document.getElementById('visited-date-row')?.remove();
 }
 
 function showAuthNudge() {
@@ -1831,9 +1878,10 @@ function buildPopup(loc) {
       <div id="comm-section" style="min-height:60px;">
         <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div>
       </div>
-      ${buildCommButtons(favKey(a))}
     </div>`;
 
+    // Visited / Want to Go always visible outside tabs
+    html += buildCommButtons(favKey(a));
     html += `</div></div>`;
     return html;
   }
@@ -1967,9 +2015,10 @@ function buildPopup(loc) {
     <div id="comm-section" style="min-height:60px;">
       <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Loading community notes…</div>
     </div>
-    ${buildCommButtons(favKey(firstMeta))}
   </div>`;
 
+  // Visited / Want to Go always visible outside tabs
+  html += buildCommButtons(favKey(firstMeta));
   html += `</div></div></div>`;
   return html;
 }
