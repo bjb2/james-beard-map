@@ -140,6 +140,45 @@
       font-weight: 600;
     }
 
+    /* Collapsible sections */
+    .sidebar-section.collapsible > h3 {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0;
+      user-select: none;
+    }
+
+    .sidebar-section.collapsible > h3::after {
+      content: '▾';
+      font-size: 0.75rem;
+      color: var(--white-dim);
+      transition: transform 0.2s;
+    }
+
+    .sidebar-section.collapsible.collapsed > h3::after {
+      transform: rotate(-90deg);
+    }
+
+    .sidebar-section.collapsible > h3.has-active::after {
+      color: var(--orange);
+    }
+
+    .section-body {
+      overflow: hidden;
+      max-height: 600px;
+      opacity: 1;
+      transition: max-height 0.25s ease, opacity 0.2s, margin-top 0.2s;
+      margin-top: 12px;
+    }
+
+    .collapsed .section-body {
+      max-height: 0;
+      opacity: 0;
+      margin-top: 0;
+    }
+
     /* Search */
     .search-box { position: relative; }
 
@@ -250,6 +289,7 @@
     #results-panel {
       flex: 1;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
       padding: 8px 12px;
     }
 
@@ -592,47 +632,50 @@
     </div>
 
     <!-- Locate Me -->
-    <div class="sidebar-section">
+    <div class="sidebar-section collapsible" id="section-nearme">
       <h3>Near Me</h3>
-      <button id="locate-btn">📍 Find Awards Near Me</button>
-      <div id="radius-control">
-        <label>Radius:</label>
-        <input type="range" id="radius-slider" min="10" max="500" value="50" step="10">
-        <span id="radius-val">50 mi</span>
+      <div class="section-body">
+        <button id="locate-btn">📍 Find Awards Near Me</button>
+        <div id="radius-control">
+          <label>Radius:</label>
+          <input type="range" id="radius-slider" min="10" max="500" value="50" step="10">
+          <span id="radius-val">50 mi</span>
+        </div>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="sidebar-section">
+    <div class="sidebar-section collapsible" id="section-filters">
       <h3>Filters</h3>
+      <div class="section-body">
+        <div class="filter-group">
+          <label>Year</label>
+          <select id="filter-year">
+            <option value="">All Years</option>
+          </select>
+        </div>
 
-      <div class="filter-group">
-        <label>Year</label>
-        <select id="filter-year">
-          <option value="">All Years</option>
-        </select>
-      </div>
+        <div class="filter-group">
+          <label>State</label>
+          <select id="filter-state">
+            <option value="">All States</option>
+          </select>
+        </div>
 
-      <div class="filter-group">
-        <label>State</label>
-        <select id="filter-state">
-          <option value="">All States</option>
-        </select>
-      </div>
+        <div class="filter-group">
+          <label>Award Category</label>
+          <select id="filter-category">
+            <option value="">All Categories</option>
+          </select>
+        </div>
 
-      <div class="filter-group">
-        <label>Award Category</label>
-        <select id="filter-category">
-          <option value="">All Categories</option>
-        </select>
-      </div>
-
-      <div class="filter-group">
-        <label>Designation</label>
-        <div class="status-toggles">
-          <button class="status-toggle winner active" data-status="Winner">🥇 Winner</button>
-          <button class="status-toggle semifinalist active" data-status="Semifinalist">🥈 Semi</button>
-          <button class="status-toggle nominee active" data-status="Nominee">🥉 Nominee</button>
+        <div class="filter-group">
+          <label>Designation</label>
+          <div class="status-toggles">
+            <button class="status-toggle winner active" data-status="Winner">🥇 Winner</button>
+            <button class="status-toggle semifinalist active" data-status="Semifinalist">🥈 Semi</button>
+            <button class="status-toggle nominee active" data-status="Nominee">🥉 Nominee</button>
+          </div>
         </div>
       </div>
     </div>
@@ -1164,6 +1207,20 @@ function debounce(fn, ms) {
   let timer;
   return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
 }
+
+// ── Collapsible sidebar sections ─────────────────────────────────────────────
+(function() {
+  document.querySelectorAll('.sidebar-section.collapsible').forEach(section => {
+    const h3 = section.querySelector('h3');
+    h3.addEventListener('click', () => section.classList.toggle('collapsed'));
+  });
+
+  // Collapse filters + near me by default on mobile
+  if (window.innerWidth <= 768) {
+    document.getElementById('section-nearme').classList.add('collapsed');
+    document.getElementById('section-filters').classList.add('collapsed');
+  }
+})();
 
 // ── Mobile sidebar ───────────────────────────────────────────────────────────
 (function() {
