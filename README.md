@@ -2,7 +2,7 @@
 
 An interactive map of James Beard Foundation Restaurant & Chef Award nominees and winners from 1991 to present — 10,800+ awards across 4,900+ restaurants.
 
-**[View the map →](https://bjb2.github.io/james-beard-map/)**
+**[View the map →](https://www.delectable.guide)**
 
 ![Awards](https://img.shields.io/badge/awards-10%2C800%2B-FEA219?style=flat-square) ![Restaurants](https://img.shields.io/badge/restaurants-4%2C900%2B-FEA219?style=flat-square) ![License](https://img.shields.io/badge/license-Apache%202.0-white?style=flat-square)
 
