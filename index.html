@@ -602,6 +602,69 @@
       flex-shrink: 0;
     }
 
+    .fav-toggle-btn, .fav-share-btn {
+      font-family: sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 3px;
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .fav-toggle-btn {
+      background: transparent;
+      color: var(--white-dim);
+      flex: 1;
+    }
+
+    .fav-toggle-btn:hover, .fav-toggle-btn.active {
+      background: #e74c3c22;
+      border-color: #e74c3c;
+      color: #e74c3c;
+    }
+
+    .fav-toggle-btn #fav-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #e74c3c;
+      color: #fff;
+      border-radius: 10px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      min-width: 16px;
+      height: 16px;
+      padding: 0 4px;
+      margin-left: 4px;
+    }
+
+    .fav-share-btn {
+      background: transparent;
+      color: var(--white-dim);
+    }
+
+    .fav-share-btn:hover {
+      background: var(--orange-dim);
+      border-color: var(--orange);
+      color: var(--orange);
+    }
+
+    .fav-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: 2px 4px;
+      color: rgba(255,255,255,0.4);
+      transition: color 0.15s, transform 0.1s;
+    }
+
+    .fav-btn:hover { color: #e74c3c; transform: scale(1.2); }
+    .fav-btn.faved { color: #e74c3c; }
+
     .legend-diamond {
       flex-shrink: 0;
       transform: rotate(45deg);
@@ -657,6 +720,19 @@
           <input type="range" id="radius-slider" min="10" max="500" value="50" step="10">
           <span id="radius-val">50 mi</span>
         </div>
+      </div>
+    </div>
+
+    <!-- Favorites -->
+    <div class="sidebar-section" id="section-favorites">
+      <h3>Favorites</h3>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <button id="fav-toggle" onclick="toggleFavoritesMode()" class="fav-toggle-btn">
+          ♥ Saved <span id="fav-count"></span>
+        </button>
+        <button id="share-favs-btn" onclick="copyFavoritesLink()" class="fav-share-btn" title="Copy shareable link">
+          ↗ Share
+        </button>
       </div>
     </div>
 
@@ -753,6 +829,12 @@ let map, markerCluster, locationCircle, locationMarker;
 let markers = [];
 let userLat = null, userLng = null, radiusMiles = 50;
 let nearbyMode = false;
+let showFavoritesOnly = false;
+let favorites = new Set(JSON.parse(localStorage.getItem('delectable_favorites') || '[]'));
+
+function favKey(a) {
+  return `${a.restaurant || a.name || ''}|${a.city || ''}|${a.state || a.country || ''}`;
+}
 
 // Active status filters
 const activeStatuses = new Set(['Winner', 'Semifinalist', 'Nominee']);
@@ -946,6 +1028,8 @@ async function loadData() {
 
     document.getElementById('loading').style.display = 'none';
     initFilters();
+    updateFavCount();
+    if (showFavoritesOnly) document.getElementById('fav-toggle').classList.add('active');
     applyFilters();
   } catch (e) {
     const loading = document.getElementById('loading');
@@ -1064,6 +1148,9 @@ function applyFilters() {
     // Michelin tier filter (applies to any record with michelinAward)
     if (michelinTier && a.michelinAward !== michelinTier) return false;
 
+    // Favorites filter
+    if (showFavoritesOnly && !favorites.has(favKey(a))) return false;
+
     // Shared filters
     if (cuisine && !(a.cuisineTags || []).includes(cuisine)) return false;
     if (search) {
@@ -1149,10 +1236,17 @@ function buildPopup(loc) {
     const a = awards[0];
     const location = [a.city, a.country].filter(Boolean).join(', ');
     const mapsUrl = buildFallbackMapsUrl(a);
+    const fk = encodeURIComponent(favKey(a));
+    const isFaved = favorites.has(favKey(a));
     let html = `<div class="jb-popup">
-      <div class="popup-header">
-        <div class="popup-name">${escHtml(a.restaurant)}</div>
-        <div class="popup-restaurant">${escHtml(location)}</div>
+      <div class="popup-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div>
+          <div class="popup-name">${escHtml(a.restaurant)}</div>
+          <div class="popup-restaurant">${escHtml(location)}</div>
+        </div>
+        <button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">
+          ${isFaved?'♥':'♡'}
+        </button>
       </div>
       <div class="popup-body">`;
 
@@ -1205,6 +1299,10 @@ function buildPopup(loc) {
 
   let html = `<div class="jb-popup">`;
 
+  const fk = encodeURIComponent(favKey(firstMeta));
+  const isFaved = favorites.has(favKey(firstMeta));
+  const favBtn = `<button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>`;
+
   if (img) {
     html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
       <img src="${escHtml(img)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
@@ -1213,11 +1311,15 @@ function buildPopup(loc) {
         <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
         <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
       </div>
+      <div style="position:absolute;top:6px;right:6px;">${favBtn}</div>
     </div>`;
   } else {
-    html += `<div class="popup-header">
-      <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
-      <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
+    html += `<div class="popup-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+      <div>
+        <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
+        <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
+      </div>
+      ${favBtn}
     </div>`;
   }
 
@@ -1325,9 +1427,16 @@ function updateSidebar() {
     const distText = (nearbyMode && userLat !== null)
       ? ` · ${distanceMiles(userLat, userLng, a.lat, a.lng).toFixed(1)} mi` : '';
 
+    const fk = encodeURIComponent(favKey(a));
+    const isFaved = favorites.has(favKey(a));
     return `<div class="result-item" data-lat="${a.lat}" data-lng="${a.lng}">
-      <div class="result-name">${escHtml(displayName)}</div>
-      ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+        <div style="min-width:0;">
+          <div class="result-name">${escHtml(displayName)}</div>
+          ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
+        </div>
+        <button class="fav-btn${isFaved?' faved':''}" onclick="event.stopPropagation();toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>
+      </div>
       <div class="result-meta">
         <span class="result-badge ${badgeClass}">${badgeText}</span>
         <span class="result-loc">${escHtml(locText)}${distText}</span>
@@ -1510,7 +1619,75 @@ function debounce(fn, ms) {
   });
 })();
 
+// ── Favorites ────────────────────────────────────────────────────────────────
+function toggleFavorite(key) {
+  if (favorites.has(key)) favorites.delete(key);
+  else favorites.add(key);
+  localStorage.setItem('delectable_favorites', JSON.stringify([...favorites]));
+
+  // Update all heart buttons for this key on the page
+  document.querySelectorAll('.fav-btn').forEach(btn => {
+    const enc = btn.getAttribute('onclick') || '';
+    if (enc.includes(encodeURIComponent(key))) {
+      const faved = favorites.has(key);
+      btn.textContent = faved ? '♥' : '♡';
+      btn.classList.toggle('faved', faved);
+    }
+  });
+
+  updateFavCount();
+  if (showFavoritesOnly) applyFilters();
+}
+
+function updateFavCount() {
+  const el = document.getElementById('fav-count');
+  if (!el) return;
+  el.textContent = favorites.size > 0 ? favorites.size : '';
+  el.style.display = favorites.size > 0 ? '' : 'none';
+}
+
+function toggleFavoritesMode() {
+  showFavoritesOnly = !showFavoritesOnly;
+  document.getElementById('fav-toggle').classList.toggle('active', showFavoritesOnly);
+  applyFilters();
+}
+
+function copyFavoritesLink() {
+  if (favorites.size === 0) {
+    alert('No favorites saved yet — heart some restaurants first!');
+    return;
+  }
+  const encoded = encodeURIComponent(JSON.stringify([...favorites]));
+  const url = `${location.origin}${location.pathname}#favs=${encoded}`;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('share-favs-btn');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  }).catch(() => {
+    // Fallback for older mobile browsers
+    prompt('Copy this link:', url);
+  });
+}
+
+function loadSharedFavorites() {
+  const hash = window.location.hash;
+  if (!hash.startsWith('#favs=')) return;
+  try {
+    const keys = JSON.parse(decodeURIComponent(hash.slice(6)));
+    let added = 0;
+    keys.forEach(k => { if (!favorites.has(k)) { favorites.add(k); added++; } });
+    if (added > 0) localStorage.setItem('delectable_favorites', JSON.stringify([...favorites]));
+    history.replaceState(null, '', location.pathname + location.search);
+    if (added > 0) {
+      showFavoritesOnly = true;
+      // fav-toggle button styled active after loadData runs
+    }
+  } catch (e) {}
+}
+
 // ── Init ────────────────────────────────────────────────────────────────────
+loadSharedFavorites();
 initMap();
 loadData();
 </script>
