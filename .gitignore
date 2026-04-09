@@ -1,0 +1,18 @@
+node_modules/
+
+# Geocoding caches (large, can be regenerated)
+data/raw-awards.json
+data/city-cache.json
+data/restaurant-cache.json
+data/name-cache.json
+data/enriched.json
+data/geocache.json
+
+# Logs
+*.log
+patch-watcher.log
+rebuild-watcher.log
+
+# Temp scripts
+patch-us-only.js
+rebuild-after-enrich.js

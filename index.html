@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>James Beard Awards Map</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Leaflet MarkerCluster CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #FEA219;
+      --orange-dim: rgba(254,162,25,0.15);
+      --black: #0d0d0d;
+      --black-mid: #141414;
+      --black-light: #1c1c1c;
+      --border: #2a2a2a;
+      --border-light: #333;
+      --white: #ffffff;
+      --white-dim: rgba(255,255,255,0.6);
+      --white-faint: rgba(255,255,255,0.25);
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--black);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 1000;
+      flex-shrink: 0;
+    }
+
+    .header-wordmark {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .header-wordmark .brand {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+    }
+
+    .header-wordmark h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border-light);
+    }
+
+    .header-sub {
+      font-size: 0.72rem;
+      color: var(--white-dim);
+      letter-spacing: 0.02em;
+    }
+
+    .header-stat {
+      margin-left: auto;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .header-stat .stat-num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--orange);
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .header-stat .stat-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--white-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+    }
+
+    /* ── Main layout ── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 300px;
+      background: var(--black-mid);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 500;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-section h3 {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--white-dim);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    /* Search */
+    .search-box { position: relative; }
+
+    .search-box input {
+      width: 100%;
+      background: var(--black-light);
+      border: 1px solid var(--border-light);
+      color: var(--white);
+      padding: 10px 12px 10px 34px;
+      border-radius: 2px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus { border-color: var(--orange); }
+    .search-box input::placeholder { color: var(--white-faint); }
+
+    .search-box::before {
+      content: '⌕';
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--white-faint);
+      font-size: 1.1rem;
+    }
+
+    /* Locate me button */
+    #locate-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--orange);
+      color: var(--orange);
+      padding: 10px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    #locate-btn:hover { background: var(--orange); color: var(--white); }
+
+    /* Filter groups */
+    .filter-group { margin-bottom: 10px; }
+
+    .filter-group label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--white-dim);
+      margin-bottom: 6px;
+    }
+
+    .filter-group select {
+      width: 100%;
+      background: var(--black-light);
+      border: 1px solid var(--border-light);
+      color: var(--white);
+      padding: 9px 28px 9px 10px;
+      border-radius: 2px;
+      font-size: 0.82rem;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23E05A1E'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .filter-group select:focus { border-color: var(--orange); }
+
+    /* Status toggles */
+    .status-toggles { display: flex; gap: 6px; }
+
+    .status-toggle {
+      flex: 1;
+      padding: 8px 4px;
+      border-radius: 2px;
+      border: 1px solid var(--border-light);
+      cursor: pointer;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--white-dim);
+    }
+
+    .status-toggle.winner.active { background: var(--orange); border-color: var(--orange); color: var(--white); }
+    .status-toggle.semifinalist.active { background: #fff; border-color: #fff; color: #000; }
+    .status-toggle.nominee.active { background: var(--border-light); border-color: var(--border-light); color: var(--white); }
+    .status-toggle:not(.active):hover { border-color: var(--white-faint); color: var(--white); }
+
+    /* Results list */
+    #results-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+    }
+
+    #results-panel::-webkit-scrollbar { width: 3px; }
+    #results-panel::-webkit-scrollbar-track { background: transparent; }
+    #results-panel::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+    .result-count {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--white-faint);
+      padding: 8px 4px;
+      text-align: center;
+    }
+
+    .result-item {
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--black-light);
+    }
+
+    .result-item:hover { border-color: var(--orange); }
+
+    .result-name {
+      font-size: 0.85rem;
+      color: var(--white);
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .result-restaurant {
+      font-size: 0.75rem;
+      color: var(--white-dim);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    .result-meta {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      align-items: center;
+    }
+
+    .result-badge {
+      font-size: 0.6rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 6px;
+      border-radius: 1px;
+    }
+
+    .badge-winner { background: var(--orange); color: var(--white); }
+    .badge-semifinalist { background: #fff; color: #000; }
+    .badge-nominee { background: var(--border-light); color: var(--white); }
+
+    .result-loc {
+      font-size: 0.68rem;
+      color: var(--white-faint);
+    }
+
+    .result-year {
+      font-size: 0.68rem;
+      color: var(--white-faint);
+      margin-left: auto;
+    }
+
+    /* ── Map ── */
+    #map { flex: 1; z-index: 100; }
+
+    /* ── Popup ── */
+    .jb-popup { min-width: 220px; max-width: 280px; }
+
+    .jb-popup .popup-header {
+      background: var(--black);
+      margin: -14px -20px 12px;
+      padding: 14px 18px;
+      border-bottom: 2px solid var(--orange);
+    }
+
+    .jb-popup .popup-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .jb-popup .popup-restaurant {
+      font-size: 0.8rem;
+      color: var(--orange);
+      margin-top: 3px;
+    }
+
+    .jb-popup .popup-body { font-family: sans-serif; }
+
+    .jb-popup .popup-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+
+    .jb-popup .popup-label { color: var(--white-faint); }
+    .jb-popup .popup-val { color: var(--white); font-weight: 500; }
+
+    .jb-popup .popup-awards-list { max-height: 200px; overflow-y: auto; }
+
+    .jb-popup .popup-award-item {
+      border-top: 1px solid var(--border);
+      padding: 6px 0;
+    }
+
+    .jb-popup .popup-award-item:first-child { border-top: none; }
+
+    .jb-popup .popup-award-title {
+      font-size: 0.82rem;
+      color: var(--white);
+      font-weight: 600;
+    }
+
+    .jb-popup .popup-award-meta {
+      font-size: 0.72rem;
+      color: var(--white-faint);
+      display: flex;
+      gap: 8px;
+      margin-top: 2px;
+    }
+
+    .leaflet-popup-content-wrapper {
+      background: var(--black-mid) !important;
+      border: 1px solid var(--border-light) !important;
+      border-radius: 3px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.8) !important;
+    }
+
+    .leaflet-popup-tip { background: var(--black-mid) !important; }
+    .leaflet-popup-close-button { color: var(--white-dim) !important; }
+    .leaflet-popup-content { margin: 14px 20px !important; }
+
+    /* Loading overlay */
+    #loading {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(13,13,13,0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .loading-spinner {
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--border-light);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .loading-text {
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    .loading-sub {
+      font-size: 0.78rem;
+      color: var(--white-faint);
+      margin-top: 8px;
+      letter-spacing: 0.04em;
+    }
+
+    /* Radius circle control */
+    #radius-control {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    #radius-control.visible { display: flex; }
+
+    #radius-control label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--white-dim);
+      white-space: nowrap;
+    }
+
+    #radius-slider { flex: 1; accent-color: var(--orange); }
+
+    #radius-val {
+      font-size: 0.75rem;
+      color: var(--orange);
+      font-weight: 600;
+      min-width: 42px;
+    }
+
+    .leaflet-control-zoom { border: 1px solid var(--border) !important; border-radius: 2px !important; }
+    .leaflet-control-zoom a { background: var(--black-mid) !important; color: var(--white) !important; border-color: var(--border) !important; }
+    .leaflet-control-zoom a:hover { background: var(--black-light) !important; color: var(--orange) !important; }
+
+    /* Legend */
+    .map-legend {
+      background: var(--black-mid);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 10px 14px;
+      font-size: 0.7rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .legend-item:last-child { margin-bottom: 0; }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-wordmark">
+    <span class="brand">James Beard Foundation</span>
+    <h1>Awards Map</h1>
+  </div>
+  <div class="header-divider"></div>
+  <span class="header-sub">Restaurant &amp; Chef &nbsp;·&nbsp; 1991–present</span>
+  <div class="header-stat">
+    <div class="stat-num" id="precise-count">—</div>
+    <div class="stat-label">Locations</div>
+  </div>
+</header>
+
+<div class="main">
+  <!-- Sidebar -->
+  <div id="sidebar">
+
+    <!-- Search -->
+    <div class="sidebar-section">
+      <h3>Search</h3>
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Chef or restaurant name…">
+      </div>
+    </div>
+
+    <!-- Locate Me -->
+    <div class="sidebar-section">
+      <h3>Near Me</h3>
+      <button id="locate-btn">📍 Find Awards Near Me</button>
+      <div id="radius-control">
+        <label>Radius:</label>
+        <input type="range" id="radius-slider" min="10" max="500" value="50" step="10">
+        <span id="radius-val">50 mi</span>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="sidebar-section">
+      <h3>Filters</h3>
+
+      <div class="filter-group">
+        <label>Year</label>
+        <select id="filter-year">
+          <option value="">All Years</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>State</label>
+        <select id="filter-state">
+          <option value="">All States</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Award Category</label>
+        <select id="filter-category">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Designation</label>
+        <div class="status-toggles">
+          <button class="status-toggle winner active" data-status="Winner">🥇 Winner</button>
+          <button class="status-toggle semifinalist active" data-status="Semifinalist">🥈 Semi</button>
+          <button class="status-toggle nominee active" data-status="Nominee">🥉 Nominee</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results list -->
+    <div id="results-panel">
+      <div class="result-count" id="result-count">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Map -->
+  <div id="map"></div>
+</div>
+
+<!-- Loading overlay -->
+<div id="loading">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">James Beard Awards Map</div>
+  <div class="loading-sub">Loading award data…</div>
+</div>
+
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let allAwards = [];
+let filteredAwards = [];
+let map, markerCluster, locationCircle, locationMarker;
+let userLat = null, userLng = null, radiusMiles = 50;
+let nearbyMode = false;
+
+// Active status filters
+const activeStatuses = new Set(['Winner', 'Semifinalist', 'Nominee']);
+
+// ── Map init ───────────────────────────────────────────────────────────────
+function initMap() {
+  map = L.map('map', {
+    center: [38.5, -96],
+    zoom: 4,
+    zoomControl: true
+  });
+
+  // Esri World Dark Gray Base (no API key required, dark themed)
+  L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    {
+      attribution: 'Tiles © <a href="https://www.esri.com">Esri</a> &mdash; Esri, DeLorme, NAVTEQ',
+      maxZoom: 16
+    }
+  ).addTo(map);
+
+  // Esri Dark Gray Reference layer (city/road labels)
+  L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+    { maxZoom: 16, opacity: 0.8 }
+  ).addTo(map);
+
+  markerCluster = L.markerClusterGroup({
+    showCoverageOnHover: false,
+    maxClusterRadius: 50,
+    iconCreateFunction: clusterIcon
+  });
+
+  map.addLayer(markerCluster);
+
+  // Legend
+  const legend = L.control({ position: 'bottomright' });
+  legend.onAdd = () => {
+    const div = L.DomUtil.create('div', 'map-legend');
+    div.innerHTML = `
+      <div class="legend-item"><div class="legend-dot" style="background:#FEA219"></div> Winner</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c0c0c0"></div> Semifinalist</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#cd7f32"></div> Nominee</div>
+    `;
+    return div;
+  };
+  legend.addTo(map);
+}
+
+function clusterIcon(cluster) {
+  const count = cluster.getChildCount();
+  const hasWinner = cluster.getAllChildMarkers().some(m => m.options.awardStatus === 'Winner');
+  const color = hasWinner ? '#FEA219' : '#888';
+  const size = count > 100 ? 44 : count > 20 ? 36 : 28;
+  return L.divIcon({
+    html: `<div style="
+      background: radial-gradient(circle, ${color}33, ${color}15);
+      border: 2px solid ${color};
+      border-radius: 50%;
+      width: ${size}px; height: ${size}px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: ${size > 36 ? 12 : 10}px;
+      color: ${color}; font-family: sans-serif;
+    ">${count}</div>`,
+    className: '',
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
+  });
+}
+
+function markerIcon(status) {
+  const colors = {
+    'Winner': { fill: '#FEA219', stroke: '#b07000' },
+    'Semifinalist': { fill: '#c0c0c0', stroke: '#888' },
+    'Nominee': { fill: '#cd7f32', stroke: '#8a5200' }
+  };
+  const c = colors[status] || colors['Nominee'];
+  const size = status === 'Winner' ? 14 : 10;
+  return L.divIcon({
+    html: `<div style="
+      width: ${size}px; height: ${size}px;
+      background: ${c.fill};
+      border: 2px solid ${c.stroke};
+      border-radius: 50%;
+      box-shadow: 0 0 6px ${c.fill}80;
+    "></div>`,
+    className: '',
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2]
+  });
+}
+
+// ── Data loading ────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch('./data/awards.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+    allAwards = data;
+
+    document.getElementById('loading').style.display = 'none';
+    initFilters();
+    applyFilters();
+  } catch (e) {
+    const loading = document.getElementById('loading');
+    loading.querySelector('.loading-text').textContent = 'Failed to load data';
+    loading.querySelector('.loading-sub').textContent = e.message;
+  }
+}
+
+
+// ── Filters ─────────────────────────────────────────────────────────────────
+function initFilters() {
+  // Populate year filter (most recent first)
+  const years = [...new Set(allAwards.map(a => a.year))].sort((a, b) => b - a);
+  const yearSel = document.getElementById('filter-year');
+  years.forEach(y => {
+    const opt = document.createElement('option');
+    opt.value = y;
+    opt.textContent = y;
+    yearSel.appendChild(opt);
+  });
+
+  // Populate state filter
+  const states = [...new Set(allAwards.map(a => a.state).filter(Boolean))].sort();
+  const stateSel = document.getElementById('filter-state');
+  states.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s;
+    stateSel.appendChild(opt);
+  });
+
+  // Populate category filter
+  const cats = [...new Set(allAwards.map(a => a.category).filter(Boolean))].sort();
+  const catSel = document.getElementById('filter-category');
+  cats.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    catSel.appendChild(opt);
+  });
+
+  yearSel.addEventListener('change', applyFilters);
+  stateSel.addEventListener('change', applyFilters);
+  catSel.addEventListener('change', applyFilters);
+
+  document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 200));
+
+  // Status toggles
+  document.querySelectorAll('.status-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = btn.dataset.status;
+      if (activeStatuses.has(s)) {
+        if (activeStatuses.size === 1) return; // keep at least one
+        activeStatuses.delete(s);
+        btn.classList.remove('active');
+      } else {
+        activeStatuses.add(s);
+        btn.classList.add('active');
+      }
+      applyFilters();
+    });
+  });
+}
+
+function updateHeaderCounts() {
+  const preciseLocations = new Set(
+    allAwards.filter(a => a.precise && a.lat && a.lng)
+             .map(a => `${a.lat.toFixed(4)},${a.lng.toFixed(4)}`)
+  ).size;
+  document.getElementById('precise-count').textContent = preciseLocations.toLocaleString();
+}
+
+function applyFilters() {
+  const year = document.getElementById('filter-year').value;
+  const state = document.getElementById('filter-state').value;
+  const category = document.getElementById('filter-category').value;
+  const search = document.getElementById('search-input').value.toLowerCase().trim();
+
+  filteredAwards = allAwards.filter(a => {
+    if (year && a.year !== year) return false;
+    if (state && a.state !== state) return false;
+    if (category && a.category !== category) return false;
+    if (!activeStatuses.has(a.status)) return false;
+    if (search) {
+      const haystack = `${a.name} ${a.restaurant}`.toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    if (nearbyMode && userLat !== null) {
+      if (!a.lat || !a.lng) return false;
+      const dist = distanceMiles(userLat, userLng, a.lat, a.lng);
+      if (dist > radiusMiles) return false;
+    }
+    return true;
+  });
+
+  updateMap();
+  updateSidebar();
+  const visEl = document.getElementById('visible-count'); if (visEl) visEl.textContent = filteredAwards.length.toLocaleString();
+  updateHeaderCounts();
+}
+
+// ── Map rendering ────────────────────────────────────────────────────────────
+function updateMap() {
+  markerCluster.clearLayers();
+
+  // Group by lat/lng to create combined popups
+  const locationMap = new Map();
+  for (const award of filteredAwards) {
+    if (!award.lat || !award.lng) continue;
+    const key = `${award.lat.toFixed(4)},${award.lng.toFixed(4)}`;
+    if (!locationMap.has(key)) {
+      locationMap.set(key, { lat: award.lat, lng: award.lng, awards: [] });
+    }
+    locationMap.get(key).awards.push(award);
+  }
+
+  const markers = [];
+  for (const [, loc] of locationMap) {
+    // Pick the "best" status for icon color (winner > semi > nominee)
+    const bestStatus = loc.awards.some(a => a.status === 'Winner') ? 'Winner'
+      : loc.awards.some(a => a.status === 'Semifinalist') ? 'Semifinalist'
+      : 'Nominee';
+
+    const marker = L.marker([loc.lat, loc.lng], {
+      icon: markerIcon(bestStatus),
+      awardStatus: bestStatus
+    });
+
+    marker.bindPopup(() => buildPopup(loc), { maxWidth: 320 });
+    markers.push(marker);
+  }
+
+  markerCluster.addLayers(markers);
+}
+
+function buildPopup(loc) {
+  const awards = loc.awards;
+  const city = awards[0].city;
+  const state = awards[0].state;
+
+  // Group by restaurant, pick first entry per restaurant for enrichment data
+  const byRestaurant = new Map();
+  for (const a of awards) {
+    const key = a.restaurant || a.name || '?';
+    if (!byRestaurant.has(key)) byRestaurant.set(key, { awards: [], meta: a });
+    byRestaurant.get(key).awards.push(a);
+    // Prefer entries with enrichment data
+    if (a.image || a.website) byRestaurant.get(key).meta = a;
+  }
+
+  // If precise pin (single restaurant at this location), show richer layout
+  const isPrecise = loc.awards[0].precise && byRestaurant.size === 1;
+  const firstMeta = [...byRestaurant.values()][0]?.meta || awards[0];
+  const img = firstMeta.image;
+  const website = firstMeta.website;
+  const description = firstMeta.description;
+  const mapsUrl = firstMeta.mapsUrl || buildFallbackMapsUrl(firstMeta);
+
+  let html = `<div class="jb-popup">`;
+
+  // Header — show image if available
+  if (img) {
+    html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+      <img src="${escHtml(img)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
+        style="width:100%;height:110px;object-fit:cover;display:block;">
+      <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+        <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
+        <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="popup-header">
+      <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
+      <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
+    </div>`;
+  }
+
+  html += `<div class="popup-body">`;
+
+  // Description
+  if (description) {
+    html += `<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-family:sans-serif;margin-bottom:8px;line-height:1.4;font-style:italic;">${escHtml(description.substring(0, 160))}…</div>`;
+  }
+
+  // Action links
+  const links = [];
+  if (mapsUrl) links.push(`<a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Google Maps</a>`);
+  if (website) links.push(`<a href="${escHtml(website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+  if (links.length) {
+    html += `<div style="display:flex;gap:12px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
+  }
+
+  // Awards list
+  html += `<div class="popup-awards-list">`;
+  for (const [restaurant, { awards: rawards, meta }] of byRestaurant) {
+    rawards.sort((a, b) => b.year - a.year);
+    html += `<div class="popup-award-item">`;
+    if (!isPrecise) {
+      // Multiple restaurants at city-level pin — show each restaurant name
+      const restLinks = [];
+      if (meta.mapsUrl || buildFallbackMapsUrl(meta)) restLinks.push(`<a href="${escHtml(meta.mapsUrl || buildFallbackMapsUrl(meta))}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.68rem;font-family:sans-serif;text-decoration:none;">📍</a>`);
+      if (meta.website) restLinks.push(`<a href="${escHtml(meta.website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.68rem;font-family:sans-serif;text-decoration:none;">🌐</a>`);
+      html += `<div class="popup-award-title" style="display:flex;align-items:center;gap:6px;">${escHtml(restaurant)} ${restLinks.join(' ')}</div>`;
+    }
+    for (const a of rawards.slice(0, 4)) {
+      const badge = a.status === 'Winner' ? '🥇' : a.status === 'Semifinalist' ? '🥈' : '🥉';
+      html += `<div class="popup-award-meta">
+        <span>${badge} ${escHtml(a.status)}</span>
+        <span>${escHtml(a.category || '')}</span>
+        <span>${a.year}</span>
+      </div>`;
+      if (a.name && a.name !== restaurant) {
+        html += `<div class="popup-award-meta" style="color:#6a5030">Chef: ${escHtml(a.name)}</div>`;
+      }
+    }
+    if (rawards.length > 4) {
+      html += `<div class="popup-award-meta" style="color:#5a4020">+${rawards.length - 4} more…</div>`;
+    }
+    html += `</div>`;
+  }
+
+  html += `</div></div></div>`;
+  return html;
+}
+
+function buildFallbackMapsUrl(a) {
+  if (!a) return null;
+  const name = a.restaurant || a.name || '';
+  const q = encodeURIComponent(`${name} ${a.city || ''} ${a.state || ''}`.trim());
+  return `https://www.google.com/maps/search/?api=1&query=${q}`;
+}
+
+// ── Sidebar results list ─────────────────────────────────────────────────────
+function updateSidebar() {
+  const panel = document.getElementById('results-panel');
+
+  const statusOrder = { Winner: 0, Semifinalist: 1, Nominee: 2 };
+
+  const sorted = [...filteredAwards].sort((a, b) => {
+    if (nearbyMode && userLat !== null) {
+      const da = distanceMiles(userLat, userLng, a.lat, a.lng);
+      const db = distanceMiles(userLat, userLng, b.lat, b.lng);
+      if (Math.abs(da - db) > 0.5) return da - db;
+    }
+    const s = (statusOrder[a.status] || 2) - (statusOrder[b.status] || 2);
+    if (s !== 0) return s;
+    return parseInt(b.year) - parseInt(a.year);
+  });
+
+  // Show max 300 in sidebar
+  const display = sorted.slice(0, 300);
+
+  const items = display.map(a => {
+    const badgeClass = a.status === 'Winner' ? 'badge-winner' : a.status === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
+    const badgeText = a.status === 'Winner' ? '🥇 Winner' : a.status === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
+    const displayName = a.name && a.name !== a.restaurant ? a.name : (a.restaurant || a.name || '?');
+    const displayRest = a.name !== a.restaurant && a.restaurant ? a.restaurant : '';
+    const distText = (nearbyMode && userLat !== null)
+      ? ` · ${distanceMiles(userLat, userLng, a.lat, a.lng).toFixed(1)} mi` : '';
+
+    return `<div class="result-item" data-lat="${a.lat}" data-lng="${a.lng}">
+      <div class="result-name">${escHtml(displayName)}</div>
+      ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
+      <div class="result-meta">
+        <span class="result-badge ${badgeClass}">${badgeText}</span>
+        <span class="result-loc">${escHtml(a.city)}, ${escHtml(a.state)}${distText}</span>
+        <span class="result-year">${a.year}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  const nearbyBanner = nearbyMode
+    ? `<div style="background:#FEA219;color:#fff;padding:6px 10px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;border-radius:2px;margin-bottom:6px;">📍 Nearby mode: within ${radiusMiles} mi of you</div>`
+    : '';
+  panel.innerHTML = `${nearbyBanner}<div class="result-count">${filteredAwards.length.toLocaleString()} results${filteredAwards.length > 300 ? ' (top 300 shown)' : ''}</div>${items}`;
+
+  // Click to fly to location
+  panel.querySelectorAll('.result-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const lat = parseFloat(el.dataset.lat);
+      const lng = parseFloat(el.dataset.lng);
+      map.flyTo([lat, lng], 13, { duration: 0.8 });
+    });
+  });
+}
+
+// ── Geolocation ──────────────────────────────────────────────────────────────
+function toggleNearbyMode() {
+  if (nearbyMode) {
+    // Turn off
+    nearbyMode = false;
+    const btn = document.getElementById('locate-btn');
+    btn.textContent = '📍 Find Awards Near Me';
+    btn.style.background = '';
+    btn.style.color = '';
+    document.getElementById('radius-control').classList.remove('visible');
+    if (locationCircle) { map.removeLayer(locationCircle); locationCircle = null; }
+    if (locationMarker) { map.removeLayer(locationMarker); locationMarker = null; }
+    applyFilters();
+  }
+}
+
+document.getElementById('locate-btn').addEventListener('click', () => {
+  if (nearbyMode) {
+    toggleNearbyMode();
+    return;
+  }
+
+  if (!navigator.geolocation) {
+    alert('Geolocation is not supported by your browser.');
+    return;
+  }
+
+  const btn = document.getElementById('locate-btn');
+  btn.textContent = '📍 Locating…';
+  btn.disabled = true;
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    userLat = pos.coords.latitude;
+    userLng = pos.coords.longitude;
+    nearbyMode = true;
+
+    console.log('[NearMe] Got location:', userLat, userLng, '| radius:', radiusMiles, 'mi | allAwards:', allAwards.length);
+
+    btn.textContent = '📍 Near Me (active)';
+    btn.style.background = '#FEA219';
+    btn.style.color = '#ffffff';
+    btn.disabled = false;
+
+    document.getElementById('radius-control').classList.add('visible');
+
+    showLocationCircle();
+    map.flyTo([userLat, userLng], 9, { duration: 1 });
+    applyFilters();
+
+    console.log('[NearMe] After filter:', filteredAwards.length, 'of', allAwards.length, 'awards within', radiusMiles, 'mi');
+  }, err => {
+    btn.textContent = '📍 Find Awards Near Me';
+    btn.disabled = false;
+    alert('Could not get your location: ' + err.message);
+  }, { timeout: 15000 });
+});
+
+const radiusSlider = document.getElementById('radius-slider');
+const radiusVal = document.getElementById('radius-val');
+radiusSlider.addEventListener('input', () => {
+  radiusMiles = parseInt(radiusSlider.value);
+  radiusVal.textContent = `${radiusMiles} mi`;
+  if (nearbyMode) {
+    showLocationCircle();
+    applyFilters();
+  }
+});
+
+function showLocationCircle() {
+  if (locationCircle) map.removeLayer(locationCircle);
+  if (locationMarker) map.removeLayer(locationMarker);
+
+  const radiusMeters = radiusMiles * 1609.34;
+
+  locationCircle = L.circle([userLat, userLng], {
+    radius: radiusMeters,
+    color: '#FEA219',
+    fillColor: '#FEA219',
+    fillOpacity: 0.06,
+    weight: 1.5,
+    dashArray: '6, 4'
+  }).addTo(map);
+
+  locationMarker = L.circleMarker([userLat, userLng], {
+    radius: 6,
+    color: '#fff',
+    fillColor: '#FEA219',
+    fillOpacity: 1,
+    weight: 2
+  }).addTo(map).bindPopup('📍 Your location');
+}
+
+// ── Utilities ────────────────────────────────────────────────────────────────
+function distanceMiles(lat1, lon1, lat2, lon2) {
+  const R = 3958.8;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
+}
+
+// ── Init ────────────────────────────────────────────────────────────────────
+initMap();
+loadData();
+</script>
+</body>
+</html>
