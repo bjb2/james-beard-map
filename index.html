@@ -670,6 +670,13 @@
         </div>
 
         <div class="filter-group">
+          <label>Cuisine / Type</label>
+          <select id="filter-cuisine">
+            <option value="">All Cuisines</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
           <label>Designation</label>
           <div class="status-toggles">
             <button class="status-toggle winner active" data-status="Winner">🥇 Winner</button>
@@ -706,6 +713,7 @@
 let allAwards = [];
 let filteredAwards = [];
 let map, markerCluster, locationCircle, locationMarker;
+let markers = [];
 let userLat = null, userLng = null, radiusMiles = 50;
 let nearbyMode = false;
 
@@ -800,14 +808,92 @@ function markerIcon(status) {
   });
 }
 
+// ── Cuisine normalisation ────────────────────────────────────────────────────
+// Maps raw category strings (from Mapbox/Yelp) → clean display labels.
+// Anything not listed falls back to title-case of the original.
+const CUISINE_MAP = {
+  'new american':'New American','american restaurant':'American','american':'American',
+  'italian restaurant':'Italian','italian':'Italian',
+  'french restaurant':'French','french':'French',
+  'japanese restaurant':'Japanese','japanese':'Japanese','sushi bars':'Japanese','izakaya':'Japanese','ramen':'Japanese','ramen restaurant':'Japanese',
+  'mexican restaurant':'Mexican','mexican':'Mexican','tex-mex':'Mexican','tacos':'Mexican','taco restaurant':'Mexican',
+  'seafood':'Seafood','fish restaurant':'Seafood','seafood markets':'Seafood',
+  'cocktail bars':'Bars & Cocktails','bar':'Bars & Cocktails','bars':'Bars & Cocktails',
+  'cocktail bar':'Bars & Cocktails','beer bar':'Bars & Cocktails','nightlife':'Bars & Cocktails',
+  'whiskey bars':'Bars & Cocktails','lounges':'Bars & Cocktails','pubs':'Bars & Cocktails',
+  'pub':'Bars & Cocktails','gastropubs':'Bars & Cocktails','gastropub':'Bars & Cocktails',
+  'wine bars':'Wine & Spirits','wine bar':'Wine & Spirits','winery':'Wine & Spirits',
+  'wineries':'Wine & Spirits','vineyards':'Wine & Spirits','beer, wine & spirits':'Wine & Spirits',
+  'liquor store':'Wine & Spirits','distillery':'Wine & Spirits',
+  'brewery':'Brewery','breweries':'Brewery','biergarten':'Brewery',
+  'breakfast & brunch':'Breakfast & Brunch','breakfast restaurant':'Breakfast & Brunch',
+  'brunch restaurant':'Breakfast & Brunch','pancakes':'Breakfast & Brunch',
+  'steakhouses':'Steakhouse','steakhouse':'Steakhouse',
+  'bakeries':'Bakery','bakery':'Bakery','patisserie/cake shop':'Bakery',
+  'bagels':'Bakery','donuts':'Bakery','donut shop':'Bakery',
+  'coffee & tea':'Coffee & Tea','coffee':'Coffee & Tea','coffee shop':'Coffee & Tea',
+  'café':'Coffee & Tea','cafes':'Coffee & Tea','juice bars & smoothies':'Coffee & Tea',
+  'southern':'Southern / Cajun','cajun/creole':'Southern / Cajun',
+  'creole restaurant':'Southern / Cajun',
+  'indian restaurant':'Indian','indian':'Indian',
+  'mediterranean restaurant':'Mediterranean','mediterranean':'Mediterranean',
+  'pizza':'Pizza',
+  'asian fusion':'Asian Fusion','asian food':'Asian Fusion',
+  'korean restaurant':'Korean','korean':'Korean',
+  'chinese restaurant':'Chinese','chinese':'Chinese','dim sum':'Chinese','cantonese':'Chinese',
+  'thai restaurant':'Thai','thai':'Thai',
+  'vietnamese restaurant':'Vietnamese','vietnamese':'Vietnamese',
+  'spanish restaurant':'Spanish','spanish':'Spanish','iberian':'Spanish','basque':'Spanish',
+  'comfort food':'American','diners':'American','diner':'American',
+  'tapas/small plates':'Tapas','tapas restaurant':'Tapas','tapas bars':'Tapas',
+  'desserts':'Desserts','ice cream & frozen yogurt':'Desserts','chocolatiers & shops':'Desserts',
+  'cupcakes':'Desserts',
+  'sandwiches':'Sandwiches','delis':'Sandwiches',
+  'vegetarian':'Vegetarian / Vegan','vegan':'Vegetarian / Vegan','gluten-free':'Vegetarian / Vegan',
+  'modern european':'Modern European','brasseries':'Modern European','austrian':'Modern European',
+  'caribbean':'Caribbean','latin american':'Latin American',
+  'peruvian':'Latin American','puerto rican':'Latin American',
+  'greek restaurant':'Greek','greek':'Greek',
+  'middle eastern':'Middle Eastern','moroccan':'Middle Eastern','persian restaurant':'Middle Eastern',
+  'african':'African','ethiopian':'African',
+  'hawaiian':'Hawaiian',
+  'filipino restaurant':'Filipino','filipino':'Filipino',
+  'fast food restaurant':null,'food delivery services':null,'food stands':null,
+  'restaurants':null,'food and drink':null,'food':null,
+};
+
+function normaliseCuisine(raw) {
+  if (!raw) return null;
+  const key = raw.toLowerCase().trim();
+  if (key in CUISINE_MAP) return CUISINE_MAP[key];
+  // Title-case anything not explicitly mapped
+  return raw.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+}
+
 // ── Data loading ────────────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const res = await fetch('./data/awards.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const [awardsRes, cuisineRes, yelpRes] = await Promise.all([
+      fetch('./data/awards.json'),
+      fetch('./data/cuisine-cache.json').catch(() => null),
+      fetch('./data/yelp-details.json').catch(() => null)
+    ]);
+    if (!awardsRes.ok) throw new Error(`HTTP ${awardsRes.status}`);
 
-    const data = await res.json();
-    allAwards = data;
+    const data = await awardsRes.json();
+    const cuisineCache = cuisineRes?.ok ? await cuisineRes.json() : {};
+    const yelpDetails = yelpRes?.ok ? await yelpRes.json() : {};
+
+    // Attach normalised cuisine tags and Yelp details to each award
+    allAwards = data.map(a => {
+      const key = `${a.restaurant || a.name}|${a.city}|${a.state}`;
+      const raw = cuisineCache[key] || [];
+      const tags = [...new Set(raw.map(normaliseCuisine).filter(Boolean))];
+      const yelp = yelpDetails[key] || null;
+      let enriched = tags.length ? { ...a, cuisineTags: tags } : a;
+      if (yelp) enriched = { ...enriched, yelpDetail: yelp };
+      return enriched;
+    });
 
     document.getElementById('loading').style.display = 'none';
     initFilters();
@@ -842,7 +928,7 @@ function initFilters() {
     stateSel.appendChild(opt);
   });
 
-  // Populate category filter
+  // Populate award category filter
   const cats = [...new Set(allAwards.map(a => a.category).filter(Boolean))].sort();
   const catSel = document.getElementById('filter-category');
   cats.forEach(c => {
@@ -852,9 +938,26 @@ function initFilters() {
     catSel.appendChild(opt);
   });
 
+  // Populate cuisine/type filter — sorted by frequency so common ones appear first
+  const cuisineCount = {};
+  allAwards.forEach(a => (a.cuisineTags || []).forEach(t => {
+    cuisineCount[t] = (cuisineCount[t] || 0) + 1;
+  }));
+  const cuisines = Object.keys(cuisineCount).sort((a, b) =>
+    cuisineCount[b] - cuisineCount[a] || a.localeCompare(b)
+  );
+  const cuisineSel = document.getElementById('filter-cuisine');
+  cuisines.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = `${c} (${cuisineCount[c]})`;
+    cuisineSel.appendChild(opt);
+  });
+
   yearSel.addEventListener('change', applyFilters);
   stateSel.addEventListener('change', applyFilters);
   catSel.addEventListener('change', applyFilters);
+  cuisineSel.addEventListener('change', applyFilters);
 
   document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 200));
 
@@ -877,7 +980,7 @@ function initFilters() {
 
 function updateHeaderCounts() {
   const preciseLocations = new Set(
-    allAwards.filter(a => a.precise && a.lat && a.lng)
+    allAwards.filter(a => a.lat && a.lng)
              .map(a => `${a.lat.toFixed(4)},${a.lng.toFixed(4)}`)
   ).size;
   document.getElementById('precise-count').textContent = preciseLocations.toLocaleString();
@@ -887,12 +990,14 @@ function applyFilters() {
   const year = document.getElementById('filter-year').value;
   const state = document.getElementById('filter-state').value;
   const category = document.getElementById('filter-category').value;
+  const cuisine = document.getElementById('filter-cuisine').value;
   const search = document.getElementById('search-input').value.toLowerCase().trim();
 
   filteredAwards = allAwards.filter(a => {
     if (year && a.year !== year) return false;
     if (state && a.state !== state) return false;
     if (category && a.category !== category) return false;
+    if (cuisine && !(a.cuisineTags || []).includes(cuisine)) return false;
     if (!activeStatuses.has(a.status)) return false;
     if (search) {
       const haystack = `${a.name} ${a.restaurant}`.toLowerCase();
@@ -927,7 +1032,7 @@ function updateMap() {
     locationMap.get(key).awards.push(award);
   }
 
-  const markers = [];
+  markers = [];
   for (const [, loc] of locationMap) {
     // Pick the "best" status for icon color (winner > semi > nominee)
     const bestStatus = loc.awards.some(a => a.status === 'Winner') ? 'Winner'
@@ -964,7 +1069,8 @@ function buildPopup(loc) {
   // If precise pin (single restaurant at this location), show richer layout
   const isPrecise = loc.awards[0].precise && byRestaurant.size === 1;
   const firstMeta = [...byRestaurant.values()][0]?.meta || awards[0];
-  const img = firstMeta.image;
+  const yelpDetail = firstMeta.yelpDetail || null;
+  const img = yelpDetail?.image || firstMeta.image;
   const website = firstMeta.website;
   const description = firstMeta.description;
   const mapsUrl = firstMeta.mapsUrl || buildFallbackMapsUrl(firstMeta);
@@ -995,12 +1101,25 @@ function buildPopup(loc) {
     html += `<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-family:sans-serif;margin-bottom:8px;line-height:1.4;font-style:italic;">${escHtml(description.substring(0, 160))}…</div>`;
   }
 
+  // Yelp rating / price / closed bar
+  if (yelpDetail) {
+    const parts = [];
+    if (yelpDetail.rating) parts.push(`<span style="color:#FEA219;font-weight:700;">⭐ ${yelpDetail.rating}</span>`);
+    if (yelpDetail.price)  parts.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(yelpDetail.price)}</span>`);
+    if (yelpDetail.isClosed) parts.push(`<span style="color:#e74c3c;font-weight:700;font-size:0.68rem;letter-spacing:0.04em;">PERMANENTLY CLOSED</span>`);
+    if (parts.length) {
+      html += `<div style="display:flex;align-items:center;gap:8px;font-family:sans-serif;font-size:0.8rem;margin-bottom:8px;">${parts.join(' · ')}</div>`;
+    }
+  }
+
   // Action links
   const links = [];
-  if (mapsUrl) links.push(`<a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Google Maps</a>`);
+  if (mapsUrl) links.push(`<a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
   if (website) links.push(`<a href="${escHtml(website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+  if (yelpDetail?.menuUrl) links.push(`<a href="${escHtml(yelpDetail.menuUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📋 Menu</a>`);
+  if (yelpDetail?.url) links.push(`<a href="${escHtml(yelpDetail.url)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Yelp</a>`);
   if (links.length) {
-    html += `<div style="display:flex;gap:12px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
+    html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
   }
 
   // Awards list
@@ -1087,12 +1206,19 @@ function updateSidebar() {
     : '';
   panel.innerHTML = `${nearbyBanner}<div class="result-count">${filteredAwards.length.toLocaleString()} results${filteredAwards.length > 300 ? ' (top 300 shown)' : ''}</div>${items}`;
 
-  // Click to fly to location
+  // Click to fly to location and open popup
   panel.querySelectorAll('.result-item').forEach(el => {
     el.addEventListener('click', () => {
       const lat = parseFloat(el.dataset.lat);
       const lng = parseFloat(el.dataset.lng);
-      map.flyTo([lat, lng], 13, { duration: 0.8 });
+      map.flyTo([lat, lng], 15, { duration: 0.8 });
+      map.once('moveend', () => {
+        const marker = markers.find(m => {
+          const ll = m.getLatLng();
+          return Math.abs(ll.lat - lat) < 0.0001 && Math.abs(ll.lng - lng) < 0.0001;
+        });
+        if (marker) markerCluster.zoomToShowLayer(marker, () => marker.openPopup());
+      });
     });
   });
 }
