@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>James Beard Awards Map</title>
+  <title>Delectable</title>
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -356,6 +356,7 @@
     .badge-winner { background: var(--orange); color: var(--white); }
     .badge-semifinalist { background: #fff; color: #000; }
     .badge-nominee { background: var(--border-light); color: var(--white); }
+    .badge-michelin { background: #E4002B; color: #fff; }
 
     .result-loc {
       font-size: 0.68rem;
@@ -600,6 +601,21 @@
       border: 1px solid rgba(255,255,255,0.2);
       flex-shrink: 0;
     }
+
+    .legend-diamond {
+      flex-shrink: 0;
+      transform: rotate(45deg);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .legend-section {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 4px;
+    }
   </style>
 </head>
 <body>
@@ -607,11 +623,10 @@
 <header>
   <button id="sidebar-toggle" aria-label="Toggle filters">☰</button>
   <div class="header-wordmark">
-    <span class="brand">James Beard Foundation</span>
-    <h1>Awards Map</h1>
+    <h1>Delectable</h1>
   </div>
   <div class="header-divider"></div>
-  <span class="header-sub">Restaurant &amp; Chef &nbsp;·&nbsp; 1991–present</span>
+  <span class="header-sub">James Beard &nbsp;·&nbsp; Michelin Guide</span>
   <div class="header-stat">
     <div class="stat-num" id="precise-count">—</div>
     <div class="stat-label">Locations</div>
@@ -684,6 +699,27 @@
             <button class="status-toggle nominee active" data-status="Nominee">🥉 Nominee</button>
           </div>
         </div>
+
+        <div class="filter-group">
+          <label>Source</label>
+          <select id="filter-source">
+            <option value="">All Sources</option>
+            <option value="jbf">James Beard Only</option>
+            <option value="michelin">Michelin Only</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Michelin Tier</label>
+          <select id="filter-michelin">
+            <option value="">All Tiers</option>
+            <option value="3 Stars">★★★ 3 Stars</option>
+            <option value="2 Stars">★★ 2 Stars</option>
+            <option value="1 Star">★ 1 Star</option>
+            <option value="Bib Gourmand">Bib Gourmand</option>
+            <option value="Selected">Michelin Selected</option>
+          </select>
+        </div>
       </div>
     </div>
 
@@ -700,7 +736,7 @@
 <!-- Loading overlay -->
 <div id="loading">
   <div class="loading-spinner"></div>
-  <div class="loading-text">James Beard Awards Map</div>
+  <div class="loading-text">Delectable</div>
   <div class="loading-sub">Loading award data…</div>
 </div>
 
@@ -756,9 +792,15 @@ function initMap() {
   legend.onAdd = () => {
     const div = L.DomUtil.create('div', 'map-legend');
     div.innerHTML = `
+      <div class="legend-section">James Beard</div>
       <div class="legend-item"><div class="legend-dot" style="background:#FEA219"></div> Winner</div>
       <div class="legend-item"><div class="legend-dot" style="background:#c0c0c0"></div> Semifinalist</div>
       <div class="legend-item"><div class="legend-dot" style="background:#cd7f32"></div> Nominee</div>
+      <div class="legend-section" style="margin-top:6px;">Michelin</div>
+      <div class="legend-item"><div class="legend-diamond" style="background:#E4002B;width:12px;height:12px;"></div> 3 Stars</div>
+      <div class="legend-item"><div class="legend-diamond" style="background:#E4002B;width:10px;height:10px;"></div> 1–2 Stars</div>
+      <div class="legend-item"><div class="legend-diamond" style="background:#E8611A;width:9px;height:9px;"></div> Bib Gourmand</div>
+      <div class="legend-item"><div class="legend-diamond" style="background:#9B3050;width:7px;height:7px;"></div> Selected</div>
     `;
     return div;
   };
@@ -786,11 +828,33 @@ function clusterIcon(cluster) {
   });
 }
 
-function markerIcon(status) {
+function markerIcon(status, michelinTier) {
+  // Michelin-only pin: red diamond, sized by tier
+  if (michelinTier && status === 'michelin') {
+    const cfg = {
+      '3 Stars':     { color: '#E4002B', stroke: '#9a0018', size: 14 },
+      '2 Stars':     { color: '#E4002B', stroke: '#9a0018', size: 11 },
+      '1 Star':      { color: '#E4002B', stroke: '#9a0018', size: 9  },
+      'Bib Gourmand':{ color: '#E8611A', stroke: '#a03a00', size: 9  },
+      'Selected':    { color: '#9B3050', stroke: '#5a1a2e', size: 7  },
+    };
+    const c = cfg[michelinTier] || cfg['Selected'];
+    const outer = Math.round(c.size * 1.5);
+    return L.divIcon({
+      html: `<div style="width:${outer}px;height:${outer}px;display:flex;align-items:center;justify-content:center;">
+        <div style="width:${c.size}px;height:${c.size}px;background:${c.color};border:1.5px solid ${c.stroke};transform:rotate(45deg);box-shadow:0 0 5px ${c.color}80;"></div>
+      </div>`,
+      className: '',
+      iconSize: [outer, outer],
+      iconAnchor: [outer / 2, outer / 2]
+    });
+  }
+
+  // JBF pin: coloured circle
   const colors = {
-    'Winner': { fill: '#FEA219', stroke: '#b07000' },
-    'Semifinalist': { fill: '#c0c0c0', stroke: '#888' },
-    'Nominee': { fill: '#cd7f32', stroke: '#8a5200' }
+    'Winner':      { fill: '#FEA219', stroke: '#b07000' },
+    'Semifinalist':{ fill: '#c0c0c0', stroke: '#888'    },
+    'Nominee':     { fill: '#cd7f32', stroke: '#8a5200' }
   };
   const c = colors[status] || colors['Nominee'];
   const size = status === 'Winner' ? 14 : 10;
@@ -942,6 +1006,8 @@ function initFilters() {
   stateSel.addEventListener('change', applyFilters);
   catSel.addEventListener('change', applyFilters);
   cuisineSel.addEventListener('change', applyFilters);
+  document.getElementById('filter-source').addEventListener('change', applyFilters);
+  document.getElementById('filter-michelin').addEventListener('change', applyFilters);
 
   document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 200));
 
@@ -971,20 +1037,36 @@ function updateHeaderCounts() {
 }
 
 function applyFilters() {
-  const year = document.getElementById('filter-year').value;
-  const state = document.getElementById('filter-state').value;
-  const category = document.getElementById('filter-category').value;
-  const cuisine = document.getElementById('filter-cuisine').value;
-  const search = document.getElementById('search-input').value.toLowerCase().trim();
+  const year          = document.getElementById('filter-year').value;
+  const state         = document.getElementById('filter-state').value;
+  const category      = document.getElementById('filter-category').value;
+  const cuisine       = document.getElementById('filter-cuisine').value;
+  const source        = document.getElementById('filter-source').value;
+  const michelinTier  = document.getElementById('filter-michelin').value;
+  const search        = document.getElementById('search-input').value.toLowerCase().trim();
 
   filteredAwards = allAwards.filter(a => {
-    if (year && a.year !== year) return false;
-    if (state && a.state !== state) return false;
-    if (category && a.category !== category) return false;
+    const isMichelin = a.source === 'michelin';
+
+    // Source filter
+    if (source === 'jbf'     && isMichelin)  return false;
+    if (source === 'michelin' && !isMichelin) return false;
+
+    // JBF-specific filters (skip for Michelin-only records)
+    if (!isMichelin) {
+      if (year     && a.year     !== year)     return false;
+      if (state    && a.state    !== state)    return false;
+      if (category && a.category !== category) return false;
+      if (!activeStatuses.has(a.status))       return false;
+    }
+
+    // Michelin tier filter (applies to any record with michelinAward)
+    if (michelinTier && a.michelinAward !== michelinTier) return false;
+
+    // Shared filters
     if (cuisine && !(a.cuisineTags || []).includes(cuisine)) return false;
-    if (!activeStatuses.has(a.status)) return false;
     if (search) {
-      const haystack = `${a.name} ${a.restaurant}`.toLowerCase();
+      const haystack = `${a.name||''} ${a.restaurant||''}`.toLowerCase();
       if (!haystack.includes(search)) return false;
     }
     if (nearbyMode && userLat !== null) {
@@ -1018,13 +1100,24 @@ function updateMap() {
 
   markers = [];
   for (const [, loc] of locationMap) {
-    // Pick the "best" status for icon color (winner > semi > nominee)
-    const bestStatus = loc.awards.some(a => a.status === 'Winner') ? 'Winner'
-      : loc.awards.some(a => a.status === 'Semifinalist') ? 'Semifinalist'
-      : 'Nominee';
+    const hasJBF = loc.awards.some(a => a.source !== 'michelin');
+
+    let bestStatus, michelinTier;
+    if (hasJBF) {
+      // JBF pin — colour by best JBF status
+      bestStatus = loc.awards.some(a => a.status === 'Winner') ? 'Winner'
+        : loc.awards.some(a => a.status === 'Semifinalist') ? 'Semifinalist'
+        : 'Nominee';
+      michelinTier = null;
+    } else {
+      // Michelin-only — pick highest tier present
+      const tierOrder = ['3 Stars','2 Stars','1 Star','Bib Gourmand','Selected'];
+      michelinTier = tierOrder.find(t => loc.awards.some(a => a.michelinAward === t)) || 'Selected';
+      bestStatus = 'michelin';
+    }
 
     const marker = L.marker([loc.lat, loc.lng], {
-      icon: markerIcon(bestStatus),
+      icon: markerIcon(bestStatus, michelinTier),
       awardStatus: bestStatus
     });
 
@@ -1035,22 +1128,69 @@ function updateMap() {
   markerCluster.addLayers(markers);
 }
 
+function michelinBadge(tier) {
+  if (!tier) return '';
+  const stars = { '3 Stars': '★★★', '2 Stars': '★★', '1 Star': '★' };
+  const label = stars[tier]
+    ? `<span style="color:#E4002B;font-weight:700;">${stars[tier]}</span> ${tier}`
+    : tier === 'Bib Gourmand'
+      ? `<span style="color:#E8611A;font-weight:700;">Ⓑ</span> Bib Gourmand`
+      : `<span style="color:#9B3050;font-weight:700;">◆</span> Michelin Selected`;
+  return `<span style="font-family:sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.85);">${label}</span>`;
+}
+
 function buildPopup(loc) {
   const awards = loc.awards;
+  const isMichelinOnly = awards.every(a => a.source === 'michelin');
+
+  // ── Michelin-only popup ────────────────────────────────────────────────────
+  if (isMichelinOnly) {
+    const a = awards[0];
+    const location = [a.city, a.country].filter(Boolean).join(', ');
+    const mapsUrl = buildFallbackMapsUrl(a);
+    let html = `<div class="jb-popup">
+      <div class="popup-header">
+        <div class="popup-name">${escHtml(a.restaurant)}</div>
+        <div class="popup-restaurant">${escHtml(location)}</div>
+      </div>
+      <div class="popup-body">`;
+
+    // Michelin badge
+    html += `<div style="margin-bottom:8px;">${michelinBadge(a.michelinAward)}`;
+    if (a.greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
+    html += `</div>`;
+
+    // Price / cuisine
+    const meta = [];
+    if (a.price)   meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
+    if (a.cuisine) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisine)}</span>`);
+    if (meta.length) html += `<div style="font-family:sans-serif;font-size:0.78rem;margin-bottom:8px;">${meta.join(' · ')}</div>`;
+
+    // Links
+    const links = [];
+    if (mapsUrl)       links.push(`<a href="${escHtml(mapsUrl)}"       target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
+    if (a.website)     links.push(`<a href="${escHtml(a.website)}"     target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+    if (a.michelinUrl) links.push(`<a href="${escHtml(a.michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
+    if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
+
+    html += `</div></div>`;
+    return html;
+  }
+
+  // ── JBF (or mixed JBF+Michelin) popup ─────────────────────────────────────
   const city = awards[0].city;
   const state = awards[0].state;
 
-  // Group by restaurant, pick first entry per restaurant for enrichment data
+  // Group by restaurant
   const byRestaurant = new Map();
   for (const a of awards) {
+    if (a.source === 'michelin') continue; // show JBF entries in this popup
     const key = a.restaurant || a.name || '?';
     if (!byRestaurant.has(key)) byRestaurant.set(key, { awards: [], meta: a });
     byRestaurant.get(key).awards.push(a);
-    // Prefer entries with enrichment data
     if (a.image || a.website) byRestaurant.get(key).meta = a;
   }
 
-  // If precise pin (single restaurant at this location), show richer layout
   const isPrecise = loc.awards[0].precise && byRestaurant.size === 1;
   const firstMeta = [...byRestaurant.values()][0]?.meta || awards[0];
   const yelpDetail = firstMeta.yelpDetail || null;
@@ -1059,9 +1199,11 @@ function buildPopup(loc) {
   const description = firstMeta.description;
   const mapsUrl = firstMeta.mapsUrl || buildFallbackMapsUrl(firstMeta);
 
+  // Michelin data on this restaurant (if cross-matched)
+  const michelinAward = firstMeta.michelinAward || null;
+
   let html = `<div class="jb-popup">`;
 
-  // Header — show image if available
   if (img) {
     html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
       <img src="${escHtml(img)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
@@ -1080,9 +1222,15 @@ function buildPopup(loc) {
 
   html += `<div class="popup-body">`;
 
-  // Description
   if (description) {
     html += `<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-family:sans-serif;margin-bottom:8px;line-height:1.4;font-style:italic;">${escHtml(description.substring(0, 160))}…</div>`;
+  }
+
+  // Michelin badge (cross-matched restaurants)
+  if (michelinAward) {
+    html += `<div style="margin-bottom:8px;">${michelinBadge(michelinAward)}`;
+    if (firstMeta.greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
+    html += `</div>`;
   }
 
   // Yelp rating / price / closed bar
@@ -1091,9 +1239,7 @@ function buildPopup(loc) {
     if (yelpDetail.rating) parts.push(`<span style="color:#FEA219;font-weight:700;">⭐ ${yelpDetail.rating}</span>`);
     if (yelpDetail.price)  parts.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(yelpDetail.price)}</span>`);
     if (yelpDetail.isClosed) parts.push(`<span style="color:#e74c3c;font-weight:700;font-size:0.68rem;letter-spacing:0.04em;">PERMANENTLY CLOSED</span>`);
-    if (parts.length) {
-      html += `<div style="display:flex;align-items:center;gap:8px;font-family:sans-serif;font-size:0.8rem;margin-bottom:8px;">${parts.join(' · ')}</div>`;
-    }
+    if (parts.length) html += `<div style="display:flex;align-items:center;gap:8px;font-family:sans-serif;font-size:0.8rem;margin-bottom:8px;">${parts.join(' · ')}</div>`;
   }
 
   // Action links
@@ -1102,17 +1248,15 @@ function buildPopup(loc) {
   if (website) links.push(`<a href="${escHtml(website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
   if (yelpDetail?.menuUrl) links.push(`<a href="${escHtml(yelpDetail.menuUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📋 Menu</a>`);
   if (yelpDetail?.url) links.push(`<a href="${escHtml(yelpDetail.url)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Yelp</a>`);
-  if (links.length) {
-    html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
-  }
+  if (firstMeta.michelinUrl) links.push(`<a href="${escHtml(firstMeta.michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
+  if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
 
-  // Awards list
+  // JBF awards list
   html += `<div class="popup-awards-list">`;
   for (const [restaurant, { awards: rawards, meta }] of byRestaurant) {
     rawards.sort((a, b) => b.year - a.year);
     html += `<div class="popup-award-item">`;
     if (!isPrecise) {
-      // Multiple restaurants at city-level pin — show each restaurant name
       const restLinks = [];
       if (meta.mapsUrl || buildFallbackMapsUrl(meta)) restLinks.push(`<a href="${escHtml(meta.mapsUrl || buildFallbackMapsUrl(meta))}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.68rem;font-family:sans-serif;text-decoration:none;">📍</a>`);
       if (meta.website) restLinks.push(`<a href="${escHtml(meta.website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.68rem;font-family:sans-serif;text-decoration:none;">🌐</a>`);
@@ -1129,9 +1273,7 @@ function buildPopup(loc) {
         html += `<div class="popup-award-meta">Chef: ${escHtml(a.name)}</div>`;
       }
     }
-    if (rawards.length > 4) {
-      html += `<div class="popup-award-meta">+${rawards.length - 4} more…</div>`;
-    }
+    if (rawards.length > 4) html += `<div class="popup-award-meta">+${rawards.length - 4} more…</div>`;
     html += `</div>`;
   }
 
@@ -1167,10 +1309,18 @@ function updateSidebar() {
   const display = sorted.slice(0, 300);
 
   const items = display.map(a => {
-    const badgeClass = a.status === 'Winner' ? 'badge-winner' : a.status === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
-    const badgeText = a.status === 'Winner' ? '🥇 Winner' : a.status === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
-    const displayName = a.name && a.name !== a.restaurant ? a.name : (a.restaurant || a.name || '?');
-    const displayRest = a.name !== a.restaurant && a.restaurant ? a.restaurant : '';
+    const isMichelin = a.source === 'michelin';
+    const badgeClass = isMichelin ? 'badge-michelin'
+      : a.status === 'Winner' ? 'badge-winner'
+      : a.status === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
+    const badgeText = isMichelin
+      ? ({ '3 Stars':'★★★ 3 Stars','2 Stars':'★★ 2 Stars','1 Star':'★ 1 Star','Bib Gourmand':'Ⓑ Bib Gourmand','Selected':'◆ Selected' }[a.michelinAward] || '◆ Michelin')
+      : a.status === 'Winner' ? '🥇 Winner' : a.status === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
+    const displayName = isMichelin ? a.restaurant : (a.name && a.name !== a.restaurant ? a.name : (a.restaurant || a.name || '?'));
+    const displayRest = !isMichelin && a.name !== a.restaurant && a.restaurant ? a.restaurant : '';
+    const locText = isMichelin
+      ? [a.city, a.country].filter(Boolean).join(', ')
+      : [a.city, a.state].filter(Boolean).join(', ');
     const distText = (nearbyMode && userLat !== null)
       ? ` · ${distanceMiles(userLat, userLng, a.lat, a.lng).toFixed(1)} mi` : '';
 
@@ -1179,8 +1329,8 @@ function updateSidebar() {
       ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
       <div class="result-meta">
         <span class="result-badge ${badgeClass}">${badgeText}</span>
-        <span class="result-loc">${escHtml(a.city)}, ${escHtml(a.state)}${distText}</span>
-        <span class="result-year">${a.year}</span>
+        <span class="result-loc">${escHtml(locText)}${distText}</span>
+        ${!isMichelin ? `<span class="result-year">${a.year}</span>` : ''}
       </div>
     </div>`;
   }).join('');

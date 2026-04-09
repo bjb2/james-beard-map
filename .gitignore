@@ -24,8 +24,11 @@ find-addresses.js
 apply-addresses.js
 resolve-addresses.js
 
-# Backups
+# Backups and intermediate data
 data/*.backup.json
+data/awards.jbf.json
+data/michelin.json
+data/michelin_raw.csv
 
 # Claude memory
 .claude/
