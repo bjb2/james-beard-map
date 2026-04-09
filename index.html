@@ -864,6 +864,12 @@
             <option value="Selected">Michelin Selected</option>
           </select>
         </div>
+
+        <div class="filter-group" style="flex-direction:row;align-items:center;gap:8px;">
+          <input type="checkbox" id="filter-hide-closed" checked
+            style="accent-color:var(--orange);width:14px;height:14px;cursor:pointer;flex-shrink:0;">
+          <label for="filter-hide-closed" style="cursor:pointer;margin:0;">Hide permanently closed</label>
+        </div>
       </div>
     </div>
 
@@ -1666,6 +1672,7 @@ function initFilters() {
   cuisineSel.addEventListener('change', applyFilters);
   document.getElementById('filter-source').addEventListener('change', applyFilters);
   document.getElementById('filter-michelin').addEventListener('change', applyFilters);
+  document.getElementById('filter-hide-closed').addEventListener('change', applyFilters);
 
   document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 200));
 
@@ -1701,9 +1708,12 @@ function applyFilters() {
   const cuisine       = document.getElementById('filter-cuisine').value;
   const source        = document.getElementById('filter-source').value;
   const michelinTier  = document.getElementById('filter-michelin').value;
+  const hideClosed    = document.getElementById('filter-hide-closed').checked;
   const search        = document.getElementById('search-input').value.toLowerCase().trim();
 
   filteredAwards = allAwards.filter(a => {
+    // Hide permanently closed
+    if (hideClosed && (a.businessStatus === 'CLOSED_PERMANENTLY' || a.yelpDetail?.isClosed)) return false;
     const isMichelin = a.source === 'michelin';
 
     // Source filter
