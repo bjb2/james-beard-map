@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Dancing+Script:wght@700&family=Pacifico&family=Raleway:wght@300&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <!-- Leaflet MarkerCluster CSS -->
@@ -698,6 +701,39 @@
     <div class="stat-num" id="precise-count">—</div>
     <div class="stat-label">Locations</div>
   </div>
+  <div style="margin-left:auto;">
+    <div id="auth-signed-out">
+      <button id="sign-in-btn" onclick="signInWithGoogle()" style="
+        background: transparent;
+        border: 1px solid var(--border-light);
+        color: var(--white-dim);
+        font-family: sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 0.15s, color 0.15s;
+      " onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'"
+         onmouseout="this.style.borderColor='var(--border-light)';this.style.color='var(--white-dim)'">
+        Sign in
+      </button>
+    </div>
+    <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;">
+      <img id="auth-avatar" src="" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid var(--border-light);display:none;">
+      <span id="auth-name" style="font-family:sans-serif;font-size:0.78rem;color:var(--white-dim);"></span>
+      <button onclick="signOut()" style="
+        background: transparent;
+        border: none;
+        color: var(--white-faint);
+        font-family: sans-serif;
+        font-size: 0.72rem;
+        cursor: pointer;
+        padding: 4px;
+      ">Sign out</button>
+    </div>
+  </div>
 </header>
 
 <div id="sidebar-backdrop"></div>
@@ -825,6 +861,53 @@
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <script>
+// ── Supabase ────────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://bnlnlfnrkwizviiabhex.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJubG5sZm5ya3dpenZpaWFiaGV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NTgxODgsImV4cCI6MjA5MTMzNDE4OH0.GW0-kcOrcQ8YXyqvI6LbDnLM1IIQTkL1FFajJUrkfHk';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+
+async function initAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  setUser(session?.user ?? null);
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user ?? null);
+  });
+}
+
+function setUser(user) {
+  currentUser = user;
+  const signedIn  = document.getElementById('auth-signed-in');
+  const signedOut = document.getElementById('auth-signed-out');
+  if (user) {
+    signedIn.style.display  = 'flex';
+    signedOut.style.display = 'none';
+    const name   = document.getElementById('auth-name');
+    const avatar = document.getElementById('auth-avatar');
+    name.textContent = user.user_metadata?.full_name?.split(' ')[0] || user.email;
+    if (user.user_metadata?.avatar_url) {
+      avatar.src = user.user_metadata.avatar_url;
+      avatar.style.display = 'block';
+    }
+  } else {
+    signedIn.style.display  = 'none';
+    signedOut.style.display = 'block';
+  }
+}
+
+async function signInWithGoogle() {
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+}
+
 // ── State ──────────────────────────────────────────────────────────────────
 let allAwards = [];
 let filteredAwards = [];
@@ -1790,6 +1873,7 @@ loadSharedFavorites();
 initMap();
 loadData();
 animateLogo();
+initAuth();
 </script>
 </body>
 </html>
