@@ -1241,8 +1241,25 @@ function buildPopup(loc) {
     const mapsUrl = buildFallbackMapsUrl(a);
     const fk = encodeURIComponent(favKey(a));
     const isFaved = favorites.has(favKey(a));
-    let html = `<div class="jb-popup">
-      <div class="popup-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
+    const photo = a.googlePhoto || null;
+    const isClosed = a.businessStatus === 'CLOSED_PERMANENTLY' || a.businessStatus === 'CLOSED_TEMPORARILY';
+
+    let html = `<div class="jb-popup">`;
+
+    if (photo) {
+      html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+        <img src="${escHtml(photo)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
+          style="width:100%;height:110px;object-fit:cover;display:block;">
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+          <div class="popup-name">${escHtml(a.restaurant)}</div>
+          <div class="popup-restaurant">${escHtml(location)}</div>
+        </div>
+        <div style="position:absolute;top:6px;right:6px;">
+          <button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="popup-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
         <div>
           <div class="popup-name">${escHtml(a.restaurant)}</div>
           <div class="popup-restaurant">${escHtml(location)}</div>
@@ -1250,8 +1267,17 @@ function buildPopup(loc) {
         <button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">
           ${isFaved?'♥':'♡'}
         </button>
-      </div>
-      <div class="popup-body">`;
+      </div>`;
+    }
+
+    html += `<div class="popup-body">`;
+
+    // Closed banner
+    if (a.businessStatus === 'CLOSED_PERMANENTLY') {
+      html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
+    } else if (a.businessStatus === 'CLOSED_TEMPORARILY') {
+      html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
+    }
 
     // Michelin badge
     html += `<div style="margin-bottom:8px;">${michelinBadge(a.michelinAward)}`;
