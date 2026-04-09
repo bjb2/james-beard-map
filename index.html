@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Delectable</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Dancing+Script:wght@700&family=Pacifico&family=Raleway:wght@300&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <!-- Leaflet MarkerCluster CSS -->
@@ -65,11 +68,11 @@
     }
 
     .header-wordmark h1 {
-      font-size: 1.05rem;
-      font-weight: 700;
+      font-family: sans-serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
       color: var(--white);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
     }
 
     .header-divider {
@@ -551,7 +554,7 @@
       .header-sub { display: none; }
 
       .header-wordmark .brand { display: none; }
-      .header-wordmark h1 { font-size: 0.95rem; }
+      .header-wordmark h1 { font-size: 1.2rem; }
 
       .header-stat .stat-num { font-size: 1.4rem; }
       .header-stat { gap: 6px; }
@@ -1686,10 +1689,47 @@ function loadSharedFavorites() {
   } catch (e) {}
 }
 
+// ── Logo font animation ──────────────────────────────────────────────────────
+function animateLogo() {
+  const steps = [
+    { font: "'Dancing Script', cursive",    size: '1.5rem', weight: '700', spacing: '0.02em' },
+    { font: "'Pacifico', cursive",           size: '1.2rem', weight: '400', spacing: '0.01em' },
+    { font: "'Raleway', sans-serif",         size: '1.1rem', weight: '300', spacing: '0.22em' },
+    { font: "'Playfair Display', serif",     size: '1.3rem', weight: '700', spacing: '0.04em' },
+    { font: "'Playfair Display', serif",      size: '1.3rem', weight: '700', spacing: '0.03em' },
+  ];
+
+  const el = document.querySelector('.header-wordmark h1');
+  if (!el) return;
+
+  el.style.transition = 'opacity 0.18s ease';
+
+  let i = 0;
+  function next() {
+    if (i >= steps.length) return;
+    const s = steps[i];
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.style.fontFamily    = s.font;
+      el.style.fontSize      = s.size;
+      el.style.fontWeight    = s.weight;
+      el.style.letterSpacing = s.spacing;
+      el.style.opacity = '1';
+      i++;
+      // Linger longer on the final font
+      if (i < steps.length) setTimeout(next, i === steps.length - 1 ? 500 : 320);
+    }, 180);
+  }
+
+  // Small delay so fonts are fetched before we start
+  setTimeout(next, 400);
+}
+
 // ── Init ────────────────────────────────────────────────────────────────────
 loadSharedFavorites();
 initMap();
 loadData();
+animateLogo();
 </script>
 </body>
 </html>
