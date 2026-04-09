@@ -262,7 +262,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.1em;
-      color: var(--white-faint);
+      color: var(--white-dim);
       padding: 8px 4px;
       text-align: center;
     }
@@ -319,12 +319,12 @@
 
     .result-loc {
       font-size: 0.68rem;
-      color: var(--white-faint);
+      color: var(--white-dim);
     }
 
     .result-year {
       font-size: 0.68rem;
-      color: var(--white-faint);
+      color: var(--white-dim);
       margin-left: auto;
     }
 
@@ -363,7 +363,7 @@
       font-size: 0.8rem;
     }
 
-    .jb-popup .popup-label { color: var(--white-faint); }
+    .jb-popup .popup-label { color: var(--white-dim); }
     .jb-popup .popup-val { color: var(--white); font-weight: 500; }
 
     .jb-popup .popup-awards-list { max-height: 200px; overflow-y: auto; }
@@ -383,7 +383,7 @@
 
     .jb-popup .popup-award-meta {
       font-size: 0.72rem;
-      color: var(--white-faint);
+      color: var(--white-dim);
       display: flex;
       gap: 8px;
       margin-top: 2px;
@@ -915,11 +915,11 @@ function buildPopup(loc) {
         <span>${a.year}</span>
       </div>`;
       if (a.name && a.name !== restaurant) {
-        html += `<div class="popup-award-meta" style="color:#6a5030">Chef: ${escHtml(a.name)}</div>`;
+        html += `<div class="popup-award-meta">Chef: ${escHtml(a.name)}</div>`;
       }
     }
     if (rawards.length > 4) {
-      html += `<div class="popup-award-meta" style="color:#5a4020">+${rawards.length - 4} more…</div>`;
+      html += `<div class="popup-award-meta">+${rawards.length - 4} more…</div>`;
     }
     html += `</div>`;
   }
