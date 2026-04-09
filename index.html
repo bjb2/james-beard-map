@@ -891,9 +891,13 @@ function setUser(user) {
       avatar.src = user.user_metadata.avatar_url;
       avatar.style.display = 'block';
     }
+    loadCommunityState();
   } else {
     signedIn.style.display  = 'none';
     signedOut.style.display = 'block';
+    visitedKeys  = new Set();
+    wantToGoKeys = new Set();
+    wantToGoListId = null;
   }
 }
 
@@ -906,6 +910,130 @@ async function signInWithGoogle() {
 
 async function signOut() {
   await sb.auth.signOut();
+}
+
+// ── Community state ─────────────────────────────────────────────────────────
+let visitedKeys   = new Set(); // restaurant_keys the user has visited
+let wantToGoKeys  = new Set(); // restaurant_keys on the user's want-to-go list
+let wantToGoListId = null;     // Supabase list id for "Want to Go"
+
+async function loadCommunityState() {
+  if (!currentUser) return;
+
+  // Load visited
+  const { data: visits } = await sb.from('visits').select('restaurant_key');
+  if (visits) visitedKeys = new Set(visits.map(v => v.restaurant_key));
+
+  // Load or create "Want to Go" list
+  let { data: lists } = await sb.from('lists').select('id,name').eq('user_id', currentUser.id);
+  let wtg = lists?.find(l => l.name === 'Want to Go');
+  if (!wtg) {
+    const { data: newList } = await sb.from('lists').insert({
+      user_id: currentUser.id, name: 'Want to Go', is_public: true
+    }).select().single();
+    wtg = newList;
+  }
+  if (wtg) {
+    wantToGoListId = wtg.id;
+    const { data: items } = await sb.from('list_items').select('restaurant_key').eq('list_id', wtg.id);
+    if (items) wantToGoKeys = new Set(items.map(i => i.restaurant_key));
+  }
+
+  // Re-render any open popup to reflect loaded state
+  map?.eachLayer(l => { if (l.isPopupOpen?.()) l.openPopup(); });
+}
+
+async function toggleVisited(restaurantKey) {
+  if (!currentUser) { showAuthNudge(); return; }
+
+  if (visitedKeys.has(restaurantKey)) {
+    visitedKeys.delete(restaurantKey);
+    await sb.from('visits').delete()
+      .eq('user_id', currentUser.id).eq('restaurant_key', restaurantKey);
+  } else {
+    visitedKeys.add(restaurantKey);
+    await sb.from('visits').upsert({
+      user_id: currentUser.id, restaurant_key: restaurantKey, visited_on: new Date().toISOString().slice(0,10)
+    });
+  }
+  refreshPopupButtons(restaurantKey);
+}
+
+async function toggleWantToGo(restaurantKey) {
+  if (!currentUser) { showAuthNudge(); return; }
+
+  if (wantToGoKeys.has(restaurantKey)) {
+    wantToGoKeys.delete(restaurantKey);
+    await sb.from('list_items').delete()
+      .eq('list_id', wantToGoListId).eq('restaurant_key', restaurantKey);
+  } else {
+    wantToGoKeys.add(restaurantKey);
+    await sb.from('list_items').upsert({
+      list_id: wantToGoListId, restaurant_key: restaurantKey
+    });
+  }
+  refreshPopupButtons(restaurantKey);
+}
+
+function refreshPopupButtons(restaurantKey) {
+  // Update button states in any open popup without full re-render
+  const visited = visitedKeys.has(restaurantKey);
+  const wtg     = wantToGoKeys.has(restaurantKey);
+  const vBtn = document.getElementById('comm-visited-btn');
+  const wBtn = document.getElementById('comm-wtg-btn');
+  if (vBtn) applyCommButtonState(vBtn, visited, '✓ Visited',   '✓ Visited',   '#2ecc71');
+  if (wBtn) applyCommButtonState(wBtn, wtg,     '♡ Want to Go','♥ Want to Go', 'var(--orange)');
+}
+
+function applyCommButtonState(btn, active, labelOff, labelOn, activeColor) {
+  btn.textContent = active ? labelOn : labelOff;
+  btn.style.borderColor = active ? activeColor : 'var(--border-light)';
+  btn.style.color       = active ? activeColor : 'var(--white-dim)';
+  btn.style.background  = active ? activeColor + '18' : 'transparent';
+}
+
+function showAuthNudge() {
+  // Flash the sign-in button to draw attention
+  const btn = document.getElementById('sign-in-btn');
+  if (!btn) return;
+  btn.style.borderColor = 'var(--orange)';
+  btn.style.color = 'var(--orange)';
+  btn.textContent = 'Sign in to save';
+  setTimeout(() => {
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    btn.textContent = 'Sign in';
+  }, 2500);
+}
+
+function buildCommButtons(restaurantKey) {
+  const visited = visitedKeys.has(restaurantKey);
+  const wtg     = wantToGoKeys.has(restaurantKey);
+  const ek      = encodeURIComponent(restaurantKey);
+  const btnStyle = `
+    font-family:sans-serif;font-size:0.73rem;font-weight:600;
+    padding:5px 10px;border-radius:6px;cursor:pointer;
+    border:1px solid var(--border-light);
+    transition:background 0.15s,color 0.15s,border-color 0.15s;
+    flex:1;
+  `;
+  const vColor  = visited ? '#2ecc71' : '';
+  const vBg     = visited ? '#2ecc7118' : 'transparent';
+  const vBorder = visited ? '#2ecc71' : 'var(--border-light)';
+  const wColor  = wtg ? 'var(--orange)' : '';
+  const wBg     = wtg ? 'var(--orange-dim)' : 'transparent';
+  const wBorder = wtg ? 'var(--orange)' : 'var(--border-light)';
+
+  return `<div style="display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">
+    <button id="comm-visited-btn" style="${btnStyle}color:${vColor||'var(--white-dim)'};background:${vBg};border-color:${vBorder};"
+      onclick="toggleVisited(decodeURIComponent('${ek}'))">
+      ${visited ? '✓ Visited' : '✓ Visited'}
+    </button>
+    <button id="comm-wtg-btn" style="${btnStyle}color:${wColor||'var(--white-dim)'};background:${wBg};border-color:${wBorder};"
+      onclick="toggleWantToGo(decodeURIComponent('${ek}'))">
+      ${wtg ? '♥ Want to Go' : '♡ Want to Go'}
+    </button>
+  </div>`;
 }
 
 // ── State ──────────────────────────────────────────────────────────────────
@@ -1402,6 +1530,7 @@ function buildPopup(loc) {
     if (a.michelinUrl) links.push(`<a href="${escHtml(a.michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
     if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
 
+    html += buildCommButtons(favKey(a));
     html += `</div></div>`;
     return html;
   }
@@ -1526,6 +1655,7 @@ function buildPopup(loc) {
     html += `</div>`;
   }
 
+  html += buildCommButtons(favKey(firstMeta));
   html += `</div></div></div>`;
   return html;
 }
