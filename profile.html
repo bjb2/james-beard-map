@@ -497,6 +497,17 @@
     .visibility-pill.public { border-color: rgba(254,162,25,0.4); color: var(--orange); }
     .visibility-pill:hover { border-color: var(--white-dim); color: var(--white-dim); }
 
+    @media (max-width: 600px) {
+      .list-row-header { flex-wrap: wrap; row-gap: 8px; padding: 10px 12px; }
+      .list-row-name { min-width: 0; }
+      .list-row-actions {
+        flex-basis: 100%;
+        padding-left: 18px;
+        justify-content: flex-start;
+        gap: 4px;
+      }
+    }
+
     .list-row-body {
       display: none;
       padding: 0 14px 12px;
