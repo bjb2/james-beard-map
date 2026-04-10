@@ -50,27 +50,20 @@
       z-index: 100;
     }
 
+    .header-logo {
+      height: 36px; width: 36px; object-fit: contain; flex-shrink: 0;
+    }
+
     .header-wordmark a {
       text-decoration: none;
       color: inherit;
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-
-    .header-wordmark .brand {
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--white-dim);
     }
 
     .header-wordmark h1 {
-      font-family: sans-serif;
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
       color: var(--white);
     }
 
@@ -154,10 +147,28 @@
       object-fit: cover;
     }
 
+    .avatar-editable { cursor: pointer; position: relative; }
+    .avatar-overlay {
+      position: absolute; inset: 0; border-radius: 50%;
+      background: rgba(0,0,0,0.55); display: flex; align-items: center;
+      justify-content: center; font-size: 1.1rem; opacity: 0;
+      transition: opacity 0.15s; pointer-events: none;
+    }
+    .avatar-editable:hover .avatar-overlay { opacity: 1; }
+
     .profile-info h2 {
       font-size: 1.4rem;
       font-weight: 600;
       margin-bottom: 4px;
+    }
+
+    .editable-name { cursor: pointer; }
+    .editable-name:hover { opacity: 0.75; }
+    .name-edit-input {
+      font-size: 1.4rem; font-weight: 600; font-family: inherit;
+      background: transparent; border: none;
+      border-bottom: 1px solid var(--orange);
+      color: var(--white); outline: none; width: 220px; max-width: 100%;
     }
 
     .profile-info .username {
@@ -578,11 +589,9 @@
 <body>
 
 <header>
+  <img src="/logo.png" class="header-logo" alt="">
   <div class="header-wordmark">
-    <a href="/">
-      <span class="brand">The</span>
-      <h1>Delectable</h1>
-    </a>
+    <a href="/"><h1>Delectable</h1></a>
   </div>
   <div class="header-divider"></div>
   <span class="header-sub">Profile</span>
@@ -790,17 +799,29 @@ function bindShowMore(type) {
 function renderProfile(profile, visits, wtgItems, customLists) {
   const stats = computeStats(visits, wtgItems);
 
-  const avatarHtml = profile.avatar_url
-    ? `<div class="avatar"><img src="${escHtml(profile.avatar_url)}" alt="avatar"></div>`
-    : `<div class="avatar">👤</div>`;
-
   const displayName = profile.display_name || profile.username || 'Anonymous';
+
+  const avatarImg = profile.avatar_url
+    ? `<img src="${escHtml(profile.avatar_url)}" alt="avatar">`
+    : `<span style="font-size:1.6rem;color:var(--white-dim);">👤</span>`;
+
+  const avatarHtml = isOwnProfile
+    ? `<div class="avatar avatar-editable" title="Change photo" onclick="document.getElementById('avatar-file-input').click()">
+        ${avatarImg}
+        <div class="avatar-overlay">📷</div>
+       </div>
+       <input type="file" id="avatar-file-input" accept="image/*" style="display:none" onchange="uploadAvatar(this)">`
+    : `<div class="avatar">${avatarImg}</div>`;
+
+  const nameHtml = isOwnProfile
+    ? `<h2 class="editable-name" title="Click to edit name" onclick="editDisplayName(this)">${escHtml(displayName)}</h2>`
+    : `<h2>${escHtml(displayName)}</h2>`;
 
   let html = `
     <div class="profile-header">
       ${avatarHtml}
       <div class="profile-info">
-        <h2>${escHtml(displayName)}</h2>
+        ${nameHtml}
         ${profile.username ? `<div class="username">@${escHtml(profile.username)}</div>` : ''}
         ${profile.bio ? `<div style="font-size:0.78rem;color:var(--white-dim);margin-top:6px">${escHtml(profile.bio)}</div>` : ''}
       </div>
@@ -856,6 +877,71 @@ function renderProfile(profile, visits, wtgItems, customLists) {
 
   bindShowMore('visited');
   bindShowMore('wantToGo');
+}
+
+// ── Profile editing ──────────────────────────────────────────────────────────
+function editDisplayName(el) {
+  const current = el.textContent.trim();
+  const input = document.createElement('input');
+  input.type      = 'text';
+  input.className = 'name-edit-input';
+  input.value     = current;
+  input.maxLength = 50;
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+
+  async function commit() {
+    const name = input.value.trim() || current;
+    if (name !== current) {
+      await sb.from('profiles').update({ display_name: name }).eq('id', currentUser.id);
+      if (profileUser) profileUser.display_name = name;
+    }
+    const h2 = document.createElement('h2');
+    h2.className = 'editable-name';
+    h2.title     = 'Click to edit name';
+    h2.textContent = name;
+    h2.onclick = () => editDisplayName(h2);
+    input.replaceWith(h2);
+  }
+  function cancel() {
+    const h2 = document.createElement('h2');
+    h2.className = 'editable-name';
+    h2.title     = 'Click to edit name';
+    h2.textContent = current;
+    h2.onclick = () => editDisplayName(h2);
+    input.replaceWith(h2);
+  }
+  input.addEventListener('blur', commit);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter')  { input.removeEventListener('blur', commit); commit(); }
+    if (e.key === 'Escape') { input.removeEventListener('blur', commit); cancel(); }
+  });
+}
+
+async function uploadAvatar(fileInput) {
+  const file = fileInput.files[0];
+  if (!file) return;
+  if (file.size > 3 * 1024 * 1024) { alert('Image must be under 3 MB'); return; }
+  const ext  = file.name.split('.').pop().toLowerCase() || 'jpg';
+  const path = `${currentUser.id}/avatar.${ext}`;
+  const { error: upErr } = await sb.storage.from('avatars').upload(path, file, { upsert: true });
+  if (upErr) { alert('Upload failed: ' + upErr.message); return; }
+  const { data: { publicUrl } } = sb.storage.from('avatars').getPublicUrl(path);
+  // Bust cache
+  const url = publicUrl + '?t=' + Date.now();
+  await sb.from('profiles').update({ avatar_url: url }).eq('id', currentUser.id);
+  if (profileUser) profileUser.avatar_url = url;
+  // Update avatar in DOM without full re-render
+  const avatarEl = document.querySelector('.avatar-editable');
+  if (avatarEl) {
+    let img = avatarEl.querySelector('img');
+    if (img) { img.src = url; }
+    else {
+      const span = avatarEl.querySelector('span');
+      if (span) { img = document.createElement('img'); img.alt = 'avatar'; img.src = url; span.replaceWith(img); }
+    }
+  }
 }
 
 // ── My Lists section ─────────────────────────────────────────────────────────

@@ -50,25 +50,17 @@
       z-index: 200;
     }
 
+    .header-logo { height: 36px; width: 36px; object-fit: contain; flex-shrink: 0; }
+
     .header-wordmark a {
       text-decoration: none;
       color: inherit;
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-    .header-wordmark .brand {
-      font-size: 0.6rem;
-      font-weight: 700;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--white-dim);
     }
     .header-wordmark h1 {
-      font-family: sans-serif;
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
     }
 
     .header-divider { width: 1px; height: 28px; background: var(--border-light); }
@@ -478,11 +470,9 @@
 <body>
 
 <header>
+  <img src="/logo.png" class="header-logo" alt="">
   <div class="header-wordmark">
-    <a href="/">
-      <span class="brand">Delectable</span>
-      <h1>Guide</h1>
-    </a>
+    <a href="/"><h1>Delectable</h1></a>
   </div>
   <div class="header-divider"></div>
   <span class="header-sub" id="header-sub">Curated List</span>
@@ -563,8 +553,11 @@ async function load() {
   isOwner = user?.id === list.user_id;
 
   const { data: profile } = await sb
-    .from('profiles').select('display_name, id').eq('id', list.user_id).limit(1).single();
-  const ownerName = profile?.display_name || 'Someone';
+    .from('profiles').select('display_name, id, avatar_url').eq('id', list.user_id).limit(1).single();
+  const ownerName   = profile?.display_name || 'Someone';
+  const ownerAvatar = profile?.avatar_url
+    ? `<img src="${profile.avatar_url}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:5px;" alt="">`
+    : '';
 
   const { data: items } = await sb
     .from('list_items').select('restaurant_key, added_at, note')
@@ -631,7 +624,7 @@ function renderMetaBar(list, ownerName, count) {
     <div class="list-meta-bar">
       <div class="list-title">${escHtml(list.name)}</div>
       <div class="list-meta">
-        <span>By <a href="/profile.html?user=${escHtml(list.user_id)}">${escHtml(ownerName)}</a></span>
+        <span>By <a href="/profile.html?user=${escHtml(list.user_id)}">${ownerAvatar}${escHtml(ownerName)}</a></span>
         <span class="list-meta-dot">\u00b7</span>
         <span>${count} place${count !== 1 ? 's' : ''}</span>
       </div>
