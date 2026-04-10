@@ -462,6 +462,51 @@
     }
     .lp-save-btn:hover { color: var(--orange); border-color: var(--orange); }
 
+    /* ── Owner card actions ── */
+    .rc-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+    .rc-action-btn {
+      font-size: 0.7rem;
+      font-family: inherit;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-light);
+      background: transparent;
+      color: var(--white-faint);
+      cursor: pointer;
+      transition: color 0.12s, border-color 0.12s, background 0.12s;
+      line-height: 1;
+    }
+    .rc-action-btn:hover { color: var(--white-dim); border-color: var(--white-dim); }
+    .rc-action-btn.visited-active { color: #2ecc71; border-color: #2ecc71; background: rgba(46,204,113,0.1); }
+    .rc-action-btn.remove:hover   { color: #e55;    border-color: #e55;    background: rgba(220,50,50,0.1); }
+    .rc-visit-date { font-size: 0.68rem; color: rgba(255,255,255,0.3); }
+    .rc-date-row {
+      display: flex; gap: 6px; align-items: center;
+      margin-top: 6px; flex-wrap: wrap;
+    }
+    .rc-date-input {
+      flex: 1; min-width: 120px;
+      background: var(--black-light); border: 1px solid var(--border-light);
+      color: var(--white); font-family: inherit; font-size: 0.72rem;
+      padding: 4px 8px; border-radius: 6px; outline: none; cursor: pointer;
+    }
+    .rc-date-save {
+      font-family: inherit; font-size: 0.7rem; padding: 4px 10px;
+      border-radius: 6px; border: 1px solid var(--orange);
+      color: var(--orange); background: transparent; cursor: pointer;
+    }
+    .rc-date-skip {
+      font-family: inherit; font-size: 0.7rem; padding: 4px 8px;
+      border-radius: 6px; border: 1px solid var(--border-light);
+      color: var(--white-faint); background: transparent; cursor: pointer;
+    }
+
     /* ── States ── */
     .state-loading, .state-error, .state-empty {
       text-align: center;
@@ -554,7 +599,9 @@ let currentUser = null;
 let listMap = null;
 let mapMarkers = []; // [{marker, key}]
 let allRestaurants = [];
-let userLists = []; // [{id, name, slug, is_public, keys: Set, notes: Map}]
+let userLists    = []; // [{id, name, slug, is_public, keys: Set, notes: Map}]
+let visitedKeys  = new Set();
+let visitedDates = new Map(); // key → visited_on string
 
 // ── Load ──────────────────────────────────────────────────────────────────────
 async function load() {
@@ -632,8 +679,8 @@ async function load() {
     ? `<div class="state-empty"><h2>No places yet</h2><p>This list doesn\u2019t have any restaurants yet.</p></div>`
     : allRestaurants.map((r, i) => cardHtml(r, noteMap.get(r.key), i + 1)).join('');
 
-  // Load viewer's own lists (for Save button)
-  await loadUserLists();
+  // Load viewer's own lists + visits (for Save / Visited buttons)
+  await Promise.all([loadUserLists(), loadVisits()]);
 
   // Map
   if (hasPins) initMap(allRestaurants, noteMap);
@@ -660,6 +707,13 @@ async function loadUserLists() {
     keys: byList.get(l.id)?.keys ?? new Set(),
     notes: byList.get(l.id)?.notes ?? new Map(),
   }));
+}
+
+async function loadVisits() {
+  if (!currentUser) return;
+  const { data } = await sb.from('visits').select('restaurant_key, visited_on').eq('user_id', currentUser.id);
+  visitedKeys  = new Set((data || []).map(v => v.restaurant_key));
+  visitedDates = new Map((data || []).map(v => [v.restaurant_key, v.visited_on]));
 }
 
 // ── Meta bar ──────────────────────────────────────────────────────────────────
@@ -793,9 +847,77 @@ function cardHtml(r, note, num) {
         ${links.length ? `<div class="rc-links">${links.join('')}</div>` : ''}
         <button class="save-to-list-btn" onclick="event.stopPropagation();openListPicker('${escHtml(r.key).replace(/'/g,"\\'")}')">＋ Save to list</button>
         ${noteSection}
+        ${isOwner ? ownerActionsHtml(r.key) : ''}
       </div>
     </div>
   `;
+}
+
+function ownerActionsHtml(key) {
+  const visited = visitedKeys.has(key);
+  const date    = visitedDates.get(key);
+  const safeKey = escHtml(key).replace(/'/g, "\\'");
+  return `<div class="rc-actions" id="rc-actions-${escHtml(key)}">
+    <button class="rc-action-btn ${visited ? 'visited-active' : ''}"
+      onclick="toggleCardVisited('${safeKey}')">
+      ${visited ? '✓ Visited' : 'Mark visited'}
+    </button>
+    ${visited && date ? `<span class="rc-visit-date">${date}</span>` : ''}
+    <button class="rc-action-btn remove" onclick="removeFromList('${safeKey}')">Remove</button>
+  </div>`;
+}
+
+async function toggleCardVisited(key) {
+  const actionsEl = document.getElementById(`rc-actions-${key}`);
+  if (visitedKeys.has(key)) {
+    visitedKeys.delete(key);
+    visitedDates.delete(key);
+    await sb.from('visits').delete().eq('user_id', currentUser.id).eq('restaurant_key', key);
+    if (actionsEl) actionsEl.outerHTML = ownerActionsHtml(key);
+  } else {
+    const today = new Date().toISOString().slice(0, 10);
+    visitedKeys.add(key);
+    visitedDates.set(key, today);
+    await sb.from('visits').upsert({ user_id: currentUser.id, restaurant_key: key, visited_on: today });
+    if (actionsEl) {
+      actionsEl.outerHTML = ownerActionsHtml(key);
+      // Insert date picker after the new actions row
+      const newActionsEl = document.getElementById(`rc-actions-${key}`);
+      if (newActionsEl) {
+        const safeKey = escHtml(key).replace(/'/g, "\\'");
+        const picker = document.createElement('div');
+        picker.className = 'rc-date-row';
+        picker.id = `rc-datepicker-${key}`;
+        picker.innerHTML = `
+          <input type="date" class="rc-date-input" id="rc-date-input-${escHtml(key)}" value="${today}" max="${today}">
+          <button class="rc-date-save" onclick="saveCardVisitDate('${safeKey}')">Save date</button>
+          <button class="rc-date-skip" onclick="document.getElementById('rc-datepicker-${escHtml(key)}').remove()">Skip</button>`;
+        newActionsEl.after(picker);
+      }
+    }
+  }
+}
+
+async function saveCardVisitDate(key) {
+  const input = document.getElementById(`rc-date-input-${key}`);
+  if (!input) return;
+  const date = input.value;
+  visitedDates.set(key, date);
+  await sb.from('visits').update({ visited_on: date }).eq('user_id', currentUser.id).eq('restaurant_key', key);
+  document.getElementById(`rc-datepicker-${key}`)?.remove();
+  // Refresh date display in actions row
+  const actionsEl = document.getElementById(`rc-actions-${key}`);
+  if (actionsEl) actionsEl.outerHTML = ownerActionsHtml(key);
+}
+
+async function removeFromList(key) {
+  await sb.from('list_items').delete().eq('list_id', currentListId).eq('restaurant_key', key);
+  allRestaurants = allRestaurants.filter(r => r.key !== key);
+  const card = document.querySelector(`.rich-card[data-key="${CSS.escape(key)}"]`);
+  if (card) card.remove();
+  // Update count in meta bar
+  const countEl = document.querySelector('.list-meta span:last-child');
+  if (countEl) countEl.textContent = `${allRestaurants.length} place${allRestaurants.length !== 1 ? 's' : ''}`;
 }
 
 function drawerBadgeHtml(summary) {
