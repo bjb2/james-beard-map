@@ -238,6 +238,47 @@
 
     #locate-btn:hover { background: var(--orange); color: var(--white); }
 
+    #zip-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    #zip-input {
+      flex: 1;
+      background: var(--black-light);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 0.82rem;
+      padding: 5px 8px;
+      outline: none;
+      letter-spacing: 0.08em;
+      transition: border-color 0.15s;
+    }
+    #zip-input::placeholder { color: rgba(255,255,255,0.25); letter-spacing: 0.04em; }
+    #zip-input:focus { border-color: var(--orange); }
+    #zip-go {
+      background: none;
+      border: 1px solid var(--border-light);
+      color: var(--white-dim);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    #zip-go:hover { border-color: var(--orange); color: var(--orange); }
+    #zip-error {
+      font-size: 0.7rem;
+      color: rgba(255,100,100,0.8);
+      margin-top: 4px;
+      display: none;
+    }
+
     /* Filter groups */
     .filter-group { margin-bottom: 10px; }
 
@@ -802,6 +843,11 @@
       <h3>Near Me</h3>
       <div class="section-body">
         <button id="locate-btn">📍 Find Awards Near Me</button>
+        <div id="zip-row">
+          <input id="zip-input" type="text" inputmode="numeric" maxlength="5" placeholder="ZIP code">
+          <button id="zip-go">Go</button>
+        </div>
+        <div id="zip-error"></div>
         <div id="radius-control">
           <label>Radius:</label>
           <input type="range" id="radius-slider" min="10" max="500" value="50" step="10">
@@ -2275,6 +2321,8 @@ function toggleNearbyMode() {
     btn.style.background = '';
     btn.style.color = '';
     document.getElementById('radius-control').classList.remove('visible');
+    document.getElementById('zip-input').value = '';
+    document.getElementById('zip-error').style.display = 'none';
     if (locationCircle) { map.removeLayer(locationCircle); locationCircle = null; }
     if (locationMarker) { map.removeLayer(locationMarker); locationMarker = null; }
     applyFilters();
@@ -2297,29 +2345,82 @@ document.getElementById('locate-btn').addEventListener('click', () => {
   btn.disabled = true;
 
   navigator.geolocation.getCurrentPosition(pos => {
-    userLat = pos.coords.latitude;
-    userLng = pos.coords.longitude;
-    nearbyMode = true;
-
-    console.log('[NearMe] Got location:', userLat, userLng, '| radius:', radiusMiles, 'mi | allAwards:', allAwards.length);
-
+    btn.disabled = false;
+    document.getElementById('zip-input').value = '';
+    document.getElementById('zip-error').style.display = 'none';
+    activateNearby(pos.coords.latitude, pos.coords.longitude, 'Me');
     btn.textContent = '📍 Near Me (active)';
     btn.style.background = '#FEA219';
     btn.style.color = '#ffffff';
-    btn.disabled = false;
-
-    document.getElementById('radius-control').classList.add('visible');
-
-    showLocationCircle();
-    map.flyTo([userLat, userLng], 9, { duration: 1 });
-    applyFilters();
-
-    console.log('[NearMe] After filter:', filteredAwards.length, 'of', allAwards.length, 'awards within', radiusMiles, 'mi');
   }, err => {
     btn.textContent = '📍 Find Awards Near Me';
     btn.disabled = false;
     alert('Could not get your location: ' + err.message);
   }, { timeout: 15000 });
+});
+
+// ── Zip code location ────────────────────────────────────────────────────────
+function activateNearby(lat, lng, label) {
+  userLat = lat;
+  userLng = lng;
+  nearbyMode = true;
+  document.getElementById('locate-btn').textContent = '📍 Near Me (active)';
+  document.getElementById('locate-btn').style.background = '';
+  document.getElementById('locate-btn').style.color = '';
+  document.getElementById('radius-control').classList.add('visible');
+  showLocationCircle();
+  map.flyTo([lat, lng], 9, { duration: 1 });
+  applyFilters();
+}
+
+async function lookupZip(zip) {
+  const zipError = document.getElementById('zip-error');
+  const zipGo    = document.getElementById('zip-go');
+  zipError.style.display = 'none';
+  zipGo.textContent = '…';
+  zipGo.disabled = true;
+
+  try {
+    const res = await fetch(`https://api.zippopotam.us/us/${zip}`);
+    if (res.status === 404) {
+      zipError.textContent = 'ZIP code not found.';
+      zipError.style.display = 'block';
+      return;
+    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const place = data.places?.[0];
+    if (!place) throw new Error('No location data');
+    const lat  = parseFloat(place.latitude);
+    const lng  = parseFloat(place.longitude);
+    const name = `${place['place name']}, ${place['state abbreviation']}`;
+    activateNearby(lat, lng, name);
+    // Reflect city name in the locate button
+    document.getElementById('locate-btn').textContent = `📍 Near ${name} (active)`;
+    document.getElementById('locate-btn').style.background = '#FEA219';
+    document.getElementById('locate-btn').style.color = '#ffffff';
+  } catch (e) {
+    zipError.textContent = 'Couldn\'t look up that ZIP code, try again.';
+    zipError.style.display = 'block';
+  } finally {
+    zipGo.textContent = 'Go';
+    zipGo.disabled = false;
+  }
+}
+
+document.getElementById('zip-go').addEventListener('click', () => {
+  const zip = document.getElementById('zip-input').value.trim();
+  if (!/^\d{5}$/.test(zip)) {
+    const zipError = document.getElementById('zip-error');
+    zipError.textContent = 'Enter a 5-digit US ZIP code.';
+    zipError.style.display = 'block';
+    return;
+  }
+  lookupZip(zip);
+});
+
+document.getElementById('zip-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('zip-go').click();
 });
 
 const radiusSlider = document.getElementById('radius-slider');
