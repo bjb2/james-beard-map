@@ -231,6 +231,14 @@
       margin-top: 2px;
     }
 
+    .card-note {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.4);
+      font-style: italic;
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
     /* ── States ── */
     .state-loading,
     .state-error,
@@ -317,7 +325,7 @@ async function load() {
     .limit(1);
 
   if (listErr || !lists || lists.length === 0) {
-    showError('This list doesn't exist or is private.');
+    showError("This list doesn\u2019t exist or is private.");
     return;
   }
 
@@ -336,11 +344,12 @@ async function load() {
   // Fetch list items
   const { data: items } = await sb
     .from('list_items')
-    .select('restaurant_key, added_at')
+    .select('restaurant_key, added_at, note')
     .eq('list_id', list.id)
     .order('added_at', { ascending: false });
 
-  const keys = (items || []).map(i => i.restaurant_key);
+  const keys   = (items || []).map(i => i.restaurant_key);
+  const noteMap = new Map((items || []).filter(i => i.note).map(i => [i.restaurant_key, i.note]));
 
   let restaurants = [];
   if (keys.length) {
@@ -379,15 +388,15 @@ async function load() {
       ${list.description ? `<div class="list-description">${escHtml(list.description)}</div>` : ''}
     </div>
     ${restaurants.length === 0
-      ? `<div class="state-empty"><h2>No places yet</h2><p>This list doesn't have any restaurants yet.</p></div>`
-      : `<div class="cards">${restaurants.map(r => cardHtml(r)).join('')}</div>`
+      ? `<div class="state-empty"><h2>No places yet</h2><p>This list doesn\u2019t have any restaurants yet.</p></div>`
+      : `<div class="cards">${restaurants.map(r => cardHtml(r, noteMap.get(r.key))).join('')}</div>`
     }
   `;
 
   document.getElementById('share-btn').addEventListener('click', handleShare.bind(null, shareUrl));
 }
 
-function cardHtml(r) {
+function cardHtml(r, note) {
   const badge = badgeText(r.award_summary);
   const location = [r.city, r.state || r.country].filter(Boolean).join(', ');
   const photo = r.photo_url
@@ -401,6 +410,7 @@ function cardHtml(r) {
         <div class="card-name">${escHtml(r.name)}</div>
         ${badge ? `<div class="card-badge">${escHtml(badge)}</div>` : ''}
         ${location ? `<div class="card-location">${escHtml(location)}</div>` : ''}
+        ${note ? `<div class="card-note">${escHtml(note)}</div>` : ''}
       </div>
     </div>
   `;

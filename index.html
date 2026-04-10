@@ -1005,12 +1005,15 @@ async function loadUserLists(allListsData) {
   const listIds = customLists.map(l => l.id);
   const { data: allItems } = await sb
     .from('list_items')
-    .select('list_id, restaurant_key')
+    .select('list_id, restaurant_key, note')
     .in('list_id', listIds);
 
-  const itemsByList = new Map(listIds.map(id => [id, new Set()]));
+  const itemsByList = new Map(listIds.map(id => [id, { keys: new Set(), notes: new Map() }]));
   for (const item of (allItems || [])) {
-    itemsByList.get(item.list_id)?.add(item.restaurant_key);
+    const bucket = itemsByList.get(item.list_id);
+    if (!bucket) continue;
+    bucket.keys.add(item.restaurant_key);
+    if (item.note) bucket.notes.set(item.restaurant_key, item.note);
   }
 
   userLists = customLists.map(l => ({
@@ -1018,7 +1021,8 @@ async function loadUserLists(allListsData) {
     name: l.name,
     slug: l.slug,
     is_public: l.is_public,
-    keys: itemsByList.get(l.id) || new Set(),
+    keys:  itemsByList.get(l.id)?.keys  || new Set(),
+    notes: itemsByList.get(l.id)?.notes || new Map(),
   }));
 }
 
@@ -2462,9 +2466,12 @@ function closeListPicker() {
     sheet.style.display    = 'none';
     backdrop.style.display = 'none';
     cancelNewList();
+    expandedNoteListId = null;
   }, 300);
   listPickerKey = null;
 }
+
+let expandedNoteListId = null; // which list row has its note field open
 
 function renderListPickerItems() {
   const container = document.getElementById('list-picker-items');
@@ -2473,26 +2480,86 @@ function renderListPickerItems() {
     return;
   }
   container.innerHTML = userLists.map(list => {
-    const checked = list.keys.has(listPickerKey);
+    const checked  = list.keys.has(listPickerKey);
+    const note     = list.notes.get(listPickerKey) || '';
+    const expanded = checked && expandedNoteListId === list.id;
+    const notePreview = checked && note && !expanded
+      ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${escHtmlInline(note)}</div>`
+      : '';
+    const noteField = expanded ? `
+      <div style="padding:0 20px 10px;" onclick="event.stopPropagation()">
+        <textarea id="note-input-${escJs(list.id)}"
+          placeholder="Why'd you add it? (optional)"
+          maxlength="200"
+          rows="2"
+          style="
+            width:100%;background:#141414;border:1px solid #444;border-radius:8px;
+            color:#fff;font-family:inherit;font-size:0.82rem;padding:8px 10px;
+            outline:none;resize:none;line-height:1.4;
+          "
+          onblur="saveListNote('${escJs(list.id)}', '${escJs(listPickerKey)}')"
+        >${escHtmlInline(note)}</textarea>
+      </div>
+    ` : '';
+
     return `
-      <button onclick="toggleListItem('${escJs(list.id)}', '${escJs(listPickerKey)}')" style="
-        display:flex;align-items:center;gap:12px;width:100%;
-        background:transparent;border:none;padding:10px 20px;
-        cursor:pointer;text-align:left;color:#fff;font-family:inherit;
-        transition:background 0.1s;
-      " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
-        <span style="
-          width:18px;height:18px;border-radius:5px;flex-shrink:0;
-          border:1.5px solid ${checked ? '#FEA219' : '#555'};
-          background:${checked ? 'rgba(254,162,25,0.15)' : 'transparent'};
-          display:flex;align-items:center;justify-content:center;
-          font-size:0.7rem;color:#FEA219;
-        ">${checked ? '✓' : ''}</span>
-        <span style="font-size:0.88rem;">${escHtmlInline(list.name)}</span>
-        <span style="margin-left:auto;font-size:0.75rem;color:rgba(255,255,255,0.35);">${list.keys.size}</span>
-      </button>
+      <div>
+        <button onclick="${checked ? `expandListNote('${escJs(list.id)}')` : `toggleListItem('${escJs(list.id)}', '${escJs(listPickerKey)}')`}" style="
+          display:flex;align-items:center;gap:12px;width:100%;
+          background:transparent;border:none;padding:10px 20px;
+          cursor:pointer;text-align:left;color:#fff;font-family:inherit;
+          transition:background 0.1s;
+        " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+          <span style="
+            width:18px;height:18px;border-radius:5px;flex-shrink:0;
+            border:1.5px solid ${checked ? '#FEA219' : '#555'};
+            background:${checked ? 'rgba(254,162,25,0.15)' : 'transparent'};
+            display:flex;align-items:center;justify-content:center;
+            font-size:0.7rem;color:#FEA219;
+          " onclick="${checked ? `event.stopPropagation();toggleListItem('${escJs(list.id)}','${escJs(listPickerKey)}')` : ''}">${checked ? '✓' : ''}</span>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:0.88rem;">${escHtmlInline(list.name)}</div>
+            ${notePreview}
+          </div>
+          <span style="margin-left:auto;font-size:0.75rem;color:rgba(255,255,255,0.35);flex-shrink:0;">${list.keys.size}</span>
+        </button>
+        ${noteField}
+      </div>
     `;
   }).join('');
+
+  // Focus the note input if expanded
+  if (expandedNoteListId) {
+    const input = document.getElementById(`note-input-${expandedNoteListId}`);
+    if (input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+  }
+}
+
+function expandListNote(listId) {
+  expandedNoteListId = expandedNoteListId === listId ? null : listId;
+  renderListPickerItems();
+}
+
+async function saveListNote(listId, restaurantKey) {
+  const input = document.getElementById(`note-input-${listId}`);
+  if (!input) return;
+  const note = input.value.trim();
+  const list = userLists.find(l => l.id === listId);
+  if (!list) return;
+
+  if (note) {
+    list.notes.set(restaurantKey, note);
+  } else {
+    list.notes.delete(restaurantKey);
+  }
+
+  await sb.from('list_items')
+    .update({ note: note || null })
+    .eq('list_id', listId)
+    .eq('restaurant_key', restaurantKey);
+
+  expandedNoteListId = null;
+  renderListPickerItems();
 }
 
 async function toggleListItem(listId, restaurantKey) {
@@ -2501,6 +2568,8 @@ async function toggleListItem(listId, restaurantKey) {
 
   if (list.keys.has(restaurantKey)) {
     list.keys.delete(restaurantKey);
+    list.notes.delete(restaurantKey);
+    expandedNoteListId = null;
     await sb.from('list_items').delete()
       .eq('list_id', listId).eq('restaurant_key', restaurantKey);
   } else {
@@ -2540,7 +2609,7 @@ async function createAndAddToList() {
   const keys = new Set([listPickerKey]);
   await sb.from('list_items').upsert({ list_id: newList.id, restaurant_key: listPickerKey });
 
-  userLists.push({ id: newList.id, name: newList.name, slug: newList.slug, is_public: true, keys });
+  userLists.push({ id: newList.id, name: newList.name, slug: newList.slug, is_public: true, keys, notes: new Map() });
   cancelNewList();
   renderListPickerItems();
 }
