@@ -595,7 +595,7 @@ async function load() {
 
   // Meta bar
   document.getElementById('list-meta-container').style.display = '';
-  renderMetaBar(list, ownerName, allRestaurants.length);
+  renderMetaBar(list, ownerName, ownerAvatar, allRestaurants.length);
 
   // Cards
   document.getElementById('loading-state').style.display = 'none';
@@ -610,10 +610,12 @@ async function load() {
 // ── Meta bar ──────────────────────────────────────────────────────────────────
 let currentList = null;
 let currentOwnerName = '';
+let currentOwnerAvatar = '';
 
-function renderMetaBar(list, ownerName, count) {
+function renderMetaBar(list, ownerName, ownerAvatar, count) {
   currentList = list;
   currentOwnerName = ownerName;
+  currentOwnerAvatar = ownerAvatar;
   const descHtml = isOwner
     ? (list.description
         ? `<div class="list-description owner-editable" onclick="editDescription(this)">${escHtml(list.description)}</div>`
@@ -652,7 +654,7 @@ function editDescription(el) {
   function commit() { saveDescription(ta.value.trim(), current); }
   function restore() {
     currentList.description = current;
-    renderMetaBar(currentList, currentOwnerName, allRestaurants.length);
+    renderMetaBar(currentList, currentOwnerName, currentOwnerAvatar, allRestaurants.length);
   }
   ta.addEventListener('blur', commit);
   ta.addEventListener('keydown', e => {
@@ -676,7 +678,7 @@ async function saveDescription(description, previous) {
   } else {
     currentList.description = description || null;
   }
-  renderMetaBar(currentList, currentOwnerName, allRestaurants.length);
+  renderMetaBar(currentList, currentOwnerName, currentOwnerAvatar, allRestaurants.length);
 }
 
 // ── View toggle ───────────────────────────────────────────────────────────────
