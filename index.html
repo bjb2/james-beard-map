@@ -1803,6 +1803,29 @@ function updateMap() {
     locationMap.get(key).awards.push(award);
   }
 
+  // Second pass: merge groups that represent the same restaurant across sources
+  // (slightly different coords from different data providers — e.g. TM vs JBF)
+  const normName = s => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const nameCity = a => normName(a.restaurant) + '|' + normName(a.city);
+  const nameCityIndex = new Map(); // nameCity → coord key
+  for (const [coordKey, loc] of locationMap) {
+    for (const a of loc.awards) {
+      const nc = nameCity(a);
+      if (!nc || nc === '|') continue;
+      if (nameCityIndex.has(nc)) {
+        const canonKey = nameCityIndex.get(nc);
+        if (canonKey !== coordKey) {
+          // Merge this group into the canonical one
+          const canon = locationMap.get(canonKey);
+          canon.awards.push(...loc.awards);
+          locationMap.delete(coordKey);
+        }
+      } else {
+        nameCityIndex.set(nc, coordKey);
+      }
+    }
+  }
+
   markers = [];
   for (const [, loc] of locationMap) {
     const hasJBF = loc.awards.some(a => a.source !== 'michelin' && a.source !== 'texasmonthly');
