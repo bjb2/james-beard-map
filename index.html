@@ -605,10 +605,6 @@
 
       /* Compact auth when signed in */
       #auth-signed-in { gap: 6px !important; }
-      #auth-name { display: none; }
-      #auth-avatar { display: block !important; width: 26px !important; height: 26px !important; }
-      #auth-profile-link::after { content: 'Profile'; font-size: 0.72rem; }
-      #auth-profile-link span { display: none; }
 
       #sidebar-toggle { display: block; }
 
@@ -771,8 +767,10 @@
       </button>
     </div>
     <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;">
-      <img id="auth-avatar" src="" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid var(--border-light);display:none;">
-      <a id="auth-profile-link" href="/profile.html" style="font-family:sans-serif;font-size:0.78rem;color:var(--white-dim);text-decoration:none;" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--white-dim)'"><span id="auth-name"></span></a>
+      <a id="auth-profile-link" href="/profile.html" title="My Profile" style="display:flex;align-items:center;text-decoration:none;flex-shrink:0;">
+        <img id="auth-avatar" src="" alt="Profile" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:2px solid var(--border-light);display:none;transition:border-color 0.15s;">
+        <span id="auth-avatar-fallback" style="display:none;width:32px;height:32px;border-radius:50%;background:var(--black-light);border:2px solid var(--border-light);font-size:0.75rem;color:var(--white-dim);align-items:center;justify-content:center;">👤</span>
+      </a>
       <button onclick="signOut()" style="
         background: transparent;
         border: none;
@@ -922,15 +920,22 @@ function setUser(user) {
   if (user) {
     signedIn.style.display  = 'flex';
     signedOut.style.display = 'none';
-    const name   = document.getElementById('auth-name');
-    const avatar = document.getElementById('auth-avatar');
+    const avatar   = document.getElementById('auth-avatar');
+    const fallback = document.getElementById('auth-avatar-fallback');
     const profileLink = document.getElementById('auth-profile-link');
-    name.textContent = user.user_metadata?.full_name?.split(' ')[0] || user.email;
     if (profileLink) profileLink.href = `/profile.html?user=${user.id}`;
-    if (user.user_metadata?.avatar_url) {
-      avatar.src = user.user_metadata.avatar_url;
-      avatar.style.display = 'block';
-    }
+
+    // Fetch profile avatar (may differ from OAuth metadata if user uploaded one)
+    sb.from('profiles').select('avatar_url').eq('id', user.id).single().then(({ data }) => {
+      const url = data?.avatar_url || user.user_metadata?.avatar_url;
+      if (url) {
+        avatar.src = url;
+        avatar.style.display = 'block';
+        if (fallback) fallback.style.display = 'none';
+      } else {
+        if (fallback) fallback.style.display = 'flex';
+      }
+    });
     loadCommunityState();
   } else {
     signedIn.style.display  = 'none';
