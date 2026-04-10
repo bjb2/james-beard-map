@@ -173,7 +173,7 @@
 
     .section-body {
       overflow: hidden;
-      max-height: 600px;
+      max-height: 1200px;
       opacity: 1;
       transition: max-height 0.25s ease, opacity 0.2s, margin-top 0.2s;
       margin-top: 12px;
@@ -363,6 +363,7 @@
     .badge-semifinalist { background: #fff; color: #000; }
     .badge-nominee { background: var(--border-light); color: var(--white); }
     .badge-michelin { background: #E4002B; color: #fff; }
+    .badge-tm { background: #1a6fa8; color: #fff; }
 
     .result-loc {
       font-size: 0.68rem;
@@ -472,7 +473,15 @@
     }
 
     .leaflet-popup-tip { background: var(--black-mid) !important; }
-    .leaflet-popup-close-button { color: var(--white-dim) !important; }
+    .leaflet-popup-close-button {
+      color: var(--white-dim) !important;
+      width: 28px !important;
+      height: 28px !important;
+      font-size: 20px !important;
+      line-height: 28px !important;
+      top: 4px !important;
+      right: 4px !important;
+    }
     .leaflet-popup-content { margin: 14px 20px !important; }
 
     /* Loading overlay */
@@ -576,19 +585,27 @@
     /* ── Mobile styles ── */
     @media (max-width: 768px) {
       header {
-        padding: 0 16px;
+        padding: 0 12px;
         height: 52px;
-        gap: 10px;
+        gap: 8px;
       }
 
       .header-divider,
-      .header-sub { display: none; }
+      .header-sub,
+      .header-stat { display: none; }
 
       .header-wordmark .brand { display: none; }
-      .header-wordmark h1 { font-size: 1.2rem; }
+      .header-wordmark h1 { font-size: 1.1rem; }
 
-      .header-stat .stat-num { font-size: 1.4rem; }
-      .header-stat { gap: 6px; }
+      /* Push auth to the far right */
+      header > div:last-child { margin-left: auto; }
+
+      /* Compact auth when signed in */
+      #auth-signed-in { gap: 6px !important; }
+      #auth-name { display: none; }
+      #auth-avatar { display: block !important; width: 26px !important; height: 26px !important; }
+      #auth-profile-link::after { content: 'Profile'; font-size: 0.72rem; }
+      #auth-profile-link span { display: none; }
 
       #sidebar-toggle { display: block; }
 
@@ -603,6 +620,8 @@
         transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 600;
         border-right: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       #sidebar.open { transform: translateX(0); }
@@ -750,7 +769,7 @@
     </div>
     <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;">
       <img id="auth-avatar" src="" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid var(--border-light);display:none;">
-      <span id="auth-name" style="font-family:sans-serif;font-size:0.78rem;color:var(--white-dim);"></span>
+      <a id="auth-profile-link" href="/profile.html" style="font-family:sans-serif;font-size:0.78rem;color:var(--white-dim);text-decoration:none;" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--white-dim)'"><span id="auth-name"></span></a>
       <button onclick="signOut()" style="
         background: transparent;
         border: none;
@@ -790,18 +809,6 @@
       </div>
     </div>
 
-    <!-- Favorites -->
-    <div class="sidebar-section" id="section-favorites">
-      <h3>Favorites</h3>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button id="fav-toggle" onclick="toggleFavoritesMode()" class="fav-toggle-btn">
-          ♥ Saved <span id="fav-count"></span>
-        </button>
-        <button id="share-favs-btn" onclick="copyFavoritesLink()" class="fav-share-btn" title="Copy shareable link">
-          ↗ Share
-        </button>
-      </div>
-    </div>
 
     <!-- Filters -->
     <div class="sidebar-section collapsible" id="section-filters">
@@ -850,6 +857,7 @@
             <option value="">All Sources</option>
             <option value="jbf">James Beard Only</option>
             <option value="michelin">Michelin Only</option>
+            <option value="texasmonthly">Texas Monthly Only</option>
           </select>
         </div>
 
@@ -920,7 +928,9 @@ function setUser(user) {
     signedOut.style.display = 'none';
     const name   = document.getElementById('auth-name');
     const avatar = document.getElementById('auth-avatar');
+    const profileLink = document.getElementById('auth-profile-link');
     name.textContent = user.user_metadata?.full_name?.split(' ')[0] || user.email;
+    if (profileLink) profileLink.href = `/profile.html?user=${user.id}`;
     if (user.user_metadata?.avatar_url) {
       avatar.src = user.user_metadata.avatar_url;
       avatar.style.display = 'block';
@@ -992,7 +1002,7 @@ async function toggleVisited(restaurantKey) {
     await sb.from('visits').upsert({
       user_id: currentUser.id,
       restaurant_key: restaurantKey,
-      visited_on: new Date().toISOString().slice(0, 10)
+      visited_on: new Date().toISOString().slice(0, 10),
     });
     // Show optional date picker inline
     showVisitedDatePicker(restaurantKey);
@@ -1014,7 +1024,8 @@ async function toggleWantToGo(restaurantKey) {
   } else {
     wantToGoKeys.add(restaurantKey);
     await sb.from('list_items').upsert({
-      list_id: wantToGoListId, restaurant_key: restaurantKey
+      list_id: wantToGoListId,
+      restaurant_key: restaurantKey,
     });
   }
   refreshPopupButtons(restaurantKey);
@@ -1379,8 +1390,6 @@ let map, markerCluster, locationCircle, locationMarker;
 let markers = [];
 let userLat = null, userLng = null, radiusMiles = 50;
 let nearbyMode = false;
-let showFavoritesOnly = false;
-let favorites = new Set(JSON.parse(localStorage.getItem('delectable_favorites') || '[]'));
 
 function favKey(a) {
   return `${a.restaurant || a.name || ''}|${a.city || ''}|${a.state || a.country || ''}`;
@@ -1487,6 +1496,16 @@ function markerIcon(status, michelinTier) {
       className: '',
       iconSize: [outer, outer],
       iconAnchor: [outer / 2, outer / 2]
+    });
+  }
+
+  // Texas Monthly pin: burnt-orange square
+  if (status === 'texasmonthly') {
+    return L.divIcon({
+      html: `<div style="width:9px;height:9px;background:#1a6fa8;border:1.5px solid #0e4a73;box-shadow:0 0 5px #1a6fa880;"></div>`,
+      className: '',
+      iconSize: [9, 9],
+      iconAnchor: [4.5, 4.5],
     });
   }
 
@@ -1597,18 +1616,25 @@ async function loadData() {
       const data = await res.json();
       allAwards = allAwards.concat(data);
 
+      const isFirst = !firstChunkLoaded;
       if (!firstChunkLoaded) {
         firstChunkLoaded = true;
         loadingEl.style.display = 'none';
         initFilters();
-        updateFavCount();
-        if (showFavoritesOnly) document.getElementById('fav-toggle').classList.add('active');
       } else {
         // Refresh filters dropdowns with newly available data (years, states, etc.)
         initFilters();
       }
 
       applyFilters();
+
+      if (isFirst) {
+        const params = new URLSearchParams(window.location.search);
+        const popupKey = params.get('popup');
+        const popupLat = parseFloat(params.get('lat'));
+        const popupLng = parseFloat(params.get('lng'));
+        if (popupKey) handlePopupDeepLink(popupKey, popupLat, popupLng);
+      }
     } catch (e) {
       loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
       loadingSub.textContent = e.message;
@@ -1617,11 +1643,37 @@ async function loadData() {
   }
 }
 
+function handlePopupDeepLink(restaurantKey, lat, lng) {
+  // Fly to location if coords provided
+  if (!isNaN(lat) && !isNaN(lng)) {
+    map.setView([lat, lng], 15);
+  }
+  // Find and open the matching marker popup
+  // Use a short delay so markers have rendered after applyFilters
+  setTimeout(() => {
+    map.eachLayer(layer => {
+      if (!layer.options?.loc) return;
+      const awards = layer.options.loc.awards || [];
+      const key = favKey(awards[0]);
+      if (key === restaurantKey) {
+        // Unspiderfy cluster if needed
+        if (layer._cluster) {
+          layer._cluster.spiderfy();
+        }
+        layer.openPopup();
+        if (!isNaN(lat) && !isNaN(lng)) {
+          map.panTo([lat, lng]);
+        }
+      }
+    });
+  }, 600);
+}
+
 
 // ── Filters ─────────────────────────────────────────────────────────────────
 function initFilters() {
-  // Populate year filter (most recent first)
-  const years = [...new Set(allAwards.map(a => a.year))].sort((a, b) => b - a);
+  // Populate year filter (most recent first) — covers JBF years and TM years
+  const years = [...new Set(allAwards.map(a => a.year || (a.tmYear ? String(a.tmYear) : null)).filter(Boolean))].sort((a, b) => b - a);
   const yearSel = document.getElementById('filter-year');
   years.forEach(y => {
     const opt = document.createElement('option');
@@ -1715,24 +1767,29 @@ function applyFilters() {
     // Hide permanently closed
     if (hideClosed && (a.businessStatus === 'CLOSED_PERMANENTLY' || a.yelpDetail?.isClosed)) return false;
     const isMichelin = a.source === 'michelin';
+    const isTM       = a.source === 'texasmonthly';
 
     // Source filter
-    if (source === 'jbf'     && isMichelin)  return false;
-    if (source === 'michelin' && !isMichelin) return false;
+    if (source === 'jbf'          && (isMichelin || isTM))  return false;
+    if (source === 'michelin'     && !isMichelin)            return false;
+    if (source === 'texasmonthly' && !isTM)                  return false;
 
-    // JBF-specific filters (skip for Michelin-only records)
-    if (!isMichelin) {
+    // JBF-specific filters
+    if (!isMichelin && !isTM) {
       if (year     && a.year     !== year)     return false;
       if (state    && a.state    !== state)    return false;
       if (category && a.category !== category) return false;
       if (!activeStatuses.has(a.status))       return false;
     }
 
+    // Texas Monthly filters
+    if (isTM) {
+      if (year  && String(a.tmYear) !== year)  return false;
+      if (state && a.state          !== state)  return false;
+    }
+
     // Michelin tier filter (applies to any record with michelinAward)
     if (michelinTier && a.michelinAward !== michelinTier) return false;
-
-    // Favorites filter
-    if (showFavoritesOnly && !favorites.has(favKey(a))) return false;
 
     // Shared filters
     if (cuisine && !(a.cuisineTags || []).includes(cuisine)) return false;
@@ -1771,7 +1828,8 @@ function updateMap() {
 
   markers = [];
   for (const [, loc] of locationMap) {
-    const hasJBF = loc.awards.some(a => a.source !== 'michelin');
+    const hasJBF = loc.awards.some(a => a.source !== 'michelin' && a.source !== 'texasmonthly');
+    const hasTM  = loc.awards.some(a => a.source === 'texasmonthly');
 
     let bestStatus, michelinTier;
     if (hasJBF) {
@@ -1779,6 +1837,9 @@ function updateMap() {
       bestStatus = loc.awards.some(a => a.status === 'Winner') ? 'Winner'
         : loc.awards.some(a => a.status === 'Semifinalist') ? 'Semifinalist'
         : 'Nominee';
+      michelinTier = null;
+    } else if (hasTM) {
+      bestStatus   = 'texasmonthly';
       michelinTier = null;
     } else {
       // Michelin-only — pick highest tier present
@@ -1814,14 +1875,13 @@ function michelinBadge(tier) {
 function buildPopup(loc) {
   const awards = loc.awards;
   const isMichelinOnly = awards.every(a => a.source === 'michelin');
+  const isTMOnly       = awards.every(a => a.source === 'texasmonthly');
 
   // ── Michelin-only popup ────────────────────────────────────────────────────
   if (isMichelinOnly) {
     const a = awards[0];
     const location = [a.city, a.country].filter(Boolean).join(', ');
     const mapsUrl = buildFallbackMapsUrl(a);
-    const fk = encodeURIComponent(favKey(a));
-    const isFaved = favorites.has(favKey(a));
     const photo = a.googlePhoto || null;
     const isClosed = a.businessStatus === 'CLOSED_PERMANENTLY' || a.businessStatus === 'CLOSED_TEMPORARILY';
 
@@ -1835,19 +1895,11 @@ function buildPopup(loc) {
           <div class="popup-name">${escHtml(a.restaurant)}</div>
           <div class="popup-restaurant">${escHtml(location)}</div>
         </div>
-        <div style="position:absolute;top:6px;right:6px;">
-          <button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>
-        </div>
       </div>`;
     } else {
-      html += `<div class="popup-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div>
-          <div class="popup-name">${escHtml(a.restaurant)}</div>
-          <div class="popup-restaurant">${escHtml(location)}</div>
-        </div>
-        <button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">
-          ${isFaved?'♥':'♡'}
-        </button>
+      html += `<div class="popup-header">
+        <div class="popup-name">${escHtml(a.restaurant)}</div>
+        <div class="popup-restaurant">${escHtml(location)}</div>
       </div>`;
     }
 
@@ -1896,6 +1948,69 @@ function buildPopup(loc) {
     return html;
   }
 
+  // ── Texas Monthly popup ────────────────────────────────────────────────────
+  if (isTMOnly) {
+    const a = awards[0];
+    // Collect all years for this restaurant
+    const tmYears = [...new Set(awards.map(x => x.tmYear).filter(Boolean))].sort();
+    const location = [a.city, a.state].filter(Boolean).join(', ');
+    const mapsUrl = buildFallbackMapsUrl(a);
+    const photo = a.googlePhoto || null;
+    const isClosed = a.businessStatus === 'CLOSED_PERMANENTLY' || a.businessStatus === 'CLOSED_TEMPORARILY';
+
+    let html = `<div class="jb-popup">`;
+
+    if (photo) {
+      html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+        <img src="${escHtml(photo)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
+          style="width:100%;height:110px;object-fit:cover;display:block;">
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+          <div class="popup-name">${escHtml(a.restaurant)}</div>
+          <div class="popup-restaurant">${escHtml(location)}</div>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="popup-header">
+        <div class="popup-name">${escHtml(a.restaurant)}</div>
+        <div class="popup-restaurant">${escHtml(location)}</div>
+      </div>`;
+    }
+
+    html += `<div class="popup-body">
+      <div class="popup-tabs">
+        <button class="popup-tab-btn active" data-tab="info"      onclick="switchPopupTab('info')">Info</button>
+        <button class="popup-tab-btn"        data-tab="community" onclick="switchPopupTab('community')">Community</button>
+      </div>`;
+
+    html += `<div class="popup-tab-content active" data-tab="info">`;
+
+    if (a.businessStatus === 'CLOSED_PERMANENTLY') {
+      html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
+    } else if (a.businessStatus === 'CLOSED_TEMPORARILY') {
+      html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
+    }
+
+    html += `<div style="margin-bottom:8px;">
+      <span style="font-family:sans-serif;font-size:0.75rem;background:#1a6fa8;color:#fff;padding:2px 8px;border-radius:4px;">🔥 Texas Monthly Top 50 BBQ</span>
+    </div>`;
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.6);margin-bottom:8px;">Listed: ${tmYears.join(', ')}</div>`;
+
+    const links = [];
+    if (mapsUrl)   links.push(`<a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
+    if (a.website) links.push(`<a href="${escHtml(a.website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+    if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
+
+    html += `</div>`;
+    html += `<div class="popup-tab-content" data-tab="community">
+      <div id="comm-section" style="min-height:60px;">
+        <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div>
+      </div>
+    </div>`;
+    html += buildCommButtons(favKey(a));
+    html += `</div></div>`;
+    return html;
+  }
+
   // ── JBF (or mixed JBF+Michelin) popup ─────────────────────────────────────
   const city = awards[0].city;
   const state = awards[0].state;
@@ -1903,7 +2018,7 @@ function buildPopup(loc) {
   // Group by restaurant
   const byRestaurant = new Map();
   for (const a of awards) {
-    if (a.source === 'michelin') continue; // show JBF entries in this popup
+    if (a.source === 'michelin' || a.source === 'texasmonthly') continue; // show JBF entries only
     const key = a.restaurant || a.name || '?';
     if (!byRestaurant.has(key)) byRestaurant.set(key, { awards: [], meta: a });
     byRestaurant.get(key).awards.push(a);
@@ -1929,10 +2044,6 @@ function buildPopup(loc) {
 
   let html = `<div class="jb-popup">`;
 
-  const fk = encodeURIComponent(favKey(firstMeta));
-  const isFaved = favorites.has(favKey(firstMeta));
-  const favBtn = `<button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>`;
-
   if (img) {
     html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
       <img src="${escHtml(img)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
@@ -1941,15 +2052,11 @@ function buildPopup(loc) {
         <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
         <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
       </div>
-      <div style="position:absolute;top:6px;right:6px;">${favBtn}</div>
     </div>`;
   } else {
-    html += `<div class="popup-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
-      <div>
-        <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
-        <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
-      </div>
-      ${favBtn}
+    html += `<div class="popup-header">
+      <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
+      <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
     </div>`;
   }
 
@@ -2062,34 +2169,31 @@ function updateSidebar() {
 
   const items = display.map(a => {
     const isMichelin = a.source === 'michelin';
+    const isTM       = a.source === 'texasmonthly';
     const badgeClass = isMichelin ? 'badge-michelin'
+      : isTM ? 'badge-tm'
       : a.status === 'Winner' ? 'badge-winner'
       : a.status === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
     const badgeText = isMichelin
       ? ({ '3 Stars':'★★★ 3 Stars','2 Stars':'★★ 2 Stars','1 Star':'★ 1 Star','Bib Gourmand':'Ⓑ Bib Gourmand','Selected':'◆ Selected' }[a.michelinAward] || '◆ Michelin')
+      : isTM ? '🔥 TX Top 50 BBQ'
       : a.status === 'Winner' ? '🥇 Winner' : a.status === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
-    const displayName = isMichelin ? a.restaurant : (a.name && a.name !== a.restaurant ? a.name : (a.restaurant || a.name || '?'));
-    const displayRest = !isMichelin && a.name !== a.restaurant && a.restaurant ? a.restaurant : '';
+    const displayName = a.restaurant || a.name || '?';
+    const displayRest = (!isMichelin && !isTM) && a.name && a.name !== a.restaurant ? a.restaurant : '';
     const locText = isMichelin
       ? [a.city, a.country].filter(Boolean).join(', ')
       : [a.city, a.state].filter(Boolean).join(', ');
+    const yearText = isTM ? a.tmYear : a.year;
     const distText = (nearbyMode && userLat !== null)
       ? ` · ${distanceMiles(userLat, userLng, a.lat, a.lng).toFixed(1)} mi` : '';
 
-    const fk = encodeURIComponent(favKey(a));
-    const isFaved = favorites.has(favKey(a));
     return `<div class="result-item" data-lat="${a.lat}" data-lng="${a.lng}">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div style="min-width:0;">
-          <div class="result-name">${escHtml(displayName)}</div>
-          ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
-        </div>
-        <button class="fav-btn${isFaved?' faved':''}" onclick="event.stopPropagation();toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>
-      </div>
+      <div class="result-name">${escHtml(displayName)}</div>
+      ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
       <div class="result-meta">
         <span class="result-badge ${badgeClass}">${badgeText}</span>
         <span class="result-loc">${escHtml(locText)}${distText}</span>
-        ${!isMichelin ? `<span class="result-year">${a.year}</span>` : ''}
+        ${yearText ? `<span class="result-year">${yearText}</span>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -2268,72 +2372,6 @@ function debounce(fn, ms) {
   });
 })();
 
-// ── Favorites ────────────────────────────────────────────────────────────────
-function toggleFavorite(key) {
-  if (favorites.has(key)) favorites.delete(key);
-  else favorites.add(key);
-  localStorage.setItem('delectable_favorites', JSON.stringify([...favorites]));
-
-  // Update all heart buttons for this key on the page
-  document.querySelectorAll('.fav-btn').forEach(btn => {
-    const enc = btn.getAttribute('onclick') || '';
-    if (enc.includes(encodeURIComponent(key))) {
-      const faved = favorites.has(key);
-      btn.textContent = faved ? '♥' : '♡';
-      btn.classList.toggle('faved', faved);
-    }
-  });
-
-  updateFavCount();
-  if (showFavoritesOnly) applyFilters();
-}
-
-function updateFavCount() {
-  const el = document.getElementById('fav-count');
-  if (!el) return;
-  el.textContent = favorites.size > 0 ? favorites.size : '';
-  el.style.display = favorites.size > 0 ? '' : 'none';
-}
-
-function toggleFavoritesMode() {
-  showFavoritesOnly = !showFavoritesOnly;
-  document.getElementById('fav-toggle').classList.toggle('active', showFavoritesOnly);
-  applyFilters();
-}
-
-function copyFavoritesLink() {
-  if (favorites.size === 0) {
-    alert('No favorites saved yet — heart some restaurants first!');
-    return;
-  }
-  const encoded = encodeURIComponent(JSON.stringify([...favorites]));
-  const url = `${location.origin}${location.pathname}#favs=${encoded}`;
-  navigator.clipboard.writeText(url).then(() => {
-    const btn = document.getElementById('share-favs-btn');
-    const orig = btn.textContent;
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = orig, 2000);
-  }).catch(() => {
-    // Fallback for older mobile browsers
-    prompt('Copy this link:', url);
-  });
-}
-
-function loadSharedFavorites() {
-  const hash = window.location.hash;
-  if (!hash.startsWith('#favs=')) return;
-  try {
-    const keys = JSON.parse(decodeURIComponent(hash.slice(6)));
-    let added = 0;
-    keys.forEach(k => { if (!favorites.has(k)) { favorites.add(k); added++; } });
-    if (added > 0) localStorage.setItem('delectable_favorites', JSON.stringify([...favorites]));
-    history.replaceState(null, '', location.pathname + location.search);
-    if (added > 0) {
-      showFavoritesOnly = true;
-      // fav-toggle button styled active after loadData runs
-    }
-  } catch (e) {}
-}
 
 // ── Logo font animation ──────────────────────────────────────────────────────
 function animateLogo() {
@@ -2372,7 +2410,6 @@ function animateLogo() {
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────
-loadSharedFavorites();
 initMap();
 loadData();
 animateLogo();
