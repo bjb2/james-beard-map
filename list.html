@@ -321,17 +321,31 @@
     }
 
     .map-list-drawer {
-      height: 220px;
+      height: 260px;
       overflow-y: auto;
       border-top: 1px solid var(--border);
       background: var(--black-mid);
     }
 
+    /* ── Leaflet dark theme ── */
+    .leaflet-popup-content-wrapper {
+      background: #141414 !important;
+      border: 1px solid #333 !important;
+      border-radius: 10px !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+      color: #fff !important;
+    }
+    .leaflet-popup-tip { background: #141414 !important; }
+    .leaflet-popup-close-button { color: rgba(255,255,255,0.5) !important; }
+    .leaflet-popup-close-button:hover { color: #fff !important; }
+    .leaflet-popup-content { margin: 14px 16px !important; }
+
+    /* ── Drawer rich cards ── */
     .drawer-item {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 10px 20px;
+      padding: 10px 14px;
       border-bottom: 1px solid var(--border);
       cursor: pointer;
       transition: background 0.1s;
@@ -339,33 +353,50 @@
     .drawer-item:hover { background: var(--black-light); }
     .drawer-item.active { background: var(--orange-dim); }
 
-    .drawer-num {
-      font-size: 0.68rem;
-      color: var(--white-faint);
-      width: 18px;
-      text-align: right;
+    .drawer-thumb {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      object-fit: cover;
       flex-shrink: 0;
+      background: var(--black-light);
     }
-    .drawer-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--orange);
+    .drawer-thumb-placeholder {
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
       flex-shrink: 0;
+      background: var(--black-light);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
     }
+    .drawer-body { flex: 1; min-width: 0; }
     .drawer-name {
       font-size: 0.85rem;
-      font-weight: 500;
-      flex: 1;
-      min-width: 0;
+      font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    .drawer-sub {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
     .drawer-loc {
       font-size: 0.7rem;
       color: var(--white-faint);
-      flex-shrink: 0;
+    }
+    .drawer-badge {
+      font-size: 0.62rem;
+      padding: 1px 6px;
+      border-radius: 8px;
+      font-weight: 600;
     }
 
     /* ── States ── */
@@ -395,7 +426,7 @@
       .list-title { font-size: 1.3rem; }
       .list-view-inner { padding: 16px 16px 60px; }
       .rc-photo, .rc-photo-placeholder { width: 72px; height: 72px; }
-      .map-list-drawer { height: 180px; }
+      .map-list-drawer { height: 220px; }
     }
   </style>
 </head>
@@ -608,6 +639,15 @@ function cardHtml(r, note, num) {
   `;
 }
 
+function drawerBadgeHtml(summary) {
+  if (!summary) return '';
+  if (summary.includes('Winner'))       return `<span class="drawer-badge badge-winner">JBF Winner</span>`;
+  if (summary.includes('Michelin Star') || summary.match(/★/)) return `<span class="drawer-badge badge-michelin">${escHtml(summary)}</span>`;
+  if (summary.includes('texasmonthly') || summary.includes('Top 50')) return `<span class="drawer-badge badge-tm">TX Monthly</span>`;
+  if (summary.includes('Nominee') || summary.includes('Semifinalist')) return `<span class="drawer-badge badge-other">${escHtml(summary)}</span>`;
+  return '';
+}
+
 function badgeHtml(summary) {
   if (!summary) return '';
   if (summary.includes('Winner'))       return `<span class="rc-badge badge-winner">🥇 JBF Winner</span>`;
@@ -690,20 +730,28 @@ function initMap(restaurants) {
   // Drawer
   document.getElementById('map-drawer').innerHTML = pts.map((r, i) => {
     const loc = [r.city, r.state || r.country].filter(Boolean).join(', ');
+    const thumb = r.photo_url
+      ? `<img class="drawer-thumb" src="${escHtml(r.photo_url)}" alt="" loading="lazy">`
+      : `<div class="drawer-thumb-placeholder">🍽</div>`;
+    const badge = drawerBadgeHtml(r.award_summary);
     return `
       <div class="drawer-item" data-key="${escHtml(r.key)}" onclick="flyToPin('${escHtml(r.key)}')">
-        <span class="drawer-num">${i + 1}</span>
-        <span class="drawer-dot"></span>
-        <span class="drawer-name">${escHtml(r.name)}</span>
-        ${loc ? `<span class="drawer-loc">${escHtml(loc)}</span>` : ''}
+        ${thumb}
+        <div class="drawer-body">
+          <div class="drawer-name">${escHtml(r.name)}</div>
+          <div class="drawer-sub">
+            ${badge}
+            ${loc ? `<span class="drawer-loc">${escHtml(loc)}</span>` : ''}
+          </div>
+        </div>
       </div>
     `;
   }).join('');
 
   setTimeout(() => {
     listMap.invalidateSize();
-    if (bounds.length === 1) listMap.setView(bounds[0], 13);
-    else listMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
+    if (bounds.length === 1) listMap.setView(bounds[0], 11);
+    else listMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 10 });
   }, 0);
 }
 
