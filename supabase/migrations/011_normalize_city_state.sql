@@ -95,18 +95,22 @@ begin
       update public.tags              set restaurant_key = new_key where restaurant_key = old_key;
       delete from public.restaurants where key = old_key;
     else
-      -- Rename: update restaurants first (FK target must exist before dependents)
-      update public.restaurants
-        set key     = new_key,
-            city    = new_city,
-            state   = new_state,
-            country = null
-        where key = old_key;
+      -- Rename: insert new row first (satisfies FK), update dependents, delete old row
+      insert into public.restaurants (key, name, city, state, country, address, lat, lng,
+        photo_url, cuisine_tags, cuisine_category, business_status, is_closed,
+        website, phone, yelp_url, michelin_url, price, updated_at)
+      select new_key, name, new_city, new_state, null, address, lat, lng,
+        photo_url, cuisine_tags, cuisine_category, business_status, is_closed,
+        website, phone, yelp_url, michelin_url, price, updated_at
+      from public.restaurants where key = old_key;
+
       update public.restaurant_awards set restaurant_key = new_key where restaurant_key = old_key;
       update public.visits            set restaurant_key = new_key where restaurant_key = old_key;
       update public.list_items        set restaurant_key = new_key where restaurant_key = old_key;
       update public.dish_notes        set restaurant_key = new_key where restaurant_key = old_key;
       update public.tags              set restaurant_key = new_key where restaurant_key = old_key;
+
+      delete from public.restaurants where key = old_key;
     end if;
   end loop;
 end $$;
