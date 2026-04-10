@@ -825,13 +825,6 @@
         </div>
 
         <div class="filter-group">
-          <label>State</label>
-          <select id="filter-state">
-            <option value="">All States</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
           <label>Award Category</label>
           <select id="filter-category">
             <option value="">All Categories</option>
@@ -1624,16 +1617,6 @@ function initFilters() {
     yearSel.appendChild(opt);
   });
 
-  // Populate state filter
-  const states = [...new Set(allAwards.map(a => a.state).filter(Boolean))].sort();
-  const stateSel = document.getElementById('filter-state');
-  states.forEach(s => {
-    const opt = document.createElement('option');
-    opt.value = s;
-    opt.textContent = s;
-    stateSel.appendChild(opt);
-  });
-
   // Populate award category filter
   const cats = [...new Set(allAwards.map(a => a.category).filter(Boolean))].sort();
   const catSel = document.getElementById('filter-category');
@@ -1662,7 +1645,6 @@ function initFilters() {
   });
 
   yearSel.addEventListener('change', applyFilters);
-  stateSel.addEventListener('change', applyFilters);
   catSel.addEventListener('change', applyFilters);
   cuisineSel.addEventListener('change', applyFilters);
   document.getElementById('filter-source').addEventListener('change', applyFilters);
@@ -1698,7 +1680,6 @@ function updateHeaderCounts() {
 
 function applyFilters() {
   const year          = document.getElementById('filter-year').value;
-  const state         = document.getElementById('filter-state').value;
   const category      = document.getElementById('filter-category').value;
   const cuisine       = document.getElementById('filter-cuisine').value;
   const source        = document.getElementById('filter-source').value;
@@ -1720,7 +1701,6 @@ function applyFilters() {
     // JBF-specific filters
     if (!isMichelin && !isTM) {
       if (year     && a.year     !== year)     return false;
-      if (state    && a.state    !== state)    return false;
       if (category && a.category !== category) return false;
       if (!activeStatuses.has(a.status))       return false;
     }
