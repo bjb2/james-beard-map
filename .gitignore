@@ -37,4 +37,8 @@ data/michelin_raw.csv
 .claude/
 
 # research
-.key.txtdata/google-types-cache.json
+.key.txt
+data/google-types-cache.json
+
+# env
+.env
