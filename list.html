@@ -239,7 +239,38 @@
       font-style: italic;
       margin-top: 4px;
       line-height: 1.4;
+      cursor: pointer;
     }
+    .card-note:hover { color: rgba(255,255,255,0.65); }
+
+    .add-note-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.25);
+      font-size: 0.7rem;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 2px 0;
+      margin-top: 4px;
+    }
+    .add-note-btn:hover { color: rgba(255,255,255,0.5); }
+
+    .note-input {
+      width: 100%;
+      background: var(--black-light);
+      border: 1px solid var(--border-light);
+      border-radius: 6px;
+      color: var(--white);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-style: italic;
+      padding: 5px 8px;
+      margin-top: 4px;
+      resize: none;
+      outline: none;
+      line-height: 1.4;
+    }
+    .note-input:focus { border-color: var(--orange); }
 
     /* ── States ── */
     .state-loading,
@@ -342,6 +373,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const slug = new URLSearchParams(window.location.search).get('slug');
+let currentListId = null;
+let isOwner = false;
 
 async function load() {
   const content = document.getElementById('content');
@@ -350,6 +383,9 @@ async function load() {
     showError('No list specified.');
     return;
   }
+
+  // Check auth (non-blocking — owners get edit affordances)
+  const { data: { user } } = await sb.auth.getUser();
 
   // Fetch the list
   const { data: lists, error: listErr } = await sb
@@ -365,6 +401,8 @@ async function load() {
   }
 
   const list = lists[0];
+  currentListId = list.id;
+  isOwner = user?.id === list.user_id;
 
   // Fetch owner display name
   const { data: profile } = await sb
@@ -421,6 +459,12 @@ async function load() {
           </svg>
           Share
         </button>
+        <button class="share-btn" id="copy-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          Copy link
+        </button>
       </div>
       ${list.description ? `<div class="list-description">${escHtml(list.description)}</div>` : ''}
     </div>
@@ -437,6 +481,7 @@ async function load() {
   `;
 
   document.getElementById('share-btn').addEventListener('click', handleShare.bind(null, shareUrl));
+  document.getElementById('copy-btn').addEventListener('click', copyLink.bind(null, shareUrl));
 
   if (hasPins) initMap(restaurants);
 }
@@ -447,15 +492,25 @@ function cardHtml(r, note) {
   const photo = r.photo_url
     ? `<img class="card-photo" src="${escHtml(r.photo_url)}" alt="" loading="lazy">`
     : `<div class="card-photo-placeholder">🍽</div>`;
+  const safeKey = escHtml(r.key);
+
+  const noteSection = isOwner
+    ? `<div class="card-note-wrap" data-key="${safeKey}">
+        ${note
+          ? `<div class="card-note" onclick="editNote(this)">${escHtml(note)}</div>`
+          : `<button class="add-note-btn" onclick="editNote(this)">+ Add note</button>`
+        }
+       </div>`
+    : note ? `<div class="card-note">${escHtml(note)}</div>` : '';
 
   return `
-    <div class="card" data-key="${escHtml(r.key)}">
+    <div class="card" data-key="${safeKey}">
       ${photo}
       <div class="card-info">
         <div class="card-name">${escHtml(r.name)}</div>
         ${badge ? `<div class="card-badge">${escHtml(badge)}</div>` : ''}
         ${location ? `<div class="card-location">${escHtml(location)}</div>` : ''}
-        ${note ? `<div class="card-note">${escHtml(note)}</div>` : ''}
+        ${noteSection}
       </div>
     </div>
   `;
@@ -469,6 +524,55 @@ function badgeText(summary) {
   if (summary.includes('★★')) return '★★ Michelin';
   if (summary.includes('★')) return '★ Michelin';
   return '';
+}
+
+function editNote(el) {
+  const wrap = el.closest('[data-key]');
+  const key  = wrap.dataset.key;
+  const current = el.classList.contains('card-note') ? el.textContent : '';
+
+  const ta = document.createElement('textarea');
+  ta.className = 'note-input';
+  ta.value = current;
+  ta.rows = 2;
+  ta.placeholder = 'Why\u2019d you add it? (optional)';
+  ta.maxLength = 200;
+  wrap.innerHTML = '';
+  wrap.appendChild(ta);
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+
+  ta.addEventListener('blur', () => saveNote(wrap, key, ta.value.trim()));
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ta.blur(); }
+    if (e.key === 'Escape') { ta.value = current; ta.blur(); }
+  });
+}
+
+async function saveNote(wrap, restaurantKey, note) {
+  await sb.from('list_items')
+    .update({ note: note || null })
+    .eq('list_id', currentListId)
+    .eq('restaurant_key', restaurantKey);
+
+  wrap.innerHTML = note
+    ? `<div class="card-note" onclick="editNote(this)">${escHtml(note)}</div>`
+    : `<button class="add-note-btn" onclick="editNote(this)">+ Add note</button>`;
+}
+
+async function copyLink(url) {
+  await navigator.clipboard.writeText(url);
+  const btn = document.getElementById('copy-btn');
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.innerHTML = `
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+      </svg>
+      Copy link`;
+    btn.classList.remove('copied');
+  }, 2000);
 }
 
 async function handleShare(url) {
