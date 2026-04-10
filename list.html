@@ -331,14 +331,59 @@
     .leaflet-popup-content-wrapper {
       background: #141414 !important;
       border: 1px solid #333 !important;
-      border-radius: 10px !important;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+      border-radius: 6px !important;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.8) !important;
       color: #fff !important;
     }
     .leaflet-popup-tip { background: #141414 !important; }
-    .leaflet-popup-close-button { color: rgba(255,255,255,0.5) !important; }
-    .leaflet-popup-close-button:hover { color: #fff !important; }
-    .leaflet-popup-content { margin: 14px 16px !important; }
+    .leaflet-popup-close-button { color: rgba(255,255,255,0.5) !important; top: 4px !important; right: 6px !important; }
+    .leaflet-popup-close-button:hover { color: #fff !important; background: transparent !important; }
+    .leaflet-popup-content { margin: 0 !important; overflow: hidden; border-radius: 6px; }
+
+    /* ── List popup ── */
+    .list-popup { min-width: 220px; max-width: 260px; font-family: sans-serif; }
+    .lp-photo-wrap { position: relative; overflow: hidden; height: 100px; }
+    .lp-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .lp-photo-gradient {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(transparent, rgba(13,13,13,0.92));
+      padding: 18px 12px 8px;
+    }
+    .lp-header { padding: 12px 12px 0; }
+    .lp-name { font-size: 0.92rem; font-weight: 700; color: #fff; line-height: 1.2; }
+    .lp-loc  { font-size: 0.72rem; color: rgba(255,255,255,0.55); margin-top: 2px; }
+    .lp-body { padding: 8px 12px 10px; }
+    .lp-badge-row { margin-bottom: 6px; }
+    .lp-links {
+      display: flex; flex-wrap: wrap; gap: 6px 12px; margin-bottom: 6px;
+    }
+    .lp-links a {
+      font-size: 0.7rem; color: #FEA219; text-decoration: none; opacity: 0.85;
+      transition: opacity 0.12s;
+    }
+    .lp-links a:hover { opacity: 1; }
+    .lp-note {
+      font-size: 0.72rem; font-style: italic; color: rgba(255,255,255,0.5);
+      border-top: 1px solid #2a2a2a; padding-top: 6px; margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* ── Description editing ── */
+    .add-desc-btn {
+      background: none; border: none; color: rgba(255,255,255,0.22);
+      font-size: 0.82rem; font-family: inherit; cursor: pointer;
+      padding: 0; margin-top: 8px; display: block;
+    }
+    .add-desc-btn:hover { color: rgba(255,255,255,0.5); }
+    .list-description.owner-editable { cursor: pointer; }
+    .list-description.owner-editable:hover { color: var(--white-dim); }
+    .desc-input {
+      width: 100%; background: var(--black-light); border: 1px solid var(--border-light);
+      border-radius: 6px; color: var(--white); font-family: inherit;
+      font-size: 0.85rem; padding: 6px 10px; margin-top: 10px;
+      resize: none; outline: none; line-height: 1.5;
+    }
+    .desc-input:focus { border-color: var(--orange); }
 
     /* ── Drawer rich cards ── */
     .drawer-item {
@@ -488,6 +533,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const slug = new URLSearchParams(window.location.search).get('slug');
 let currentListId = null;
 let isOwner = false;
+let isLoggedIn = false;
 let listMap = null;
 let mapMarkers = []; // [{marker, key}]
 let allRestaurants = [];
@@ -498,6 +544,7 @@ async function load() {
 
   const { data: { session } } = await sb.auth.getSession();
   const user = session?.user ?? null;
+  isLoggedIn = !!user;
 
   const { data: lists, error: listErr } = await sb
     .from('lists')
@@ -555,18 +602,7 @@ async function load() {
 
   // Meta bar
   document.getElementById('list-meta-container').style.display = '';
-  document.getElementById('list-meta-container').innerHTML = `
-    <div class="list-meta-bar">
-      <div class="list-title">${escHtml(list.name)}</div>
-      <div class="list-meta">
-        <span>By <a href="/profile.html?user=${escHtml(list.user_id)}">${escHtml(ownerName)}</a></span>
-        <span class="list-meta-dot">·</span>
-        <span>${allRestaurants.length} place${allRestaurants.length !== 1 ? 's' : ''}</span>
-      </div>
-      ${list.description ? `<div class="list-description">${escHtml(list.description)}</div>` : ''}
-      ${!user ? `<div class="sign-in-nudge"><a onclick="signInToEdit(event)">Sign in</a> to edit notes</div>` : ''}
-    </div>
-  `;
+  renderMetaBar(list, ownerName, allRestaurants.length);
 
   // Cards
   document.getElementById('loading-state').style.display = 'none';
@@ -575,7 +611,79 @@ async function load() {
     : allRestaurants.map((r, i) => cardHtml(r, noteMap.get(r.key), i + 1)).join('');
 
   // Map
-  if (hasPins) initMap(allRestaurants);
+  if (hasPins) initMap(allRestaurants, noteMap);
+}
+
+// ── Meta bar ──────────────────────────────────────────────────────────────────
+let currentList = null;
+let currentOwnerName = '';
+
+function renderMetaBar(list, ownerName, count) {
+  currentList = list;
+  currentOwnerName = ownerName;
+  const descHtml = isOwner
+    ? (list.description
+        ? `<div class="list-description owner-editable" onclick="editDescription(this)">${escHtml(list.description)}</div>`
+        : `<button class="add-desc-btn" onclick="editDescription(this)">+ Add a description\u2026</button>`)
+    : (list.description ? `<div class="list-description">${escHtml(list.description)}</div>` : '');
+
+  document.getElementById('list-meta-container').innerHTML = `
+    <div class="list-meta-bar">
+      <div class="list-title">${escHtml(list.name)}</div>
+      <div class="list-meta">
+        <span>By <a href="/profile.html?user=${escHtml(list.user_id)}">${escHtml(ownerName)}</a></span>
+        <span class="list-meta-dot">\u00b7</span>
+        <span>${count} place${count !== 1 ? 's' : ''}</span>
+      </div>
+      <div id="desc-wrap">${descHtml}</div>
+      ${(!isOwner && !isLoggedIn) ? `<div class="sign-in-nudge"><a onclick="signInToEdit(event)">Sign in</a> to edit notes</div>` : ''}
+    </div>
+  `;
+}
+
+function editDescription(el) {
+  const wrap = document.getElementById('desc-wrap');
+  const current = el.classList.contains('list-description') ? el.textContent : '';
+
+  const ta = document.createElement('textarea');
+  ta.className   = 'desc-input';
+  ta.value       = current;
+  ta.rows        = 3;
+  ta.placeholder = 'Describe this list for visitors\u2026';
+  ta.maxLength   = 400;
+  wrap.innerHTML = '';
+  wrap.appendChild(ta);
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+
+  function commit() { saveDescription(ta.value.trim(), current); }
+  function restore() {
+    currentList.description = current;
+    renderMetaBar(currentList, currentOwnerName, allRestaurants.length);
+  }
+  ta.addEventListener('blur', commit);
+  ta.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      ta.removeEventListener('blur', commit);
+      commit();
+    }
+    if (e.key === 'Escape') {
+      ta.removeEventListener('blur', commit);
+      restore();
+    }
+  });
+}
+
+async function saveDescription(description, previous) {
+  const { error } = await sb.from('lists').update({ description: description || null })
+    .eq('id', currentListId);
+  if (error) {
+    currentList.description = previous;
+  } else {
+    currentList.description = description || null;
+  }
+  renderMetaBar(currentList, currentOwnerName, allRestaurants.length);
 }
 
 // ── View toggle ───────────────────────────────────────────────────────────────
@@ -674,10 +782,23 @@ function editNote(el) {
   ta.focus();
   ta.setSelectionRange(ta.value.length, ta.value.length);
 
-  ta.addEventListener('blur',    () => saveNote(wrap, key, ta.value.trim()));
+  function commitNote() { saveNote(wrap, key, ta.value.trim()); }
+  function restoreNote() {
+    wrap.innerHTML = current
+      ? `<div class="rc-note" onclick="editNote(this)">${escHtml(current)}</div>`
+      : `<button class="add-note-btn" onclick="editNote(this)">+ Add note</button>`;
+  }
+  ta.addEventListener('blur', commitNote);
   ta.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); ta.blur(); }
-    if (e.key === 'Escape') { ta.value = current; ta.blur(); }
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      ta.removeEventListener('blur', commitNote);
+      commitNote();
+    }
+    if (e.key === 'Escape') {
+      ta.removeEventListener('blur', commitNote);
+      restoreNote();
+    }
   });
 }
 
@@ -689,8 +810,46 @@ async function saveNote(wrap, restaurantKey, note) {
     : `<button class="add-note-btn" onclick="editNote(this)">+ Add note</button>`;
 }
 
+// ── Popup HTML ────────────────────────────────────────────────────────────────
+function popupHtml(r, note) {
+  const location = [r.city, r.state || r.country].filter(Boolean).join(', ');
+  const mapsHref = r.address
+    ? `https://maps.google.com/?q=${encodeURIComponent(r.address)}`
+    : (r.lat && r.lng ? `https://maps.google.com/?q=${r.lat},${r.lng}` : null);
+
+  const links = [];
+  if (mapsHref)       links.push(`<a href="${escHtml(mapsHref)}" target="_blank" rel="noopener">📍 Maps</a>`);
+  if (r.website)      links.push(`<a href="${escHtml(r.website)}" target="_blank" rel="noopener">🌐 Website</a>`);
+  if (r.yelp_url)     links.push(`<a href="${escHtml(r.yelp_url)}" target="_blank" rel="noopener">⭐ Yelp</a>`);
+  if (r.michelin_url) links.push(`<a href="${escHtml(r.michelin_url)}" target="_blank" rel="noopener" style="color:#E4002B;">◆ Michelin</a>`);
+
+  const badge = badgeHtml(r.award_summary);
+
+  const header = r.photo_url
+    ? `<div class="lp-photo-wrap">
+        <img class="lp-photo" src="${escHtml(r.photo_url)}" alt="" onerror="this.parentElement.style.display='none'">
+        <div class="lp-photo-gradient">
+          <div class="lp-name">${escHtml(r.name)}</div>
+          ${location ? `<div class="lp-loc">${escHtml(location)}</div>` : ''}
+        </div>
+       </div>`
+    : `<div class="lp-header">
+        <div class="lp-name">${escHtml(r.name)}</div>
+        ${location ? `<div class="lp-loc">${escHtml(location)}</div>` : ''}
+       </div>`;
+
+  return `<div class="list-popup">
+    ${header}
+    <div class="lp-body">
+      ${badge ? `<div class="lp-badge-row">${badge}</div>` : ''}
+      ${links.length ? `<div class="lp-links">${links.join('')}</div>` : ''}
+      ${note ? `<div class="lp-note">\u201c${escHtml(note)}\u201d</div>` : ''}
+    </div>
+  </div>`;
+}
+
 // ── Map ───────────────────────────────────────────────────────────────────────
-function initMap(restaurants) {
+function initMap(restaurants, noteMap = new Map()) {
   const pts = restaurants.filter(r => r.lat && r.lng);
   if (!pts.length) return;
 
@@ -714,14 +873,7 @@ function initMap(restaurants) {
   const bounds = [];
   pts.forEach((r, i) => {
     const marker = L.marker([r.lat, r.lng], { icon });
-    const location = [r.city, r.state || r.country].filter(Boolean).join(', ');
-    marker.bindPopup(`
-      <div style="font-family:sans-serif;min-width:160px;">
-        <div style="font-size:0.88rem;font-weight:600;margin-bottom:4px;">${escHtml(r.name)}</div>
-        ${location ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.55);margin-bottom:6px;">${escHtml(location)}</div>` : ''}
-        ${r.website ? `<a href="${escHtml(r.website)}" target="_blank" style="font-size:0.72rem;color:#FEA219;text-decoration:none;">🌐 Website</a>` : ''}
-      </div>
-    `, { maxWidth: 220 });
+    marker.bindPopup(popupHtml(r, noteMap.get(r.key)), { maxWidth: 280 });
     marker.addTo(listMap);
     mapMarkers.push({ marker, key: r.key });
     bounds.push([r.lat, r.lng]);
