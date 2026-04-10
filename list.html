@@ -515,7 +515,7 @@
     .rc-action-btn:hover { color: var(--white-dim); border-color: var(--white-dim); }
     .rc-action-btn.visited-active { color: #2ecc71; border-color: #2ecc71; background: rgba(46,204,113,0.1); }
     .rc-action-btn.remove:hover   { color: #e55;    border-color: #e55;    background: rgba(220,50,50,0.1); }
-    .rc-visit-date { font-size: 0.68rem; color: rgba(255,255,255,0.3); }
+    .rc-visit-date { font-size: 0.68rem; color: rgba(255,255,255,0.4); }
     .rc-date-row {
       display: flex; gap: 6px; align-items: center;
       margin-top: 6px; flex-wrap: wrap;
@@ -902,7 +902,7 @@ function ownerActionsHtml(key) {
       onclick="toggleCardVisited('${safeKey}')">
       ${visited ? '✓ Visited' : 'Mark visited'}
     </button>
-    ${visited && date ? `<span class="rc-visit-date">${date}</span>` : ''}
+    ${visited && date ? `<span class="rc-visit-date">Visited ${formatVisitDate(date)}</span>` : ''}
     <button class="rc-action-btn remove" onclick="removeFromList('${safeKey}')">Remove</button>
   </div>`;
 }
@@ -1153,6 +1153,12 @@ async function signInToEdit(e) {
 function showError(msg) {
   document.getElementById('loading-state').innerHTML = `
     <div class="state-error"><h2>List not found</h2><p>${escHtml(msg)}</p></div>`;
+}
+
+function formatVisitDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function escHtml(s) {

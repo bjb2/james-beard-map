@@ -742,9 +742,12 @@ function renderItem(item, type) {
       + `<div class="rest-thumb-placeholder" style="display:none">🍽</div>`
     : `<div class="rest-thumb-placeholder">🍽</div>`;
 
-  const removeBtn = (isOwnProfile && type === 'wantToGo')
-    ? `<button class="remove-btn" onclick="removeWantToGo(this, '${key}')" title="Remove">✕</button>`
-    : '';
+  let removeBtn = '';
+  if (isOwnProfile && type === 'wantToGo') {
+    removeBtn = `<button class="remove-btn" onclick="removeWantToGo(this, '${key}')" title="Remove from Want to Go">✕</button>`;
+  } else if (isOwnProfile && type === 'visited') {
+    removeBtn = `<button class="remove-btn" onclick="removeVisited(this, '${key}')" title="Remove visit">✕</button>`;
+  }
 
   return `
     <div class="rest-item" data-key="${key}">
@@ -780,6 +783,25 @@ async function removeWantToGo(btn, encodedKey) {
   // Update stats count
   const countEl = document.querySelector('#section-wtg-count');
   if (countEl) countEl.textContent = listData['wantToGo'].length;
+}
+
+async function removeVisited(btn, encodedKey) {
+  const restaurantKey = decodeURIComponent(encodedKey);
+  btn.disabled = true;
+  btn.textContent = '…';
+
+  const { error } = await sb.from('visits').delete()
+    .eq('user_id', currentUser.id).eq('restaurant_key', restaurantKey);
+
+  if (error) { btn.disabled = false; btn.textContent = '✕'; return; }
+
+  const el = btn.closest('.rest-item');
+  el.remove();
+  listData['visited'] = listData['visited'].filter(i => i.restaurant_key !== restaurantKey);
+
+  // Update visited count in stats bar
+  const countEl = document.querySelector('#section-visited-count');
+  if (countEl) countEl.textContent = listData['visited'].length;
 }
 
 function escHtml(s) {
@@ -860,7 +882,7 @@ function renderProfile(profile, visits, wtgItems, customLists) {
     <div class="section">
       <div class="section-title">
         Visited
-        <span class="section-count">${stats.visited}</span>
+        <span class="section-count" id="section-visited-count">${stats.visited}</span>
       </div>
       ${renderList(visits, 'visited')}
     </div>
