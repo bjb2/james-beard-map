@@ -971,13 +971,16 @@ async function loadCommunityState() {
   const { data: visits } = await sb.from('visits').select('restaurant_key');
   if (visits) visitedKeys = new Set(visits.map(v => v.restaurant_key));
 
-  // Load or create "Want to Go" list
+  // Load or create "Want to Go" list (upsert on slug to avoid race-condition dupes)
   let { data: lists } = await sb.from('lists').select('id,name').eq('user_id', currentUser.id);
-  let wtg = lists?.find(l => l.name === 'Want to Go');
+  // Deduplicate: if somehow multiple "Want to Go" exist, use the oldest
+  const wtgAll = lists?.filter(l => l.name === 'Want to Go') || [];
+  let wtg = wtgAll[0] || null;
   if (!wtg) {
-    const { data: newList } = await sb.from('lists').insert({
-      user_id: currentUser.id, name: 'Want to Go', is_public: true
-    }).select().single();
+    const wtgSlug = 'want-to-go-' + currentUser.id.slice(0, 8);
+    const { data: newList } = await sb.from('lists').upsert({
+      user_id: currentUser.id, name: 'Want to Go', is_public: true, slug: wtgSlug
+    }, { onConflict: 'slug' }).select().single();
     wtg = newList;
   }
   if (wtg) {

@@ -690,7 +690,7 @@ async function load() {
 async function loadUserLists() {
   if (!currentUser) return;
   const { data: lists } = await sb.from('lists')
-    .select('id, name, slug, is_public').eq('user_id', currentUser.id);
+    .select('id, name, slug, is_public').eq('user_id', currentUser.id).neq('name', 'Want to Go');
   if (!lists?.length) { userLists = []; return; }
   const listIds = lists.map(l => l.id);
   const { data: allItems } = await sb.from('list_items')
