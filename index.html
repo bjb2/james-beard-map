@@ -1654,43 +1654,56 @@ function handlePopupDeepLink(restaurantKey, lat, lng) {
 
 
 // ── Filters ─────────────────────────────────────────────────────────────────
+let filtersInitialized = false;
+
 function initFilters() {
-  // Populate year filter (most recent first) — covers JBF years and TM years
+  // Rebuild dropdown options with latest data on every chunk load
+  const yearSel    = document.getElementById('filter-year');
+  const catSel     = document.getElementById('filter-category');
+  const cuisineSel = document.getElementById('filter-cuisine');
+  const savedYear    = yearSel.value;
+  const savedCat     = catSel.value;
+
+  // Year filter (most recent first, covers JBF + TM years)
   const years = [...new Set(allAwards.map(a => a.year || (a.tmYear ? String(a.tmYear) : null)).filter(Boolean))].sort((a, b) => b - a);
-  const yearSel = document.getElementById('filter-year');
+  yearSel.innerHTML = '<option value="">All years</option>';
   years.forEach(y => {
     const opt = document.createElement('option');
-    opt.value = y;
-    opt.textContent = y;
+    opt.value = y; opt.textContent = y;
     yearSel.appendChild(opt);
   });
+  yearSel.value = savedYear;
 
-  // Populate award category filter
+  // Award category filter
   const cats = [...new Set(allAwards.map(a => a.category).filter(Boolean))].sort();
-  const catSel = document.getElementById('filter-category');
+  catSel.innerHTML = '<option value="">All categories</option>';
   cats.forEach(c => {
     const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = c;
+    opt.value = c; opt.textContent = c;
     catSel.appendChild(opt);
   });
+  catSel.value = savedCat;
 
-  // Populate cuisine/type filter — canonical categories in fixed order
-  const CUISINE_CATEGORIES = [
-    'BBQ & Smokehouse', 'Steakhouse', 'Japanese', 'Chinese', 'Italian',
-    'French', 'Korean', 'Thai', 'Indian', 'Southeast Asian', 'Mexican',
-    'Mediterranean', 'Middle Eastern', 'Latin American', 'Seafood',
-    'Southern & Soul', 'African', 'European', 'American', 'Farm to Table',
-    'Vegetarian / Vegan', 'Bakery & Café', 'Wine & Spirits', 'Bars & Cocktails',
-    'Contemporary',
-  ];
-  const cuisineSel = document.getElementById('filter-cuisine');
-  CUISINE_CATEGORIES.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c;
-    opt.textContent = c;
-    cuisineSel.appendChild(opt);
-  });
+  // Cuisine filter — static list, only populate once
+  if (!cuisineSel.children.length || cuisineSel.children.length === 1) {
+    const CUISINE_CATEGORIES = [
+      'BBQ & Smokehouse', 'Steakhouse', 'Japanese', 'Chinese', 'Italian',
+      'French', 'Korean', 'Thai', 'Indian', 'Southeast Asian', 'Mexican',
+      'Mediterranean', 'Middle Eastern', 'Latin American', 'Seafood',
+      'Southern & Soul', 'African', 'European', 'American', 'Farm to Table',
+      'Vegetarian / Vegan', 'Bakery & Café', 'Wine & Spirits', 'Bars & Cocktails',
+      'Contemporary',
+    ];
+    CUISINE_CATEGORIES.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c; opt.textContent = c;
+      cuisineSel.appendChild(opt);
+    });
+  }
+
+  // Event listeners — attach only once
+  if (filtersInitialized) return;
+  filtersInitialized = true;
 
   yearSel.addEventListener('change', applyFilters);
   catSel.addEventListener('change', applyFilters);
@@ -1698,7 +1711,6 @@ function initFilters() {
   document.getElementById('filter-source').addEventListener('change', applyFilters);
   document.getElementById('filter-michelin').addEventListener('change', applyFilters);
   document.getElementById('filter-hide-closed').addEventListener('change', applyFilters);
-
   document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 200));
 
   // Status toggles
@@ -1706,7 +1718,7 @@ function initFilters() {
     btn.addEventListener('click', () => {
       const s = btn.dataset.status;
       if (activeStatuses.has(s)) {
-        if (activeStatuses.size === 1) return; // keep at least one
+        if (activeStatuses.size === 1) return; // keep at least one active
         activeStatuses.delete(s);
         btn.classList.remove('active');
       } else {
