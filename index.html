@@ -795,7 +795,7 @@
     <div class="sidebar-section">
       <h3>Search</h3>
       <div class="search-box">
-        <input type="text" id="search-input" placeholder="Chef or restaurant name…">
+        <input type="text" id="search-input" placeholder="Chef, restaurant, or city…">
       </div>
     </div>
 
@@ -1771,7 +1771,7 @@ function applyFilters() {
     // Shared filters
     if (cuisine && a.cuisineCategory !== cuisine) return false;
     if (search) {
-      const haystack = `${a.name||''} ${a.restaurant||''}`.toLowerCase();
+      const haystack = `${a.name||''} ${a.restaurant||''} ${a.city||''} ${a.state||''}`.toLowerCase();
       if (!haystack.includes(search)) return false;
     }
     if (nearbyMode && userLat !== null) {
@@ -1786,6 +1786,20 @@ function applyFilters() {
   updateSidebar();
   const visEl = document.getElementById('visible-count'); if (visEl) visEl.textContent = filteredAwards.length.toLocaleString();
   updateHeaderCounts();
+
+  // Zoom map to matching pins when search is active
+  if (search) {
+    const pts = filteredAwards.filter(a => a.lat && a.lng);
+    if (pts.length === 1) {
+      map.setView([pts[0].lat, pts[0].lng], 14, { animate: true });
+    } else if (pts.length > 1) {
+      const lats = pts.map(a => a.lat), lngs = pts.map(a => a.lng);
+      map.fitBounds(
+        [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]],
+        { padding: [40, 40], maxZoom: 13, animate: true }
+      );
+    }
+  }
 }
 
 // ── Map rendering ────────────────────────────────────────────────────────────
