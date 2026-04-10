@@ -1762,8 +1762,7 @@ function applyFilters() {
 
     // Texas Monthly filters
     if (isTM) {
-      if (year  && String(a.tmYear) !== year)  return false;
-      if (state && a.state          !== state)  return false;
+      if (year && String(a.tmYear) !== year) return false;
     }
 
     // Michelin tier filter (applies to any record with michelinAward)
