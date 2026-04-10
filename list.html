@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List — Delectable</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --orange: #FEA219;
+      --orange-dim: rgba(254,162,25,0.15);
+      --black: #0d0d0d;
+      --black-mid: #141414;
+      --black-light: #1c1c1c;
+      --border: #2a2a2a;
+      --border-light: #333;
+      --white: #ffffff;
+      --white-dim: rgba(255,255,255,0.6);
+      --white-faint: rgba(255,255,255,0.25);
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--black);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-wordmark a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .header-wordmark .brand {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+    }
+
+    .header-wordmark h1 {
+      font-family: sans-serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: var(--white);
+    }
+
+    .header-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border-light);
+    }
+
+    .header-sub {
+      font-size: 0.72rem;
+      color: var(--white-dim);
+    }
+
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border-light);
+      color: var(--white-dim);
+      font-size: 0.72rem;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-ghost:hover { border-color: var(--white-dim); color: var(--white); }
+
+    /* ── Page ── */
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── List header ── */
+    .list-header {
+      margin-bottom: 32px;
+    }
+
+    .list-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .list-meta {
+      font-size: 0.78rem;
+      color: var(--white-dim);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .list-meta a {
+      color: var(--orange);
+      text-decoration: none;
+    }
+    .list-meta a:hover { text-decoration: underline; }
+
+    .list-description {
+      margin-top: 12px;
+      font-size: 0.88rem;
+      color: var(--white-dim);
+      line-height: 1.5;
+      max-width: 600px;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: transparent;
+      border: 1px solid var(--border-light);
+      color: var(--white-dim);
+      font-size: 0.72rem;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .share-btn:hover { border-color: var(--white-dim); color: var(--white); }
+    .share-btn.copied { border-color: var(--orange); color: var(--orange); }
+
+    /* ── Cards ── */
+    .cards {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .card:hover { background: rgba(255,255,255,0.03); }
+
+    .card-photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: var(--black-light);
+      flex-shrink: 0;
+    }
+
+    .card-photo-placeholder {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+      background: var(--black-light);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+
+    .card-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .card-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-badge {
+      font-size: 0.72rem;
+      color: var(--orange);
+      margin-top: 3px;
+    }
+
+    .card-location {
+      font-size: 0.72rem;
+      color: var(--white-dim);
+      margin-top: 2px;
+    }
+
+    /* ── States ── */
+    .state-loading,
+    .state-error,
+    .state-empty {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--white-dim);
+    }
+
+    .state-loading .spinner {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--orange);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .state-error h2,
+    .state-empty h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 8px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      header { padding: 0 16px; }
+      .page { padding: 24px 16px 60px; }
+      .list-title { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-wordmark">
+    <a href="/">
+      <span class="brand">Delectable</span>
+      <h1>Guide</h1>
+    </a>
+  </div>
+  <div class="header-divider"></div>
+  <span class="header-sub" id="header-sub">Curated List</span>
+  <div class="header-actions">
+    <a href="/" class="btn-ghost">Map</a>
+  </div>
+</header>
+
+<div class="page">
+  <div id="content">
+    <div class="state-loading">
+      <div class="spinner"></div>
+      <div>Loading list…</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://bnlnlfnrkwizviiabhex.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJubG5sZm5ya3dpenZpaWFiaGV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NTgxODgsImV4cCI6MjA5MTMzNDE4OH0.GW0-kcOrcQ8YXyqvI6LbDnLM1IIQTkL1FFajJUrkfHk';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const slug = window.location.pathname.split('/').filter(Boolean).pop();
+
+async function load() {
+  const content = document.getElementById('content');
+
+  if (!slug) {
+    showError('No list specified.');
+    return;
+  }
+
+  // Fetch the list
+  const { data: lists, error: listErr } = await sb
+    .from('lists')
+    .select('id, name, description, is_public, user_id')
+    .eq('slug', slug)
+    .eq('is_public', true)
+    .limit(1);
+
+  if (listErr || !lists || lists.length === 0) {
+    showError('This list doesn't exist or is private.');
+    return;
+  }
+
+  const list = lists[0];
+
+  // Fetch owner display name
+  const { data: profile } = await sb
+    .from('profiles')
+    .select('display_name')
+    .eq('id', list.user_id)
+    .limit(1)
+    .single();
+
+  const ownerName = profile?.display_name || 'Someone';
+
+  // Fetch list items
+  const { data: items } = await sb
+    .from('list_items')
+    .select('restaurant_key, added_at')
+    .eq('list_id', list.id)
+    .order('added_at', { ascending: false });
+
+  const keys = (items || []).map(i => i.restaurant_key);
+
+  let restaurants = [];
+  if (keys.length) {
+    const { data: rests } = await sb
+      .from('restaurants_with_summary')
+      .select('key, name, city, state, country, photo_url, award_summary')
+      .in('key', keys);
+    restaurants = rests || [];
+  }
+
+  // Sort restaurants to match list order
+  const keyOrder = new Map(keys.map((k, i) => [k, i]));
+  restaurants.sort((a, b) => (keyOrder.get(a.key) ?? 999) - (keyOrder.get(b.key) ?? 999));
+
+  // Update page title
+  document.title = `${list.name} — Delectable`;
+  document.getElementById('header-sub').textContent = list.name;
+
+  // Build UI
+  const shareUrl = window.location.href;
+
+  content.innerHTML = `
+    <div class="list-header">
+      <div class="list-title">${escHtml(list.name)}</div>
+      <div class="list-meta">
+        <span>By <a href="/profile">${escHtml(ownerName)}</a></span>
+        <span>${restaurants.length} place${restaurants.length !== 1 ? 's' : ''}</span>
+        <button class="share-btn" id="share-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+          Share
+        </button>
+      </div>
+      ${list.description ? `<div class="list-description">${escHtml(list.description)}</div>` : ''}
+    </div>
+    ${restaurants.length === 0
+      ? `<div class="state-empty"><h2>No places yet</h2><p>This list doesn't have any restaurants yet.</p></div>`
+      : `<div class="cards">${restaurants.map(r => cardHtml(r)).join('')}</div>`
+    }
+  `;
+
+  document.getElementById('share-btn').addEventListener('click', handleShare.bind(null, shareUrl));
+}
+
+function cardHtml(r) {
+  const badge = badgeText(r.award_summary);
+  const location = [r.city, r.state || r.country].filter(Boolean).join(', ');
+  const photo = r.photo_url
+    ? `<img class="card-photo" src="${escHtml(r.photo_url)}" alt="" loading="lazy">`
+    : `<div class="card-photo-placeholder">🍽</div>`;
+
+  return `
+    <div class="card" data-key="${escHtml(r.key)}">
+      ${photo}
+      <div class="card-info">
+        <div class="card-name">${escHtml(r.name)}</div>
+        ${badge ? `<div class="card-badge">${escHtml(badge)}</div>` : ''}
+        ${location ? `<div class="card-location">${escHtml(location)}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function badgeText(summary) {
+  if (!summary) return '';
+  if (summary.includes('Winner')) return '🥇 Winner';
+  if (summary.includes('Nominee')) return 'Nominee';
+  if (summary.includes('★★★')) return '★★★ Michelin';
+  if (summary.includes('★★')) return '★★ Michelin';
+  if (summary.includes('★')) return '★ Michelin';
+  return '';
+}
+
+async function handleShare(url) {
+  if (navigator.share) {
+    try { await navigator.share({ url }); return; } catch (_) { /* fallback */ }
+  }
+  await navigator.clipboard.writeText(url);
+  const btn = document.getElementById('share-btn');
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(() => {
+    btn.innerHTML = `
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+      </svg>
+      Share`;
+    btn.classList.remove('copied');
+  }, 2000);
+}
+
+function showError(msg) {
+  document.getElementById('content').innerHTML = `
+    <div class="state-error">
+      <h2>List not found</h2>
+      <p>${escHtml(msg)}</p>
+    </div>
+  `;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+load();
+</script>
+</body>
+</html>

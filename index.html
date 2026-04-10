@@ -938,6 +938,7 @@ function setUser(user) {
     visitedKeys  = new Set();
     wantToGoKeys = new Set();
     wantToGoListId = null;
+    userLists = [];
   }
 }
 
@@ -956,6 +957,7 @@ async function signOut() {
 let visitedKeys   = new Set(); // restaurant_keys the user has visited
 let wantToGoKeys  = new Set(); // restaurant_keys on the user's want-to-go list
 let wantToGoListId = null;     // Supabase list id for "Want to Go"
+let userLists     = [];        // [{ id, name, slug, is_public, keys: Set }]
 
 async function loadCommunityState() {
   if (!currentUser) return;
@@ -979,8 +981,45 @@ async function loadCommunityState() {
     if (items) wantToGoKeys = new Set(items.map(i => i.restaurant_key));
   }
 
+  // Load user-created lists (excludes Want to Go)
+  await loadUserLists(lists);
+
   // Re-render any open popup to reflect loaded state
   map?.eachLayer(l => { if (l.isPopupOpen?.()) l.openPopup(); });
+}
+
+async function loadUserLists(allListsData) {
+  if (!currentUser) return;
+
+  // Re-use already-fetched list data if provided, otherwise fetch
+  let allLists = allListsData;
+  if (!allLists) {
+    const { data } = await sb.from('lists').select('id,name,slug,is_public').eq('user_id', currentUser.id);
+    allLists = data || [];
+  }
+
+  const customLists = allLists.filter(l => l.name !== 'Want to Go');
+  if (!customLists.length) { userLists = []; return; }
+
+  // Fetch all items for custom lists in one query
+  const listIds = customLists.map(l => l.id);
+  const { data: allItems } = await sb
+    .from('list_items')
+    .select('list_id, restaurant_key')
+    .in('list_id', listIds);
+
+  const itemsByList = new Map(listIds.map(id => [id, new Set()]));
+  for (const item of (allItems || [])) {
+    itemsByList.get(item.list_id)?.add(item.restaurant_key);
+  }
+
+  userLists = customLists.map(l => ({
+    id: l.id,
+    name: l.name,
+    slug: l.slug,
+    is_public: l.is_public,
+    keys: itemsByList.get(l.id) || new Set(),
+  }));
 }
 
 async function toggleVisited(restaurantKey) {
@@ -1112,6 +1151,14 @@ function buildCommButtons(restaurantKey) {
   const wBg     = wtg ? 'var(--orange-dim)' : 'transparent';
   const wBorder = wtg ? 'var(--orange)' : 'var(--border-light)';
 
+  const listBtnStyle = `
+    font-family:sans-serif;font-size:0.73rem;font-weight:600;
+    padding:5px 10px;border-radius:6px;cursor:pointer;
+    border:1px solid var(--border-light);
+    background:transparent;color:var(--white-dim);
+    transition:background 0.15s,color 0.15s,border-color 0.15s;
+    white-space:nowrap;
+  `;
   return `<div style="display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">
     <button id="comm-visited-btn" style="${btnStyle}color:${vColor||'var(--white-dim)'};background:${vBg};border-color:${vBorder};"
       onclick="toggleVisited(decodeURIComponent('${ek}'))">
@@ -1120,6 +1167,10 @@ function buildCommButtons(restaurantKey) {
     <button id="comm-wtg-btn" style="${btnStyle}color:${wColor||'var(--white-dim)'};background:${wBg};border-color:${wBorder};"
       onclick="toggleWantToGo(decodeURIComponent('${ek}'))">
       ${wtg ? '♥ Want to Go' : '♡ Want to Go'}
+    </button>
+    <button id="comm-list-btn" style="${listBtnStyle}"
+      onclick="openListPicker(decodeURIComponent('${ek}'))">
+      + List
     </button>
   </div>`;
 }
@@ -2338,5 +2389,183 @@ loadData();
 animateLogo();
 initAuth();
 </script>
+
+<!-- ── List Picker Sheet ──────────────────────────────────────────────────── -->
+<div id="list-picker-backdrop" style="
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;
+" onclick="closeListPicker()"></div>
+
+<div id="list-picker-sheet" style="
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:#1c1c1c;border-top:1px solid #333;border-radius:14px 14px 0 0;
+  z-index:2001;max-height:60vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform 0.3s ease;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+">
+  <div style="padding:12px 20px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2a2a;">
+    <span style="font-size:0.88rem;font-weight:600;color:#fff;">Add to list</span>
+    <button onclick="closeListPicker()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.2rem;cursor:pointer;padding:0 4px;line-height:1;">×</button>
+  </div>
+  <div id="list-picker-items" style="padding:8px 0;"></div>
+  <div style="padding:8px 20px 24px;border-top:1px solid #2a2a2a;">
+    <div id="list-picker-new-form" style="display:none;">
+      <input id="list-picker-new-input" type="text" placeholder="List name…" maxlength="60" style="
+        width:100%;background:#141414;border:1px solid #333;border-radius:8px;
+        color:#fff;font-family:inherit;font-size:0.85rem;padding:8px 12px;
+        outline:none;margin-bottom:8px;
+      ">
+      <div style="display:flex;gap:8px;">
+        <button onclick="createAndAddToList()" style="
+          flex:1;background:#FEA219;border:none;border-radius:8px;
+          color:#0d0d0d;font-family:inherit;font-size:0.8rem;font-weight:700;
+          padding:8px;cursor:pointer;
+        ">Create & Add</button>
+        <button onclick="cancelNewList()" style="
+          background:transparent;border:1px solid #333;border-radius:8px;
+          color:rgba(255,255,255,0.5);font-family:inherit;font-size:0.8rem;
+          padding:8px 14px;cursor:pointer;
+        ">Cancel</button>
+      </div>
+    </div>
+    <button id="list-picker-new-btn" onclick="showNewListForm()" style="
+      display:flex;align-items:center;gap:8px;width:100%;
+      background:transparent;border:none;color:rgba(255,255,255,0.5);
+      font-family:inherit;font-size:0.85rem;cursor:pointer;padding:6px 0;
+    ">
+      <span style="font-size:1.1rem;line-height:1;">+</span> New list…
+    </button>
+  </div>
+</div>
+
+<script>
+let listPickerKey = null;
+
+function openListPicker(restaurantKey) {
+  if (!currentUser) { showAuthNudge(); return; }
+  listPickerKey = restaurantKey;
+  renderListPickerItems();
+
+  const backdrop = document.getElementById('list-picker-backdrop');
+  const sheet    = document.getElementById('list-picker-sheet');
+  backdrop.style.display = 'block';
+  sheet.style.display    = 'block';
+  requestAnimationFrame(() => {
+    sheet.style.transform = 'translateY(0)';
+  });
+}
+
+function closeListPicker() {
+  const sheet    = document.getElementById('list-picker-sheet');
+  const backdrop = document.getElementById('list-picker-backdrop');
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(() => {
+    sheet.style.display    = 'none';
+    backdrop.style.display = 'none';
+    cancelNewList();
+  }, 300);
+  listPickerKey = null;
+}
+
+function renderListPickerItems() {
+  const container = document.getElementById('list-picker-items');
+  if (!userLists.length) {
+    container.innerHTML = `<div style="padding:12px 20px;font-size:0.82rem;color:rgba(255,255,255,0.4);">No lists yet — create one below.</div>`;
+    return;
+  }
+  container.innerHTML = userLists.map(list => {
+    const checked = list.keys.has(listPickerKey);
+    return `
+      <button onclick="toggleListItem('${escJs(list.id)}', '${escJs(listPickerKey)}')" style="
+        display:flex;align-items:center;gap:12px;width:100%;
+        background:transparent;border:none;padding:10px 20px;
+        cursor:pointer;text-align:left;color:#fff;font-family:inherit;
+        transition:background 0.1s;
+      " onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+        <span style="
+          width:18px;height:18px;border-radius:5px;flex-shrink:0;
+          border:1.5px solid ${checked ? '#FEA219' : '#555'};
+          background:${checked ? 'rgba(254,162,25,0.15)' : 'transparent'};
+          display:flex;align-items:center;justify-content:center;
+          font-size:0.7rem;color:#FEA219;
+        ">${checked ? '✓' : ''}</span>
+        <span style="font-size:0.88rem;">${escHtmlInline(list.name)}</span>
+        <span style="margin-left:auto;font-size:0.75rem;color:rgba(255,255,255,0.35);">${list.keys.size}</span>
+      </button>
+    `;
+  }).join('');
+}
+
+async function toggleListItem(listId, restaurantKey) {
+  const list = userLists.find(l => l.id === listId);
+  if (!list) return;
+
+  if (list.keys.has(restaurantKey)) {
+    list.keys.delete(restaurantKey);
+    await sb.from('list_items').delete()
+      .eq('list_id', listId).eq('restaurant_key', restaurantKey);
+  } else {
+    list.keys.add(restaurantKey);
+    await sb.from('list_items').upsert({ list_id: listId, restaurant_key: restaurantKey });
+  }
+  renderListPickerItems();
+}
+
+function showNewListForm() {
+  document.getElementById('list-picker-new-btn').style.display  = 'none';
+  document.getElementById('list-picker-new-form').style.display = 'block';
+  document.getElementById('list-picker-new-input').focus();
+}
+
+function cancelNewList() {
+  const input = document.getElementById('list-picker-new-input');
+  if (input) input.value = '';
+  const form = document.getElementById('list-picker-new-form');
+  const btn  = document.getElementById('list-picker-new-btn');
+  if (form) form.style.display = 'none';
+  if (btn)  btn.style.display  = 'flex';
+}
+
+async function createAndAddToList() {
+  const input = document.getElementById('list-picker-new-input');
+  const name  = input.value.trim();
+  if (!name || !currentUser) return;
+
+  const slug = slugify(name);
+  const { data: newList, error } = await sb.from('lists').insert({
+    user_id: currentUser.id, name, slug, is_public: true,
+  }).select().single();
+
+  if (error || !newList) return;
+
+  const keys = new Set([listPickerKey]);
+  await sb.from('list_items').upsert({ list_id: newList.id, restaurant_key: listPickerKey });
+
+  userLists.push({ id: newList.id, name: newList.name, slug: newList.slug, is_public: true, keys });
+  cancelNewList();
+  renderListPickerItems();
+}
+
+function slugify(name) {
+  const base = name.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .slice(0, 40);
+  const suffix = Math.random().toString(36).slice(2, 6);
+  return `${base}-${suffix}`;
+}
+
+function escJs(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function escHtmlInline(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+</script>
+
 </body>
 </html>
