@@ -136,13 +136,40 @@
       max-width: 900px;
       margin: 0 auto;
       padding: 24px 24px 0;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
     }
+
+    .list-meta-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+      margin-top: 3px;
+      border: 2px solid var(--border-light);
+    }
+    .list-meta-avatar-placeholder {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 3px;
+      background: var(--black-light);
+      border: 2px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+    }
+    .list-meta-text { flex: 1; min-width: 0; }
 
     .list-title {
       font-size: 1.7rem;
       font-weight: 700;
       line-height: 1.2;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .list-meta {
@@ -153,14 +180,14 @@
       gap: 10px;
       flex-wrap: wrap;
     }
-    .list-meta a { color: var(--orange); text-decoration: none; }
+    .list-meta a { color: var(--orange); text-decoration: none; font-weight: 500; }
     .list-meta a:hover { text-decoration: underline; }
     .list-meta-dot { color: var(--border-light); }
 
     .list-description {
       margin-top: 10px;
-      font-size: 0.85rem;
-      color: var(--white-dim);
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.6);
       line-height: 1.5;
       max-width: 600px;
     }
@@ -261,14 +288,17 @@
     .rc-link:hover { opacity: 1; }
 
     .rc-note {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.4);
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.7);
       font-style: italic;
-      line-height: 1.4;
+      line-height: 1.5;
       cursor: pointer;
-      margin-top: 2px;
+      margin-top: 6px;
+      padding: 4px 0 4px 10px;
+      border-left: 2px solid var(--orange);
     }
-    .rc-note:hover { color: rgba(255,255,255,0.65); }
+    .rc-note:hover { color: rgba(255,255,255,0.9); background: rgba(254,162,25,0.05); border-radius: 0 4px 4px 0; }
+    .rc-note::before { content: '\201C'; margin-right: 1px; opacity: 0.5; }
 
     .add-note-btn {
       background: none;
@@ -278,7 +308,7 @@
       font-family: inherit;
       cursor: pointer;
       padding: 2px 0;
-      margin-top: 2px;
+      margin-top: 4px;
     }
     .add-note-btn:hover { color: rgba(255,255,255,0.5); }
 
@@ -530,7 +560,9 @@
     @media (max-width: 600px) {
       header { padding: 0 14px; gap: 10px; }
       .header-sub { display: none; }
-      .list-meta-bar { padding: 18px 16px 0; }
+      .list-meta-bar { padding: 18px 16px 0; gap: 12px; }
+      .list-meta-avatar, .list-meta-avatar-placeholder { width: 40px; height: 40px; }
+      .list-meta-avatar-placeholder { font-size: 1.1rem; }
       .list-title { font-size: 1.3rem; }
       .list-view-inner { padding: 16px 16px 60px; }
       .rc-photo, .rc-photo-placeholder { width: 72px; height: 72px; }
@@ -632,7 +664,7 @@ async function load() {
     .from('profiles').select('display_name, id, avatar_url').eq('id', list.user_id).limit(1).single();
   const ownerName   = profile?.display_name || 'Someone';
   const ownerAvatar = profile?.avatar_url
-    ? `<img src="${profile.avatar_url}" style="width:20px;height:20px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-right:5px;" alt="">`
+    ? `<img src="${profile.avatar_url}" alt="">`
     : '';
 
   const { data: items } = await sb
@@ -731,16 +763,23 @@ function renderMetaBar(list, ownerName, ownerAvatar, count) {
         : `<button class="add-desc-btn" onclick="editDescription(this)">+ Add a description\u2026</button>`)
     : (list.description ? `<div class="list-description">${escHtml(list.description)}</div>` : '');
 
+  const avatarEl = ownerAvatar
+    ? ownerAvatar.replace('<img ', '<img class="list-meta-avatar" ')
+    : `<div class="list-meta-avatar-placeholder">👤</div>`;
+
   document.getElementById('list-meta-container').innerHTML = `
     <div class="list-meta-bar">
-      <div class="list-title">${escHtml(list.name)}</div>
-      <div class="list-meta">
-        <span>By <a href="/profile.html?user=${escHtml(list.user_id)}">${ownerAvatar}${escHtml(ownerName)}</a></span>
-        <span class="list-meta-dot">\u00b7</span>
-        <span>${count} place${count !== 1 ? 's' : ''}</span>
+      <a href="/profile.html?user=${escHtml(list.user_id)}" style="text-decoration:none;">${avatarEl}</a>
+      <div class="list-meta-text">
+        <div class="list-title">${escHtml(list.name)}</div>
+        <div class="list-meta">
+          <span>By <a href="/profile.html?user=${escHtml(list.user_id)}">${escHtml(ownerName)}</a></span>
+          <span class="list-meta-dot">\u00b7</span>
+          <span>${count} place${count !== 1 ? 's' : ''}</span>
+        </div>
+        <div id="desc-wrap">${descHtml}</div>
+        ${(!isOwner && !isLoggedIn) ? `<div class="sign-in-nudge"><a onclick="signInToEdit(event)">Sign in</a> to edit notes</div>` : ''}
       </div>
-      <div id="desc-wrap">${descHtml}</div>
-      ${(!isOwner && !isLoggedIn) ? `<div class="sign-in-nudge"><a onclick="signInToEdit(event)">Sign in</a> to edit notes</div>` : ''}
     </div>
   `;
 }
