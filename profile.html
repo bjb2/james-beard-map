@@ -895,10 +895,16 @@ function renderListRow(list) {
     >${list.is_public ? 'Public' : 'Private'}</button>
   ` : '';
 
+  const openBtn = list.slug ? `
+    <a class="list-action-btn" href="/list.html?slug=${escHtml(list.slug)}"
+      onclick="event.stopPropagation()" target="_blank" title="Open list page"
+      style="text-decoration:none;">Open →</a>
+  ` : '';
+
   const shareBtn = list.slug ? `
     <button class="list-action-btn" id="share-list-${escHtml(list.id)}"
       onclick="event.stopPropagation(); shareList('${escHtml(list.id)}', '${escHtml(list.slug)}')"
-      title="Share">⤴</button>
+      title="Copy link">Copy link</button>
   ` : '';
 
   const deleteBtn = isOwnProfile ? `
@@ -915,6 +921,7 @@ function renderListRow(list) {
         <span class="list-row-count">${list.count} place${list.count !== 1 ? 's' : ''}</span>
         <div class="list-row-actions">
           ${visibilityBtn}
+          ${openBtn}
           ${shareBtn}
           ${deleteBtn}
         </div>

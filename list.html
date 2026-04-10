@@ -384,8 +384,9 @@ async function load() {
     return;
   }
 
-  // Check auth (non-blocking — owners get edit affordances)
-  const { data: { user } } = await sb.auth.getUser();
+  // Check auth via session (faster than getUser for existing sessions)
+  const { data: { session } } = await sb.auth.getSession();
+  const user = session?.user ?? null;
 
   // Fetch the list
   const { data: lists, error: listErr } = await sb
@@ -467,6 +468,9 @@ async function load() {
         </button>
       </div>
       ${list.description ? `<div class="list-description">${escHtml(list.description)}</div>` : ''}
+      ${!user ? `<div style="margin-top:10px;font-size:0.72rem;color:rgba(255,255,255,0.3);">
+        <a href="#" onclick="signInToEdit(event)" style="color:rgba(255,255,255,0.35);text-decoration:underline;">Sign in</a> to edit notes
+      </div>` : ''}
     </div>
     ${hasPins ? `
       <button class="map-toggle" id="map-toggle" onclick="toggleMap()">🗺 Show map</button>
@@ -640,11 +644,15 @@ function initMap(restaurants) {
     bounds.push([r.lat, r.lng]);
   }
 
-  if (bounds.length === 1) {
-    map.setView(bounds[0], 13);
-  } else {
-    map.fitBounds(bounds, { padding: [32, 32], maxZoom: 13 });
-  }
+  // Let the browser paint the container before fitting bounds
+  setTimeout(() => {
+    map.invalidateSize();
+    if (bounds.length === 1) {
+      map.setView(bounds[0], 13);
+    } else {
+      map.fitBounds(bounds, { padding: [32, 32], maxZoom: 13 });
+    }
+  }, 0);
 }
 
 function toggleMap() {
@@ -652,6 +660,11 @@ function toggleMap() {
   const btn  = document.getElementById('map-toggle');
   const showing = wrap.classList.toggle('visible');
   btn.textContent = showing ? '🗺 Hide map' : '🗺 Show map';
+}
+
+async function signInToEdit(e) {
+  e.preventDefault();
+  await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
 }
 
 function escHtml(s) {
