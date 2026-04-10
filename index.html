@@ -8,6 +8,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Dancing+Script:wght@700&family=Pacifico&family=Raleway:wght@300&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <!-- Leaflet MarkerCluster CSS -->
@@ -170,7 +173,7 @@
 
     .section-body {
       overflow: hidden;
-      max-height: 600px;
+      max-height: 1200px;
       opacity: 1;
       transition: max-height 0.25s ease, opacity 0.2s, margin-top 0.2s;
       margin-top: 12px;
@@ -360,6 +363,7 @@
     .badge-semifinalist { background: #fff; color: #000; }
     .badge-nominee { background: var(--border-light); color: var(--white); }
     .badge-michelin { background: #E4002B; color: #fff; }
+    .badge-tm { background: #1a6fa8; color: #fff; }
 
     .result-loc {
       font-size: 0.68rem;
@@ -377,6 +381,34 @@
 
     /* ── Popup ── */
     .jb-popup { min-width: 220px; max-width: 280px; }
+
+    .popup-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin: 0 -20px 10px;
+      padding: 0 20px;
+    }
+    .popup-tab-btn {
+      font-family: sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 6px 12px 6px 0;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--white-faint);
+      cursor: pointer;
+      margin-bottom: -1px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .popup-tab-btn.active {
+      color: var(--white);
+      border-bottom-color: var(--orange);
+    }
+    .popup-tab-content { display: none; }
+    .popup-tab-content.active { display: block; }
 
     .jb-popup .popup-header {
       background: var(--black);
@@ -441,7 +473,15 @@
     }
 
     .leaflet-popup-tip { background: var(--black-mid) !important; }
-    .leaflet-popup-close-button { color: var(--white-dim) !important; }
+    .leaflet-popup-close-button {
+      color: var(--white-dim) !important;
+      width: 28px !important;
+      height: 28px !important;
+      font-size: 20px !important;
+      line-height: 28px !important;
+      top: 4px !important;
+      right: 4px !important;
+    }
     .leaflet-popup-content { margin: 14px 20px !important; }
 
     /* Loading overlay */
@@ -545,19 +585,27 @@
     /* ── Mobile styles ── */
     @media (max-width: 768px) {
       header {
-        padding: 0 16px;
+        padding: 0 12px;
         height: 52px;
-        gap: 10px;
+        gap: 8px;
       }
 
       .header-divider,
-      .header-sub { display: none; }
+      .header-sub,
+      .header-stat { display: none; }
 
       .header-wordmark .brand { display: none; }
-      .header-wordmark h1 { font-size: 1.2rem; }
+      .header-wordmark h1 { font-size: 1.1rem; }
 
-      .header-stat .stat-num { font-size: 1.4rem; }
-      .header-stat { gap: 6px; }
+      /* Push auth to the far right */
+      header > div:last-child { margin-left: auto; }
+
+      /* Compact auth when signed in */
+      #auth-signed-in { gap: 6px !important; }
+      #auth-name { display: none; }
+      #auth-avatar { display: block !important; width: 26px !important; height: 26px !important; }
+      #auth-profile-link::after { content: 'Profile'; font-size: 0.72rem; }
+      #auth-profile-link span { display: none; }
 
       #sidebar-toggle { display: block; }
 
@@ -572,6 +620,8 @@
         transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         z-index: 600;
         border-right: none;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
 
       #sidebar.open { transform: translateX(0); }
@@ -698,6 +748,39 @@
     <div class="stat-num" id="precise-count">—</div>
     <div class="stat-label">Locations</div>
   </div>
+  <div style="margin-left:auto;">
+    <div id="auth-signed-out">
+      <button id="sign-in-btn" onclick="signInWithGoogle()" style="
+        background: transparent;
+        border: 1px solid var(--border-light);
+        color: var(--white-dim);
+        font-family: sans-serif;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: border-color 0.15s, color 0.15s;
+      " onmouseover="this.style.borderColor='var(--orange)';this.style.color='var(--orange)'"
+         onmouseout="this.style.borderColor='var(--border-light)';this.style.color='var(--white-dim)'">
+        Sign in
+      </button>
+    </div>
+    <div id="auth-signed-in" style="display:none;align-items:center;gap:10px;">
+      <img id="auth-avatar" src="" alt="" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:1px solid var(--border-light);display:none;">
+      <a id="auth-profile-link" href="/profile.html" style="font-family:sans-serif;font-size:0.78rem;color:var(--white-dim);text-decoration:none;" onmouseover="this.style.color='var(--orange)'" onmouseout="this.style.color='var(--white-dim)'"><span id="auth-name"></span></a>
+      <button onclick="signOut()" style="
+        background: transparent;
+        border: none;
+        color: var(--white-faint);
+        font-family: sans-serif;
+        font-size: 0.72rem;
+        cursor: pointer;
+        padding: 4px;
+      ">Sign out</button>
+    </div>
+  </div>
 </header>
 
 <div id="sidebar-backdrop"></div>
@@ -726,18 +809,6 @@
       </div>
     </div>
 
-    <!-- Favorites -->
-    <div class="sidebar-section" id="section-favorites">
-      <h3>Favorites</h3>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <button id="fav-toggle" onclick="toggleFavoritesMode()" class="fav-toggle-btn">
-          ♥ Saved <span id="fav-count"></span>
-        </button>
-        <button id="share-favs-btn" onclick="copyFavoritesLink()" class="fav-share-btn" title="Copy shareable link">
-          ↗ Share
-        </button>
-      </div>
-    </div>
 
     <!-- Filters -->
     <div class="sidebar-section collapsible" id="section-filters">
@@ -786,6 +857,7 @@
             <option value="">All Sources</option>
             <option value="jbf">James Beard Only</option>
             <option value="michelin">Michelin Only</option>
+            <option value="texasmonthly">Texas Monthly Only</option>
           </select>
         </div>
 
@@ -799,6 +871,12 @@
             <option value="Bib Gourmand">Bib Gourmand</option>
             <option value="Selected">Michelin Selected</option>
           </select>
+        </div>
+
+        <div class="filter-group" style="flex-direction:row;align-items:center;gap:8px;">
+          <input type="checkbox" id="filter-hide-closed" checked
+            style="accent-color:var(--orange);width:14px;height:14px;cursor:pointer;flex-shrink:0;">
+          <label for="filter-hide-closed" style="cursor:pointer;margin:0;">Hide permanently closed</label>
         </div>
       </div>
     </div>
@@ -825,6 +903,486 @@
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <script>
+// ── Supabase ────────────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://bnlnlfnrkwizviiabhex.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJubG5sZm5ya3dpenZpaWFiaGV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NTgxODgsImV4cCI6MjA5MTMzNDE4OH0.GW0-kcOrcQ8YXyqvI6LbDnLM1IIQTkL1FFajJUrkfHk';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser = null;
+
+async function initAuth() {
+  const { data: { session } } = await sb.auth.getSession();
+  setUser(session?.user ?? null);
+
+  sb.auth.onAuthStateChange((_event, session) => {
+    setUser(session?.user ?? null);
+  });
+}
+
+function setUser(user) {
+  currentUser = user;
+  const signedIn  = document.getElementById('auth-signed-in');
+  const signedOut = document.getElementById('auth-signed-out');
+  if (user) {
+    signedIn.style.display  = 'flex';
+    signedOut.style.display = 'none';
+    const name   = document.getElementById('auth-name');
+    const avatar = document.getElementById('auth-avatar');
+    const profileLink = document.getElementById('auth-profile-link');
+    name.textContent = user.user_metadata?.full_name?.split(' ')[0] || user.email;
+    if (profileLink) profileLink.href = `/profile.html?user=${user.id}`;
+    if (user.user_metadata?.avatar_url) {
+      avatar.src = user.user_metadata.avatar_url;
+      avatar.style.display = 'block';
+    }
+    loadCommunityState();
+  } else {
+    signedIn.style.display  = 'none';
+    signedOut.style.display = 'block';
+    visitedKeys  = new Set();
+    wantToGoKeys = new Set();
+    wantToGoListId = null;
+  }
+}
+
+async function signInWithGoogle() {
+  await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+}
+
+// ── Community state ─────────────────────────────────────────────────────────
+let visitedKeys   = new Set(); // restaurant_keys the user has visited
+let wantToGoKeys  = new Set(); // restaurant_keys on the user's want-to-go list
+let wantToGoListId = null;     // Supabase list id for "Want to Go"
+
+async function loadCommunityState() {
+  if (!currentUser) return;
+
+  // Load visited
+  const { data: visits } = await sb.from('visits').select('restaurant_key');
+  if (visits) visitedKeys = new Set(visits.map(v => v.restaurant_key));
+
+  // Load or create "Want to Go" list
+  let { data: lists } = await sb.from('lists').select('id,name').eq('user_id', currentUser.id);
+  let wtg = lists?.find(l => l.name === 'Want to Go');
+  if (!wtg) {
+    const { data: newList } = await sb.from('lists').insert({
+      user_id: currentUser.id, name: 'Want to Go', is_public: true
+    }).select().single();
+    wtg = newList;
+  }
+  if (wtg) {
+    wantToGoListId = wtg.id;
+    const { data: items } = await sb.from('list_items').select('restaurant_key').eq('list_id', wtg.id);
+    if (items) wantToGoKeys = new Set(items.map(i => i.restaurant_key));
+  }
+
+  // Re-render any open popup to reflect loaded state
+  map?.eachLayer(l => { if (l.isPopupOpen?.()) l.openPopup(); });
+}
+
+async function toggleVisited(restaurantKey) {
+  if (!currentUser) { showAuthNudge(); return; }
+
+  if (visitedKeys.has(restaurantKey)) {
+    visitedKeys.delete(restaurantKey);
+    await sb.from('visits').delete()
+      .eq('user_id', currentUser.id).eq('restaurant_key', restaurantKey);
+    // Hide date picker if open
+    const dp = document.getElementById('visited-date-row');
+    if (dp) dp.remove();
+  } else {
+    visitedKeys.add(restaurantKey);
+    await sb.from('visits').upsert({
+      user_id: currentUser.id,
+      restaurant_key: restaurantKey,
+      visited_on: new Date().toISOString().slice(0, 10),
+    });
+    // Show optional date picker inline
+    showVisitedDatePicker(restaurantKey);
+  }
+  refreshPopupButtons(restaurantKey);
+}
+
+async function toggleWantToGo(restaurantKey) {
+  if (!currentUser) { showAuthNudge(); return; }
+
+  // Ensure Want to Go list exists before writing
+  if (!wantToGoListId) await loadCommunityState();
+  if (!wantToGoListId) { console.warn('Could not create Want to Go list'); return; }
+
+  if (wantToGoKeys.has(restaurantKey)) {
+    wantToGoKeys.delete(restaurantKey);
+    await sb.from('list_items').delete()
+      .eq('list_id', wantToGoListId).eq('restaurant_key', restaurantKey);
+  } else {
+    wantToGoKeys.add(restaurantKey);
+    await sb.from('list_items').upsert({
+      list_id: wantToGoListId,
+      restaurant_key: restaurantKey,
+    });
+  }
+  refreshPopupButtons(restaurantKey);
+}
+
+function refreshPopupButtons(restaurantKey) {
+  // Update button states in any open popup without full re-render
+  const visited = visitedKeys.has(restaurantKey);
+  const wtg     = wantToGoKeys.has(restaurantKey);
+  const vBtn = document.getElementById('comm-visited-btn');
+  const wBtn = document.getElementById('comm-wtg-btn');
+  if (vBtn) applyCommButtonState(vBtn, visited, '✓ Visited',   '✓ Visited',   '#2ecc71');
+  if (wBtn) applyCommButtonState(wBtn, wtg,     '♡ Want to Go','♥ Want to Go', 'var(--orange)');
+}
+
+function applyCommButtonState(btn, active, labelOff, labelOn, activeColor) {
+  btn.textContent = active ? labelOn : labelOff;
+  btn.style.borderColor = active ? activeColor : 'var(--border-light)';
+  btn.style.color       = active ? activeColor : 'var(--white-dim)';
+  btn.style.background  = active ? activeColor + '18' : 'transparent';
+}
+
+function showVisitedDatePicker(restaurantKey) {
+  const btn = document.getElementById('comm-visited-btn');
+  if (!btn) return;
+  const ek = encodeURIComponent(restaurantKey);
+  const today = new Date().toISOString().slice(0, 10);
+
+  const row = document.createElement('div');
+  row.id = 'visited-date-row';
+  row.style.cssText = 'display:flex;gap:6px;align-items:center;margin-top:6px;';
+  row.innerHTML = `
+    <input type="date" id="visited-date-input" value="${today}" max="${today}"
+      style="flex:1;background:var(--black-light);border:1px solid var(--border-light);
+             color:var(--white);font-family:sans-serif;font-size:0.72rem;padding:4px 8px;
+             border-radius:6px;outline:none;cursor:pointer;">
+    <button onclick="saveVisitDate(decodeURIComponent('${ek}'))"
+      style="font-family:sans-serif;font-size:0.7rem;padding:4px 10px;border-radius:6px;
+             border:1px solid var(--orange);color:var(--orange);background:transparent;cursor:pointer;">
+      Save
+    </button>
+    <button onclick="document.getElementById('visited-date-row').remove()"
+      style="font-family:sans-serif;font-size:0.7rem;padding:4px 8px;border-radius:6px;
+             border:1px solid var(--border-light);color:var(--white-faint);background:transparent;cursor:pointer;">
+      Skip
+    </button>`;
+  btn.parentElement.after(row);
+}
+
+async function saveVisitDate(restaurantKey) {
+  const input = document.getElementById('visited-date-input');
+  if (!input) return;
+  const date = input.value;
+  await sb.from('visits').update({ visited_on: date })
+    .eq('user_id', currentUser.id).eq('restaurant_key', restaurantKey);
+  document.getElementById('visited-date-row')?.remove();
+}
+
+function showAuthNudge() {
+  // Flash the sign-in button to draw attention
+  const btn = document.getElementById('sign-in-btn');
+  if (!btn) return;
+  btn.style.borderColor = 'var(--orange)';
+  btn.style.color = 'var(--orange)';
+  btn.textContent = 'Sign in to save';
+  setTimeout(() => {
+    btn.style.borderColor = '';
+    btn.style.color = '';
+    btn.textContent = 'Sign in';
+  }, 2500);
+}
+
+function buildCommButtons(restaurantKey) {
+  const visited = visitedKeys.has(restaurantKey);
+  const wtg     = wantToGoKeys.has(restaurantKey);
+  const ek      = encodeURIComponent(restaurantKey);
+  const btnStyle = `
+    font-family:sans-serif;font-size:0.73rem;font-weight:600;
+    padding:5px 10px;border-radius:6px;cursor:pointer;
+    border:1px solid var(--border-light);
+    transition:background 0.15s,color 0.15s,border-color 0.15s;
+    flex:1;
+  `;
+  const vColor  = visited ? '#2ecc71' : '';
+  const vBg     = visited ? '#2ecc7118' : 'transparent';
+  const vBorder = visited ? '#2ecc71' : 'var(--border-light)';
+  const wColor  = wtg ? 'var(--orange)' : '';
+  const wBg     = wtg ? 'var(--orange-dim)' : 'transparent';
+  const wBorder = wtg ? 'var(--orange)' : 'var(--border-light)';
+
+  return `<div style="display:flex;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">
+    <button id="comm-visited-btn" style="${btnStyle}color:${vColor||'var(--white-dim)'};background:${vBg};border-color:${vBorder};"
+      onclick="toggleVisited(decodeURIComponent('${ek}'))">
+      ${visited ? '✓ Visited' : '✓ Visited'}
+    </button>
+    <button id="comm-wtg-btn" style="${btnStyle}color:${wColor||'var(--white-dim)'};background:${wBg};border-color:${wBorder};"
+      onclick="toggleWantToGo(decodeURIComponent('${ek}'))">
+      ${wtg ? '♥ Want to Go' : '♡ Want to Go'}
+    </button>
+  </div>`;
+}
+
+// ── Community data (tags + dish notes) ──────────────────────────────────────
+const communityCache = new Map(); // restaurantKey → {tags, dishNotes, myTagVotes, myDishVotes}
+let currentPopupKey = null;
+
+const SUGGESTED_TAGS = [
+  'Outdoor seating', 'Bar seating', 'Counter seating',
+  'Tasting menu', 'À la carte', 'Reservations required', 'Walk-ins welcome',
+  'Good for groups', 'Romantic', 'BYOB', 'Natural wine', 'Open late', 'Brunch',
+  'Vegetarian-friendly', 'Vegan options', 'Michelin experience',
+];
+
+async function fetchCommunityData(restaurantKey) {
+  if (communityCache.has(restaurantKey)) return communityCache.get(restaurantKey);
+
+  const [tagsRes, notesRes] = await Promise.all([
+    sb.from('tags_ranked').select('*').eq('restaurant_key', restaurantKey),
+    sb.from('dish_notes_ranked').select('*').eq('restaurant_key', restaurantKey),
+  ]);
+
+  let myTagVotes = new Set(), myDishVotes = new Set();
+  if (currentUser) {
+    const [tv, dv] = await Promise.all([
+      sb.from('tag_votes').select('tag_id').eq('user_id', currentUser.id),
+      sb.from('dish_note_votes').select('dish_note_id').eq('user_id', currentUser.id),
+    ]);
+    if (tv.data) myTagVotes  = new Set(tv.data.map(r => r.tag_id));
+    if (dv.data) myDishVotes = new Set(dv.data.map(r => r.dish_note_id));
+  }
+
+  const data = {
+    tags: tagsRes.data || [],
+    dishNotes: notesRes.data || [],
+    myTagVotes,
+    myDishVotes,
+  };
+  communityCache.set(restaurantKey, data);
+  return data;
+}
+
+function invalidateCommunityCache(restaurantKey) {
+  communityCache.delete(restaurantKey);
+}
+
+function switchPopupTab(tab) {
+  document.querySelectorAll('.popup-tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.popup-tab-content').forEach(d => d.classList.toggle('active', d.dataset.tab === tab));
+  if (tab === 'community' && currentPopupKey) {
+    loadAndRenderCommunity(currentPopupKey);
+  }
+}
+
+async function loadAndRenderCommunity(restaurantKey) {
+  const el = document.getElementById('comm-section');
+  if (!el) return;
+  const data = await fetchCommunityData(restaurantKey);
+  if (document.getElementById('comm-section')) {
+    document.getElementById('comm-section').innerHTML = renderCommunitySection(restaurantKey, data);
+  }
+}
+
+function renderCommunitySection(restaurantKey, data) {
+  const ek = encodeURIComponent(restaurantKey);
+  const { tags, dishNotes, myTagVotes, myDishVotes } = data;
+  let html = '';
+
+  // ── Tags ──────────────────────────────────────────────────────────────────
+  html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">`;
+  html += `<div style="font-family:sans-serif;font-size:0.7rem;font-weight:700;color:var(--white-faint);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">Tags</div>`;
+
+  if (tags.length > 0) {
+    html += `<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px;">`;
+    for (const tag of tags) {
+      const voted = myTagVotes.has(tag.id);
+      const col   = voted ? 'var(--orange)' : 'var(--white-faint)';
+      const bg    = voted ? 'var(--orange-dim)' : 'transparent';
+      html += `<button onclick="voteTag('${ek}','${tag.id}')"
+        style="font-family:sans-serif;font-size:0.7rem;padding:3px 8px;border-radius:12px;
+               border:1px solid ${col};color:${col};background:${bg};cursor:pointer;transition:all 0.15s;">
+        ${escHtml(tag.label)}${tag.vote_count > 0 ? ` <span style="opacity:0.7;">+${tag.vote_count}</span>` : ''}
+      </button>`;
+    }
+    html += `</div>`;
+  }
+
+  if (currentUser) {
+    html += `<div style="display:flex;gap:5px;align-items:center;">
+      <input id="tag-input-${ek}" placeholder="Add a tag…" list="tag-suggestions-${ek}"
+        style="flex:1;background:var(--black-light);border:1px solid var(--border-light);
+               color:var(--white);font-family:sans-serif;font-size:0.72rem;padding:4px 8px;
+               border-radius:6px;outline:none;"
+        onkeydown="if(event.key==='Enter')addTag('${ek}')">
+      <datalist id="tag-suggestions-${ek}">
+        ${SUGGESTED_TAGS.map(t => `<option value="${escHtml(t)}">`).join('')}
+      </datalist>
+      <button onclick="addTag('${ek}')"
+        style="font-family:sans-serif;font-size:0.7rem;padding:4px 10px;border-radius:6px;
+               border:1px solid var(--border-light);color:var(--white-dim);background:transparent;cursor:pointer;">
+        Add
+      </button>
+    </div>`;
+  } else if (tags.length === 0) {
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);">Sign in to add tags</div>`;
+  }
+
+  html += `</div>`;
+
+  // ── Dish notes ────────────────────────────────────────────────────────────
+  html += `<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--border);">`;
+  html += `<div style="font-family:sans-serif;font-size:0.7rem;font-weight:700;color:var(--white-faint);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:6px;">What to order</div>`;
+
+  if (dishNotes.length > 0) {
+    for (const note of dishNotes) {
+      const voted = myDishVotes.has(note.id);
+      const col   = voted ? 'var(--orange)' : 'var(--white-faint)';
+      html += `<div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;">
+        <button onclick="voteDishNote('${ek}','${note.id}')"
+          style="font-family:sans-serif;font-size:0.68rem;padding:2px 6px;border-radius:4px;
+                 border:1px solid ${col};color:${col};background:transparent;cursor:pointer;
+                 flex-shrink:0;transition:all 0.15s;">
+          ↑${note.vote_count}
+        </button>
+        <div>
+          <div style="font-family:sans-serif;font-size:0.78rem;color:var(--white);font-weight:600;">${escHtml(note.dish_name)}</div>
+          ${note.note ? `<div style="font-family:sans-serif;font-size:0.7rem;color:var(--white-dim);margin-top:1px;">${escHtml(note.note)}</div>` : ''}
+        </div>
+      </div>`;
+    }
+  }
+
+  if (currentUser) {
+    html += `<div id="dish-form-${ek}" style="margin-top:6px;">
+      <div style="display:flex;gap:5px;align-items:center;">
+        <input id="dish-name-${ek}" placeholder="Dish name…"
+          style="flex:1;background:var(--black-light);border:1px solid var(--border-light);
+                 color:var(--white);font-family:sans-serif;font-size:0.72rem;padding:4px 8px;
+                 border-radius:6px;outline:none;">
+        <button onclick="toggleDishNoteForm('${ek}')"
+          style="font-family:sans-serif;font-size:0.7rem;padding:4px 10px;border-radius:6px;
+                 border:1px solid var(--border-light);color:var(--white-dim);background:transparent;cursor:pointer;">
+          +
+        </button>
+      </div>
+      <div id="dish-extra-${ek}" style="display:none;margin-top:4px;">
+        <input id="dish-note-${ek}" placeholder="Any notes? (optional)"
+          style="width:100%;background:var(--black-light);border:1px solid var(--border-light);
+                 color:var(--white);font-family:sans-serif;font-size:0.72rem;padding:4px 8px;
+                 border-radius:6px;outline:none;margin-bottom:4px;">
+        <button onclick="addDishNote('${ek}')"
+          style="font-family:sans-serif;font-size:0.7rem;padding:4px 12px;border-radius:6px;
+                 border:1px solid var(--orange);color:var(--orange);background:transparent;cursor:pointer;">
+          Save
+        </button>
+      </div>
+    </div>`;
+  } else if (dishNotes.length === 0) {
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);">Sign in to add dish recommendations</div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+function toggleDishNoteForm(ek) {
+  const nameEl  = document.getElementById(`dish-name-${ek}`);
+  const extraEl = document.getElementById(`dish-extra-${ek}`);
+  if (!extraEl) return;
+  const showing = extraEl.style.display !== 'none';
+  extraEl.style.display = showing ? 'none' : 'block';
+  if (!showing) nameEl?.focus();
+}
+
+async function addTag(ek) {
+  const restaurantKey = decodeURIComponent(ek);
+  const input = document.getElementById(`tag-input-${ek}`);
+  if (!input) return;
+  const label = input.value.trim();
+  if (!label || label.length > 50) return;
+  input.value = '';
+
+  const { error } = await sb.from('tags').upsert({
+    restaurant_key: restaurantKey,
+    label,
+    created_by: currentUser.id,
+  }, { onConflict: 'restaurant_key,label' });
+
+  if (!error) {
+    invalidateCommunityCache(restaurantKey);
+    await loadAndRenderCommunity(restaurantKey);
+  }
+}
+
+async function voteTag(ek, tagId) {
+  const restaurantKey = decodeURIComponent(ek);
+  const data = communityCache.get(restaurantKey);
+  if (!currentUser) { showAuthNudge(); return; }
+
+  if (data?.myTagVotes.has(tagId)) {
+    data.myTagVotes.delete(tagId);
+    await sb.from('tag_votes').delete().eq('user_id', currentUser.id).eq('tag_id', tagId);
+    const tag = data.tags.find(t => t.id === tagId);
+    if (tag) tag.vote_count = Math.max(0, tag.vote_count - 1);
+  } else {
+    data?.myTagVotes.add(tagId);
+    await sb.from('tag_votes').insert({ user_id: currentUser.id, tag_id: tagId });
+    const tag = data?.tags.find(t => t.id === tagId);
+    if (tag) tag.vote_count++;
+  }
+
+  // Re-render without full refetch
+  if (document.getElementById('comm-section') && data) {
+    document.getElementById('comm-section').innerHTML = renderCommunitySection(restaurantKey, data);
+  }
+}
+
+async function addDishNote(ek) {
+  const restaurantKey = decodeURIComponent(ek);
+  const dishName = document.getElementById(`dish-name-${ek}`)?.value.trim();
+  const dishNote = document.getElementById(`dish-note-${ek}`)?.value.trim();
+  if (!dishName) return;
+
+  const { error } = await sb.from('dish_notes').insert({
+    user_id: currentUser.id,
+    restaurant_key: restaurantKey,
+    dish_name: dishName,
+    note: dishNote || null,
+  });
+
+  if (!error) {
+    invalidateCommunityCache(restaurantKey);
+    await loadAndRenderCommunity(restaurantKey);
+  }
+}
+
+async function voteDishNote(ek, noteId) {
+  const restaurantKey = decodeURIComponent(ek);
+  const data = communityCache.get(restaurantKey);
+  if (!currentUser) { showAuthNudge(); return; }
+
+  if (data?.myDishVotes.has(noteId)) {
+    data.myDishVotes.delete(noteId);
+    await sb.from('dish_note_votes').delete().eq('user_id', currentUser.id).eq('dish_note_id', noteId);
+    const note = data?.dishNotes.find(n => n.id === noteId);
+    if (note) note.vote_count = Math.max(0, note.vote_count - 1);
+  } else {
+    data?.myDishVotes.add(noteId);
+    await sb.from('dish_note_votes').insert({ user_id: currentUser.id, dish_note_id: noteId });
+    const note = data?.dishNotes.find(n => n.id === noteId);
+    if (note) note.vote_count++;
+  }
+
+  if (document.getElementById('comm-section') && data) {
+    document.getElementById('comm-section').innerHTML = renderCommunitySection(restaurantKey, data);
+  }
+}
+
 // ── State ──────────────────────────────────────────────────────────────────
 let allAwards = [];
 let filteredAwards = [];
@@ -832,8 +1390,6 @@ let map, markerCluster, locationCircle, locationMarker;
 let markers = [];
 let userLat = null, userLng = null, radiusMiles = 50;
 let nearbyMode = false;
-let showFavoritesOnly = false;
-let favorites = new Set(JSON.parse(localStorage.getItem('delectable_favorites') || '[]'));
 
 function favKey(a) {
   return `${a.restaurant || a.name || ''}|${a.city || ''}|${a.state || a.country || ''}`;
@@ -872,6 +1428,13 @@ function initMap() {
   });
 
   map.addLayer(markerCluster);
+
+  // Track which restaurant's popup is open for community tab lazy-load
+  map.on('popupopen', (e) => {
+    const marker = e.popup._source;
+    if (!marker?.options?.loc) return;
+    currentPopupKey = favKey(marker.options.loc.awards[0]);
+  });
 
   // Legend
   const legend = L.control({ position: 'bottomright' });
@@ -933,6 +1496,16 @@ function markerIcon(status, michelinTier) {
       className: '',
       iconSize: [outer, outer],
       iconAnchor: [outer / 2, outer / 2]
+    });
+  }
+
+  // Texas Monthly pin: burnt-orange square
+  if (status === 'texasmonthly') {
+    return L.divIcon({
+      html: `<div style="width:9px;height:9px;background:#1a6fa8;border:1.5px solid #0e4a73;box-shadow:0 0 5px #1a6fa880;"></div>`,
+      className: '',
+      iconSize: [9, 9],
+      iconAnchor: [4.5, 4.5],
     });
   }
 
@@ -1043,18 +1616,25 @@ async function loadData() {
       const data = await res.json();
       allAwards = allAwards.concat(data);
 
+      const isFirst = !firstChunkLoaded;
       if (!firstChunkLoaded) {
         firstChunkLoaded = true;
         loadingEl.style.display = 'none';
         initFilters();
-        updateFavCount();
-        if (showFavoritesOnly) document.getElementById('fav-toggle').classList.add('active');
       } else {
         // Refresh filters dropdowns with newly available data (years, states, etc.)
         initFilters();
       }
 
       applyFilters();
+
+      if (isFirst) {
+        const params = new URLSearchParams(window.location.search);
+        const popupKey = params.get('popup');
+        const popupLat = parseFloat(params.get('lat'));
+        const popupLng = parseFloat(params.get('lng'));
+        if (popupKey) handlePopupDeepLink(popupKey, popupLat, popupLng);
+      }
     } catch (e) {
       loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
       loadingSub.textContent = e.message;
@@ -1063,11 +1643,37 @@ async function loadData() {
   }
 }
 
+function handlePopupDeepLink(restaurantKey, lat, lng) {
+  // Fly to location if coords provided
+  if (!isNaN(lat) && !isNaN(lng)) {
+    map.setView([lat, lng], 15);
+  }
+  // Find and open the matching marker popup
+  // Use a short delay so markers have rendered after applyFilters
+  setTimeout(() => {
+    map.eachLayer(layer => {
+      if (!layer.options?.loc) return;
+      const awards = layer.options.loc.awards || [];
+      const key = favKey(awards[0]);
+      if (key === restaurantKey) {
+        // Unspiderfy cluster if needed
+        if (layer._cluster) {
+          layer._cluster.spiderfy();
+        }
+        layer.openPopup();
+        if (!isNaN(lat) && !isNaN(lng)) {
+          map.panTo([lat, lng]);
+        }
+      }
+    });
+  }, 600);
+}
+
 
 // ── Filters ─────────────────────────────────────────────────────────────────
 function initFilters() {
-  // Populate year filter (most recent first)
-  const years = [...new Set(allAwards.map(a => a.year))].sort((a, b) => b - a);
+  // Populate year filter (most recent first) — covers JBF years and TM years
+  const years = [...new Set(allAwards.map(a => a.year || (a.tmYear ? String(a.tmYear) : null)).filter(Boolean))].sort((a, b) => b - a);
   const yearSel = document.getElementById('filter-year');
   years.forEach(y => {
     const opt = document.createElement('option');
@@ -1118,6 +1724,7 @@ function initFilters() {
   cuisineSel.addEventListener('change', applyFilters);
   document.getElementById('filter-source').addEventListener('change', applyFilters);
   document.getElementById('filter-michelin').addEventListener('change', applyFilters);
+  document.getElementById('filter-hide-closed').addEventListener('change', applyFilters);
 
   document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 200));
 
@@ -1153,28 +1760,36 @@ function applyFilters() {
   const cuisine       = document.getElementById('filter-cuisine').value;
   const source        = document.getElementById('filter-source').value;
   const michelinTier  = document.getElementById('filter-michelin').value;
+  const hideClosed    = document.getElementById('filter-hide-closed').checked;
   const search        = document.getElementById('search-input').value.toLowerCase().trim();
 
   filteredAwards = allAwards.filter(a => {
+    // Hide permanently closed
+    if (hideClosed && (a.businessStatus === 'CLOSED_PERMANENTLY' || a.yelpDetail?.isClosed)) return false;
     const isMichelin = a.source === 'michelin';
+    const isTM       = a.source === 'texasmonthly';
 
     // Source filter
-    if (source === 'jbf'     && isMichelin)  return false;
-    if (source === 'michelin' && !isMichelin) return false;
+    if (source === 'jbf'          && (isMichelin || isTM))  return false;
+    if (source === 'michelin'     && !isMichelin)            return false;
+    if (source === 'texasmonthly' && !isTM)                  return false;
 
-    // JBF-specific filters (skip for Michelin-only records)
-    if (!isMichelin) {
+    // JBF-specific filters
+    if (!isMichelin && !isTM) {
       if (year     && a.year     !== year)     return false;
       if (state    && a.state    !== state)    return false;
       if (category && a.category !== category) return false;
       if (!activeStatuses.has(a.status))       return false;
     }
 
+    // Texas Monthly filters
+    if (isTM) {
+      if (year  && String(a.tmYear) !== year)  return false;
+      if (state && a.state          !== state)  return false;
+    }
+
     // Michelin tier filter (applies to any record with michelinAward)
     if (michelinTier && a.michelinAward !== michelinTier) return false;
-
-    // Favorites filter
-    if (showFavoritesOnly && !favorites.has(favKey(a))) return false;
 
     // Shared filters
     if (cuisine && !(a.cuisineTags || []).includes(cuisine)) return false;
@@ -1213,7 +1828,8 @@ function updateMap() {
 
   markers = [];
   for (const [, loc] of locationMap) {
-    const hasJBF = loc.awards.some(a => a.source !== 'michelin');
+    const hasJBF = loc.awards.some(a => a.source !== 'michelin' && a.source !== 'texasmonthly');
+    const hasTM  = loc.awards.some(a => a.source === 'texasmonthly');
 
     let bestStatus, michelinTier;
     if (hasJBF) {
@@ -1221,6 +1837,9 @@ function updateMap() {
       bestStatus = loc.awards.some(a => a.status === 'Winner') ? 'Winner'
         : loc.awards.some(a => a.status === 'Semifinalist') ? 'Semifinalist'
         : 'Nominee';
+      michelinTier = null;
+    } else if (hasTM) {
+      bestStatus   = 'texasmonthly';
       michelinTier = null;
     } else {
       // Michelin-only — pick highest tier present
@@ -1231,10 +1850,11 @@ function updateMap() {
 
     const marker = L.marker([loc.lat, loc.lng], {
       icon: markerIcon(bestStatus, michelinTier),
-      awardStatus: bestStatus
+      awardStatus: bestStatus,
+      loc,
     });
 
-    marker.bindPopup(() => buildPopup(loc), { maxWidth: 320 });
+    marker.bindPopup(() => buildPopup(loc), { maxWidth: 320, maxHeight: 480 });
     markers.push(marker);
   }
 
@@ -1255,14 +1875,13 @@ function michelinBadge(tier) {
 function buildPopup(loc) {
   const awards = loc.awards;
   const isMichelinOnly = awards.every(a => a.source === 'michelin');
+  const isTMOnly       = awards.every(a => a.source === 'texasmonthly');
 
   // ── Michelin-only popup ────────────────────────────────────────────────────
   if (isMichelinOnly) {
     const a = awards[0];
     const location = [a.city, a.country].filter(Boolean).join(', ');
     const mapsUrl = buildFallbackMapsUrl(a);
-    const fk = encodeURIComponent(favKey(a));
-    const isFaved = favorites.has(favKey(a));
     const photo = a.googlePhoto || null;
     const isClosed = a.businessStatus === 'CLOSED_PERMANENTLY' || a.businessStatus === 'CLOSED_TEMPORARILY';
 
@@ -1276,49 +1895,118 @@ function buildPopup(loc) {
           <div class="popup-name">${escHtml(a.restaurant)}</div>
           <div class="popup-restaurant">${escHtml(location)}</div>
         </div>
-        <div style="position:absolute;top:6px;right:6px;">
-          <button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>
-        </div>
       </div>`;
     } else {
-      html += `<div class="popup-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div>
-          <div class="popup-name">${escHtml(a.restaurant)}</div>
-          <div class="popup-restaurant">${escHtml(location)}</div>
-        </div>
-        <button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">
-          ${isFaved?'♥':'♡'}
-        </button>
+      html += `<div class="popup-header">
+        <div class="popup-name">${escHtml(a.restaurant)}</div>
+        <div class="popup-restaurant">${escHtml(location)}</div>
       </div>`;
     }
 
-    html += `<div class="popup-body">`;
+    html += `<div class="popup-body">
+      <div class="popup-tabs">
+        <button class="popup-tab-btn active" data-tab="info"      onclick="switchPopupTab('info')">Info</button>
+        <button class="popup-tab-btn"        data-tab="community" onclick="switchPopupTab('community')">Community</button>
+      </div>`;
 
-    // Closed banner
+    // ── Info tab ──────────────────────────────────────────────────────────
+    html += `<div class="popup-tab-content active" data-tab="info">`;
+
     if (a.businessStatus === 'CLOSED_PERMANENTLY') {
       html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
     } else if (a.businessStatus === 'CLOSED_TEMPORARILY') {
       html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
     }
 
-    // Michelin badge
     html += `<div style="margin-bottom:8px;">${michelinBadge(a.michelinAward)}`;
     if (a.greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
     html += `</div>`;
 
-    // Price / cuisine
     const meta = [];
     if (a.price)   meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
     if (a.cuisine) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisine)}</span>`);
     if (meta.length) html += `<div style="font-family:sans-serif;font-size:0.78rem;margin-bottom:8px;">${meta.join(' · ')}</div>`;
 
-    // Links
     const links = [];
     if (mapsUrl)       links.push(`<a href="${escHtml(mapsUrl)}"       target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
     if (a.website)     links.push(`<a href="${escHtml(a.website)}"     target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
     if (a.michelinUrl) links.push(`<a href="${escHtml(a.michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
     if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
 
+    html += `</div>`;
+
+    // ── Community tab ─────────────────────────────────────────────────────
+    html += `<div class="popup-tab-content" data-tab="community">
+      <div id="comm-section" style="min-height:60px;">
+        <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div>
+      </div>
+    </div>`;
+
+    // Visited / Want to Go always visible outside tabs
+    html += buildCommButtons(favKey(a));
+    html += `</div></div>`;
+    return html;
+  }
+
+  // ── Texas Monthly popup ────────────────────────────────────────────────────
+  if (isTMOnly) {
+    const a = awards[0];
+    // Collect all years for this restaurant
+    const tmYears = [...new Set(awards.map(x => x.tmYear).filter(Boolean))].sort();
+    const location = [a.city, a.state].filter(Boolean).join(', ');
+    const mapsUrl = buildFallbackMapsUrl(a);
+    const photo = a.googlePhoto || null;
+    const isClosed = a.businessStatus === 'CLOSED_PERMANENTLY' || a.businessStatus === 'CLOSED_TEMPORARILY';
+
+    let html = `<div class="jb-popup">`;
+
+    if (photo) {
+      html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+        <img src="${escHtml(photo)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
+          style="width:100%;height:110px;object-fit:cover;display:block;">
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+          <div class="popup-name">${escHtml(a.restaurant)}</div>
+          <div class="popup-restaurant">${escHtml(location)}</div>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="popup-header">
+        <div class="popup-name">${escHtml(a.restaurant)}</div>
+        <div class="popup-restaurant">${escHtml(location)}</div>
+      </div>`;
+    }
+
+    html += `<div class="popup-body">
+      <div class="popup-tabs">
+        <button class="popup-tab-btn active" data-tab="info"      onclick="switchPopupTab('info')">Info</button>
+        <button class="popup-tab-btn"        data-tab="community" onclick="switchPopupTab('community')">Community</button>
+      </div>`;
+
+    html += `<div class="popup-tab-content active" data-tab="info">`;
+
+    if (a.businessStatus === 'CLOSED_PERMANENTLY') {
+      html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
+    } else if (a.businessStatus === 'CLOSED_TEMPORARILY') {
+      html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
+    }
+
+    html += `<div style="margin-bottom:8px;">
+      <span style="font-family:sans-serif;font-size:0.75rem;background:#1a6fa8;color:#fff;padding:2px 8px;border-radius:4px;">🔥 Texas Monthly Top 50 BBQ</span>
+    </div>`;
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.6);margin-bottom:8px;">Listed: ${tmYears.join(', ')}</div>`;
+
+    const links = [];
+    if (mapsUrl)   links.push(`<a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
+    if (a.website) links.push(`<a href="${escHtml(a.website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+    if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
+
+    html += `</div>`;
+    html += `<div class="popup-tab-content" data-tab="community">
+      <div id="comm-section" style="min-height:60px;">
+        <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div>
+      </div>
+    </div>`;
+    html += buildCommButtons(favKey(a));
     html += `</div></div>`;
     return html;
   }
@@ -1330,7 +2018,7 @@ function buildPopup(loc) {
   // Group by restaurant
   const byRestaurant = new Map();
   for (const a of awards) {
-    if (a.source === 'michelin') continue; // show JBF entries in this popup
+    if (a.source === 'michelin' || a.source === 'texasmonthly') continue; // show JBF entries only
     const key = a.restaurant || a.name || '?';
     if (!byRestaurant.has(key)) byRestaurant.set(key, { awards: [], meta: a });
     byRestaurant.get(key).awards.push(a);
@@ -1356,10 +2044,6 @@ function buildPopup(loc) {
 
   let html = `<div class="jb-popup">`;
 
-  const fk = encodeURIComponent(favKey(firstMeta));
-  const isFaved = favorites.has(favKey(firstMeta));
-  const favBtn = `<button class="fav-btn${isFaved?' faved':''}" onclick="toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>`;
-
   if (img) {
     html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
       <img src="${escHtml(img)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
@@ -1368,39 +2052,39 @@ function buildPopup(loc) {
         <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
         <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
       </div>
-      <div style="position:absolute;top:6px;right:6px;">${favBtn}</div>
     </div>`;
   } else {
-    html += `<div class="popup-header" style="display:flex;align-items:flex-start;justify-content:space-between;">
-      <div>
-        <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
-        <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
-      </div>
-      ${favBtn}
+    html += `<div class="popup-header">
+      <div class="popup-name">${escHtml(isPrecise ? (firstMeta.restaurant || firstMeta.name || city) : city+', '+state)}</div>
+      <div class="popup-restaurant">${escHtml(isPrecise ? city+', '+state : awards.length+' award'+(awards.length!==1?'s':'')+' shown')}</div>
     </div>`;
   }
 
-  html += `<div class="popup-body">`;
+  html += `<div class="popup-body">
+    <div class="popup-tabs">
+      <button class="popup-tab-btn active" data-tab="info"      onclick="switchPopupTab('info')">Info</button>
+      <button class="popup-tab-btn"        data-tab="community" onclick="switchPopupTab('community')">Community</button>
+    </div>`;
+
+  // ── Info tab ────────────────────────────────────────────────────────────
+  html += `<div class="popup-tab-content active" data-tab="info">`;
 
   if (description) {
     html += `<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);font-family:sans-serif;margin-bottom:8px;line-height:1.4;font-style:italic;">${escHtml(description.substring(0, 160))}…</div>`;
   }
 
-  // Michelin badge (cross-matched or co-located Michelin record)
   if (michelinAward) {
     html += `<div style="margin-bottom:8px;">${michelinBadge(michelinAward)}`;
     if (greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
     html += `</div>`;
   }
 
-  // Closed status from Google Places (Michelin records) or Yelp
   if (businessStatus === 'CLOSED_PERMANENTLY' || yelpDetail?.isClosed) {
     html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
   } else if (businessStatus === 'CLOSED_TEMPORARILY') {
     html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
   }
 
-  // Yelp rating / price
   if (yelpDetail) {
     const parts = [];
     if (yelpDetail.rating) parts.push(`<span style="color:#FEA219;font-weight:700;">⭐ ${yelpDetail.rating}</span>`);
@@ -1408,7 +2092,6 @@ function buildPopup(loc) {
     if (parts.length) html += `<div style="display:flex;align-items:center;gap:8px;font-family:sans-serif;font-size:0.8rem;margin-bottom:8px;">${parts.join(' · ')}</div>`;
   }
 
-  // Action links
   const links = [];
   if (mapsUrl) links.push(`<a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
   if (website) links.push(`<a href="${escHtml(website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
@@ -1417,7 +2100,6 @@ function buildPopup(loc) {
   if (michelinUrl) links.push(`<a href="${escHtml(michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
   if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
 
-  // JBF awards list
   html += `<div class="popup-awards-list">`;
   for (const [restaurant, { awards: rawards, meta }] of byRestaurant) {
     rawards.sort((a, b) => b.year - a.year);
@@ -1442,7 +2124,18 @@ function buildPopup(loc) {
     if (rawards.length > 4) html += `<div class="popup-award-meta">+${rawards.length - 4} more…</div>`;
     html += `</div>`;
   }
+  html += `</div>`;  // popup-awards-list
+  html += `</div>`;  // info tab
 
+  // ── Community tab ─────────────────────────────────────────────────────
+  html += `<div class="popup-tab-content" data-tab="community">
+    <div id="comm-section" style="min-height:60px;">
+      <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Loading community notes…</div>
+    </div>
+  </div>`;
+
+  // Visited / Want to Go always visible outside tabs
+  html += buildCommButtons(favKey(firstMeta));
   html += `</div></div></div>`;
   return html;
 }
@@ -1476,34 +2169,31 @@ function updateSidebar() {
 
   const items = display.map(a => {
     const isMichelin = a.source === 'michelin';
+    const isTM       = a.source === 'texasmonthly';
     const badgeClass = isMichelin ? 'badge-michelin'
+      : isTM ? 'badge-tm'
       : a.status === 'Winner' ? 'badge-winner'
       : a.status === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
     const badgeText = isMichelin
       ? ({ '3 Stars':'★★★ 3 Stars','2 Stars':'★★ 2 Stars','1 Star':'★ 1 Star','Bib Gourmand':'Ⓑ Bib Gourmand','Selected':'◆ Selected' }[a.michelinAward] || '◆ Michelin')
+      : isTM ? '🔥 TX Top 50 BBQ'
       : a.status === 'Winner' ? '🥇 Winner' : a.status === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
-    const displayName = isMichelin ? a.restaurant : (a.name && a.name !== a.restaurant ? a.name : (a.restaurant || a.name || '?'));
-    const displayRest = !isMichelin && a.name !== a.restaurant && a.restaurant ? a.restaurant : '';
+    const displayName = a.restaurant || a.name || '?';
+    const displayRest = (!isMichelin && !isTM) && a.name && a.name !== a.restaurant ? a.restaurant : '';
     const locText = isMichelin
       ? [a.city, a.country].filter(Boolean).join(', ')
       : [a.city, a.state].filter(Boolean).join(', ');
+    const yearText = isTM ? a.tmYear : a.year;
     const distText = (nearbyMode && userLat !== null)
       ? ` · ${distanceMiles(userLat, userLng, a.lat, a.lng).toFixed(1)} mi` : '';
 
-    const fk = encodeURIComponent(favKey(a));
-    const isFaved = favorites.has(favKey(a));
     return `<div class="result-item" data-lat="${a.lat}" data-lng="${a.lng}">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div style="min-width:0;">
-          <div class="result-name">${escHtml(displayName)}</div>
-          ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
-        </div>
-        <button class="fav-btn${isFaved?' faved':''}" onclick="event.stopPropagation();toggleFavorite(decodeURIComponent('${fk}'))" title="Save">${isFaved?'♥':'♡'}</button>
-      </div>
+      <div class="result-name">${escHtml(displayName)}</div>
+      ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
       <div class="result-meta">
         <span class="result-badge ${badgeClass}">${badgeText}</span>
         <span class="result-loc">${escHtml(locText)}${distText}</span>
-        ${!isMichelin ? `<span class="result-year">${a.year}</span>` : ''}
+        ${yearText ? `<span class="result-year">${yearText}</span>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -1682,72 +2372,6 @@ function debounce(fn, ms) {
   });
 })();
 
-// ── Favorites ────────────────────────────────────────────────────────────────
-function toggleFavorite(key) {
-  if (favorites.has(key)) favorites.delete(key);
-  else favorites.add(key);
-  localStorage.setItem('delectable_favorites', JSON.stringify([...favorites]));
-
-  // Update all heart buttons for this key on the page
-  document.querySelectorAll('.fav-btn').forEach(btn => {
-    const enc = btn.getAttribute('onclick') || '';
-    if (enc.includes(encodeURIComponent(key))) {
-      const faved = favorites.has(key);
-      btn.textContent = faved ? '♥' : '♡';
-      btn.classList.toggle('faved', faved);
-    }
-  });
-
-  updateFavCount();
-  if (showFavoritesOnly) applyFilters();
-}
-
-function updateFavCount() {
-  const el = document.getElementById('fav-count');
-  if (!el) return;
-  el.textContent = favorites.size > 0 ? favorites.size : '';
-  el.style.display = favorites.size > 0 ? '' : 'none';
-}
-
-function toggleFavoritesMode() {
-  showFavoritesOnly = !showFavoritesOnly;
-  document.getElementById('fav-toggle').classList.toggle('active', showFavoritesOnly);
-  applyFilters();
-}
-
-function copyFavoritesLink() {
-  if (favorites.size === 0) {
-    alert('No favorites saved yet — heart some restaurants first!');
-    return;
-  }
-  const encoded = encodeURIComponent(JSON.stringify([...favorites]));
-  const url = `${location.origin}${location.pathname}#favs=${encoded}`;
-  navigator.clipboard.writeText(url).then(() => {
-    const btn = document.getElementById('share-favs-btn');
-    const orig = btn.textContent;
-    btn.textContent = '✓ Copied!';
-    setTimeout(() => btn.textContent = orig, 2000);
-  }).catch(() => {
-    // Fallback for older mobile browsers
-    prompt('Copy this link:', url);
-  });
-}
-
-function loadSharedFavorites() {
-  const hash = window.location.hash;
-  if (!hash.startsWith('#favs=')) return;
-  try {
-    const keys = JSON.parse(decodeURIComponent(hash.slice(6)));
-    let added = 0;
-    keys.forEach(k => { if (!favorites.has(k)) { favorites.add(k); added++; } });
-    if (added > 0) localStorage.setItem('delectable_favorites', JSON.stringify([...favorites]));
-    history.replaceState(null, '', location.pathname + location.search);
-    if (added > 0) {
-      showFavoritesOnly = true;
-      // fav-toggle button styled active after loadData runs
-    }
-  } catch (e) {}
-}
 
 // ── Logo font animation ──────────────────────────────────────────────────────
 function animateLogo() {
@@ -1786,10 +2410,10 @@ function animateLogo() {
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────
-loadSharedFavorites();
 initMap();
 loadData();
 animateLogo();
+initAuth();
 </script>
 </body>
 </html>

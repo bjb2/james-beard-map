@@ -1,6 +1,9 @@
 node_modules/
 
 # Geocoding caches (large, can be regenerated)
+data/google-cache.json
+data/google-jbf-cache.json
+data/google-tm-cache.json
 data/raw-awards.json
 data/city-cache.json
 data/restaurant-cache.json

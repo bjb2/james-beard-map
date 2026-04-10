@@ -9,7 +9,10 @@ const DATA = path.join(__dirname, 'data');
 const AWARDS_FILE = path.join(DATA, 'awards.json');
 
 app.use(compression());
+app.use((req, res, next) => { console.log('[REQ]', req.method, req.url); next(); });
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'profile.html')));
+app.get('/profile.html', (req, res) => res.sendFile(path.join(__dirname, 'profile.html')));
 app.use('/data', express.static(path.join(__dirname, 'data')));
 
 // Awards data
