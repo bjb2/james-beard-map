@@ -660,11 +660,7 @@ function mapUrl(restaurantKey) {
 function renderAuthHeader(user) {
   const el = document.getElementById('header-actions');
   if (user) {
-    el.innerHTML = `
-      <span style="font-size:0.72rem;color:var(--white-dim)">${user.email}</span>
-      <a href="/profile.html?user=${user.id}" style="font-size:0.72rem;color:var(--orange);text-decoration:none;">My Profile</a>
-      <button class="btn-ghost" onclick="signOut()">Sign out</button>
-    `;
+    el.innerHTML = `<button class="btn-ghost" onclick="signOut()">Sign out</button>`;
   } else {
     el.innerHTML = `<button class="btn-orange" onclick="signIn()">Sign in</button>`;
   }
