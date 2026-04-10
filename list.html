@@ -498,7 +498,7 @@ async function load() {
   if (keys.length) {
     const { data: rests } = await sb
       .from('restaurants_with_summary')
-      .select('key, name, city, state, country, photo_url, award_summary, lat, lng, website, address, yelp_url, michelin_url, cuisine_category, price')
+      .select('key, name, city, state, country, photo_url, award_summary, lat, lng, website, address, yelp_url, michelin_url, cuisine_tags, price')
       .in('key', keys);
     allRestaurants = rests || [];
   }
@@ -589,7 +589,7 @@ function cardHtml(r, note, num) {
 
   const subParts = [];
   if (location) subParts.push(`<span>${escHtml(location)}</span>`);
-  if (r.cuisine_category) subParts.push(`<span style="color:var(--white-faint);">${escHtml(r.cuisine_category)}</span>`);
+  if (r.cuisine_tags) subParts.push(`<span style="color:var(--white-faint);">${escHtml(r.cuisine_tags)}</span>`);
   if (r.price) subParts.push(`<span style="color:var(--white-faint);">${escHtml(r.price)}</span>`);
 
   return `
