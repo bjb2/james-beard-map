@@ -12,6 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -268,11 +270,44 @@
       margin-bottom: 8px;
     }
 
+    /* ── Map ── */
+    .list-map-wrap {
+      margin-bottom: 28px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    #list-map {
+      height: 280px;
+      width: 100%;
+      background: var(--black-light);
+    }
+
+    .map-toggle {
+      display: none;
+      width: 100%;
+      background: var(--black-mid);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--white-dim);
+      font-family: inherit;
+      font-size: 0.75rem;
+      padding: 8px 14px;
+      cursor: pointer;
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
     /* ── Responsive ── */
     @media (max-width: 600px) {
       header { padding: 0 16px; }
       .page { padding: 24px 16px 60px; }
       .list-title { font-size: 1.4rem; }
+      .list-map-wrap { display: none; }
+      .list-map-wrap.visible { display: block; }
+      .map-toggle { display: block; }
+      #list-map { height: 220px; }
     }
   </style>
 </head>
@@ -355,7 +390,7 @@ async function load() {
   if (keys.length) {
     const { data: rests } = await sb
       .from('restaurants_with_summary')
-      .select('key, name, city, state, country, photo_url, award_summary')
+      .select('key, name, city, state, country, photo_url, award_summary, lat, lng')
       .in('key', keys);
     restaurants = rests || [];
   }
@@ -370,6 +405,8 @@ async function load() {
 
   // Build UI
   const shareUrl = window.location.href;
+
+  const hasPins = restaurants.some(r => r.lat && r.lng);
 
   content.innerHTML = `
     <div class="list-header">
@@ -387,6 +424,12 @@ async function load() {
       </div>
       ${list.description ? `<div class="list-description">${escHtml(list.description)}</div>` : ''}
     </div>
+    ${hasPins ? `
+      <button class="map-toggle" id="map-toggle" onclick="toggleMap()">🗺 Show map</button>
+      <div class="list-map-wrap" id="list-map-wrap">
+        <div id="list-map"></div>
+      </div>
+    ` : ''}
     ${restaurants.length === 0
       ? `<div class="state-empty"><h2>No places yet</h2><p>This list doesn\u2019t have any restaurants yet.</p></div>`
       : `<div class="cards">${restaurants.map(r => cardHtml(r, noteMap.get(r.key))).join('')}</div>`
@@ -394,6 +437,8 @@ async function load() {
   `;
 
   document.getElementById('share-btn').addEventListener('click', handleShare.bind(null, shareUrl));
+
+  if (hasPins) initMap(restaurants);
 }
 
 function cardHtml(r, note) {
@@ -452,6 +497,57 @@ function showError(msg) {
       <p>${escHtml(msg)}</p>
     </div>
   `;
+}
+
+function initMap(restaurants) {
+  const pts = restaurants.filter(r => r.lat && r.lng);
+  if (!pts.length) return;
+
+  const map = L.map('list-map', { zoomControl: true, scrollWheelZoom: false });
+
+  L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+    { attribution: 'Tiles © Esri', maxZoom: 16 }
+  ).addTo(map);
+  L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}',
+    { maxZoom: 16, opacity: 0.8 }
+  ).addTo(map);
+
+  const icon = L.divIcon({
+    className: '',
+    html: `<div style="
+      width:10px;height:10px;border-radius:50%;
+      background:#FEA219;border:2px solid #fff;
+      box-shadow:0 1px 4px rgba(0,0,0,0.6);
+    "></div>`,
+    iconSize: [10, 10],
+    iconAnchor: [5, 5],
+  });
+
+  const bounds = [];
+  for (const r of pts) {
+    const location = [r.city, r.state || r.country].filter(Boolean).join(', ');
+    const marker = L.marker([r.lat, r.lng], { icon });
+    marker.bindTooltip(escHtml(r.name) + (location ? `<br><span style="font-size:0.7rem;opacity:0.7">${escHtml(location)}</span>` : ''), {
+      direction: 'top', offset: [0, -6],
+    });
+    marker.addTo(map);
+    bounds.push([r.lat, r.lng]);
+  }
+
+  if (bounds.length === 1) {
+    map.setView(bounds[0], 13);
+  } else {
+    map.fitBounds(bounds, { padding: [32, 32], maxZoom: 13 });
+  }
+}
+
+function toggleMap() {
+  const wrap = document.getElementById('list-map-wrap');
+  const btn  = document.getElementById('map-toggle');
+  const showing = wrap.classList.toggle('visible');
+  btn.textContent = showing ? '🗺 Hide map' : '🗺 Show map';
 }
 
 function escHtml(s) {
