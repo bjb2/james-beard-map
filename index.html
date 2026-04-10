@@ -2029,11 +2029,13 @@ function buildPopup(loc) {
   const firstMeta = [...byRestaurant.values()][0]?.meta || awards[0];
   const yelpDetail = firstMeta.yelpDetail || null;
 
-  // Michelin record co-located at this pin (coord-promoted or originally same location)
+  // Michelin / TM records co-located at this pin
   const michelinRecord = awards.find(a => a.source === 'michelin');
+  const tmRecord       = awards.find(a => a.source === 'texasmonthly');
   const michelinAward   = firstMeta.michelinAward   || michelinRecord?.michelinAward   || null;
   const michelinUrl     = firstMeta.michelinUrl     || michelinRecord?.michelinUrl     || null;
   const greenStar       = firstMeta.greenStar       || michelinRecord?.greenStar       || false;
+  const tmYears         = tmRecord ? [...new Set(awards.filter(a => a.source === 'texasmonthly').map(a => a.tmYear).filter(Boolean))].sort() : null;
   const googlePhoto     = firstMeta.googlePhoto || michelinRecord?.googlePhoto || null;
   const businessStatus  = firstMeta.businessStatus || michelinRecord?.businessStatus || null;
 
@@ -2077,6 +2079,13 @@ function buildPopup(loc) {
     html += `<div style="margin-bottom:8px;">${michelinBadge(michelinAward)}`;
     if (greenStar) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:#2ecc71;">🌿 Green Star</span>`;
     html += `</div>`;
+  }
+
+  if (tmYears) {
+    html += `<div style="margin-bottom:8px;">
+      <span style="font-family:sans-serif;font-size:0.75rem;background:#1a6fa8;color:#fff;padding:2px 8px;border-radius:4px;">🔥 Texas Monthly Top 50 BBQ</span>
+      <span style="font-family:sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.5);margin-left:6px;">${tmYears.join(', ')}</span>
+    </div>`;
   }
 
   if (businessStatus === 'CLOSED_PERMANENTLY' || yelpDetail?.isClosed) {
