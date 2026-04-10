@@ -306,7 +306,7 @@ const SUPABASE_URL = 'https://bnlnlfnrkwizviiabhex.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJubG5sZm5ya3dpenZpaWFiaGV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NTgxODgsImV4cCI6MjA5MTMzNDE4OH0.GW0-kcOrcQ8YXyqvI6LbDnLM1IIQTkL1FFajJUrkfHk';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const slug = window.location.pathname.split('/').filter(Boolean).pop();
+const slug = new URLSearchParams(window.location.search).get('slug');
 
 async function load() {
   const content = document.getElementById('content');
