@@ -1023,7 +1023,8 @@ async function toggleListPublic(listId) {
 }
 
 async function shareList(listId, slug) {
-  const url = `${window.location.origin}/list.html?slug=${encodeURIComponent(slug)}`;
+  const origin = window.location.hostname === 'localhost' ? 'https://www.delectable.guide' : window.location.origin;
+  const url = `${origin}/list.html?slug=${encodeURIComponent(slug)}`;
   const btn = document.getElementById(`share-list-${listId}`);
 
   if (navigator.share) {
