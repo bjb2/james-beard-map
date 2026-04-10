@@ -527,8 +527,10 @@
     .jb-popup .popup-award-meta {
       font-size: 0.72rem;
       color: var(--white-dim);
-      display: flex;
-      gap: 8px;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 0 8px;
+      align-items: start;
       margin-top: 2px;
     }
 
@@ -2275,7 +2277,7 @@ function buildPopup(loc) {
         <span>${escHtml(g.category)}</span>
         ${yearStr ? `<span>${escHtml(yearStr)}</span>` : ''}
       </div>`;
-      if (chefStr) html += `<div class="popup-award-meta" style="color:rgba(255,255,255,0.4);">${escHtml(chefStr)}</div>`;
+      if (chefStr) html += `<div class="popup-award-meta" style="color:rgba(255,255,255,0.4);display:block;">${escHtml(chefStr)}</div>`;
     }
     html += `</div>`;
   }
