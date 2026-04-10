@@ -1634,27 +1634,15 @@ async function loadData() {
 }
 
 function handlePopupDeepLink(restaurantKey, lat, lng) {
-  // Fly to location if coords provided
-  if (!isNaN(lat) && !isNaN(lng)) {
-    map.setView([lat, lng], 15);
-  }
-  // Find and open the matching marker popup
   // Use a short delay so markers have rendered after applyFilters
   setTimeout(() => {
-    map.eachLayer(layer => {
-      if (!layer.options?.loc) return;
-      const awards = layer.options.loc.awards || [];
-      const key = favKey(awards[0]);
-      if (key === restaurantKey) {
-        // Unspiderfy cluster if needed
-        if (layer._cluster) {
-          layer._cluster.spiderfy();
-        }
-        layer.openPopup();
-        if (!isNaN(lat) && !isNaN(lng)) {
-          map.panTo([lat, lng]);
-        }
-      }
+    const marker = markerCluster.getLayers().find(layer => {
+      const awards = layer.options?.loc?.awards || [];
+      return awards.some(a => favKey(a) === restaurantKey);
+    });
+    if (!marker) return;
+    markerCluster.zoomToShowLayer(marker, () => {
+      marker.openPopup();
     });
   }, 600);
 }
