@@ -2133,7 +2133,6 @@ function buildPopup(loc) {
 
   html += `<div class="popup-awards-list">`;
   for (const [restaurant, { awards: rawards, meta }] of byRestaurant) {
-    rawards.sort((a, b) => b.year - a.year);
     html += `<div class="popup-award-item">`;
     if (!isPrecise) {
       const restLinks = [];
@@ -2141,18 +2140,33 @@ function buildPopup(loc) {
       if (meta.website) restLinks.push(`<a href="${escHtml(meta.website)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.68rem;font-family:sans-serif;text-decoration:none;">🌐</a>`);
       html += `<div class="popup-award-title" style="display:flex;align-items:center;gap:6px;">${escHtml(restaurant)} ${restLinks.join(' ')}</div>`;
     }
-    for (const a of rawards.slice(0, 4)) {
-      const badge = a.status === 'Winner' ? '🥇' : a.status === 'Semifinalist' ? '🥈' : '🥉';
-      html += `<div class="popup-award-meta">
-        <span>${badge} ${escHtml(a.status)}</span>
-        <span>${escHtml(a.category || '')}</span>
-        <span>${a.year}</span>
-      </div>`;
-      if (a.name && a.name !== restaurant) {
-        html += `<div class="popup-award-meta">Chef: ${escHtml(a.name)}</div>`;
-      }
+
+    // Group by status+category so multiple years/chefs collapse into one row
+    const groups = new Map();
+    for (const a of rawards) {
+      const gk = `${a.status}||${a.category || ''}`;
+      if (!groups.has(gk)) groups.set(gk, { status: a.status, category: a.category || '', years: new Set(), chefs: new Set() });
+      const g = groups.get(gk);
+      if (a.year) g.years.add(String(a.year));
+      if (a.name && a.name !== restaurant) g.chefs.add(a.name);
     }
-    if (rawards.length > 4) html += `<div class="popup-award-meta">+${rawards.length - 4} more…</div>`;
+
+    for (const g of groups.values()) {
+      const badge  = g.status === 'Winner' ? '🥇' : g.status === 'Semifinalist' ? '🥈' : '🥉';
+      const years  = [...g.years].sort((a, b) => b - a);
+      const yearStr = years.length > 1
+        ? (Number(years[0]) - Number(years[years.length - 1]) === years.length - 1
+            ? `${years[years.length - 1]}–${years[0]}`   // consecutive → range
+            : years.join(', '))
+        : (years[0] || '');
+      const chefStr = [...g.chefs].join(', ');
+      html += `<div class="popup-award-meta">
+        <span>${badge} ${escHtml(g.status)}</span>
+        <span>${escHtml(g.category)}</span>
+        ${yearStr ? `<span>${escHtml(yearStr)}</span>` : ''}
+      </div>`;
+      if (chefStr) html += `<div class="popup-award-meta" style="color:rgba(255,255,255,0.4);">${escHtml(chefStr)}</div>`;
+    }
     html += `</div>`;
   }
   html += `</div>`;  // popup-awards-list
