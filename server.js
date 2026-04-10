@@ -13,7 +13,10 @@ app.use((req, res, next) => { console.log('[REQ]', req.method, req.url); next();
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'profile.html')));
 app.get('/profile.html', (req, res) => res.sendFile(path.join(__dirname, 'profile.html')));
+app.get('/list', (req, res) => res.sendFile(path.join(__dirname, 'list.html')));
+app.get('/list.html', (req, res) => res.sendFile(path.join(__dirname, 'list.html')));
 app.use('/data', express.static(path.join(__dirname, 'data')));
+app.use(express.static(__dirname));
 
 // Awards data
 app.get('/api/awards', (req, res) => {
