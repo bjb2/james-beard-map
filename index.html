@@ -1531,67 +1531,6 @@ function markerIcon(status, michelinTier) {
   });
 }
 
-// ── Cuisine normalisation ────────────────────────────────────────────────────
-// Maps raw category strings (from Mapbox/Yelp) → clean display labels.
-// Anything not listed falls back to title-case of the original.
-const CUISINE_MAP = {
-  'new american':'New American','american restaurant':'American','american':'American',
-  'italian restaurant':'Italian','italian':'Italian',
-  'french restaurant':'French','french':'French',
-  'japanese restaurant':'Japanese','japanese':'Japanese','sushi bars':'Japanese','izakaya':'Japanese','ramen':'Japanese','ramen restaurant':'Japanese',
-  'mexican restaurant':'Mexican','mexican':'Mexican','tex-mex':'Mexican','tacos':'Mexican','taco restaurant':'Mexican',
-  'seafood':'Seafood','fish restaurant':'Seafood','seafood markets':'Seafood',
-  'cocktail bars':'Bars & Cocktails','bar':'Bars & Cocktails','bars':'Bars & Cocktails',
-  'cocktail bar':'Bars & Cocktails','beer bar':'Bars & Cocktails','nightlife':'Bars & Cocktails',
-  'whiskey bars':'Bars & Cocktails','lounges':'Bars & Cocktails','pubs':'Bars & Cocktails',
-  'pub':'Bars & Cocktails','gastropubs':'Bars & Cocktails','gastropub':'Bars & Cocktails',
-  'wine bars':'Wine & Spirits','wine bar':'Wine & Spirits','winery':'Wine & Spirits',
-  'wineries':'Wine & Spirits','vineyards':'Wine & Spirits','beer, wine & spirits':'Wine & Spirits',
-  'liquor store':'Wine & Spirits','distillery':'Wine & Spirits',
-  'brewery':'Brewery','breweries':'Brewery','biergarten':'Brewery',
-  'breakfast & brunch':'Breakfast & Brunch','breakfast restaurant':'Breakfast & Brunch',
-  'brunch restaurant':'Breakfast & Brunch','pancakes':'Breakfast & Brunch',
-  'steakhouses':'Steakhouse','steakhouse':'Steakhouse',
-  'bakeries':'Bakery','bakery':'Bakery','patisserie/cake shop':'Bakery',
-  'bagels':'Bakery','donuts':'Bakery','donut shop':'Bakery',
-  'coffee & tea':'Coffee & Tea','coffee':'Coffee & Tea','coffee shop':'Coffee & Tea',
-  'café':'Coffee & Tea','cafes':'Coffee & Tea','juice bars & smoothies':'Coffee & Tea',
-  'southern':'Southern / Cajun','cajun/creole':'Southern / Cajun',
-  'creole restaurant':'Southern / Cajun',
-  'indian restaurant':'Indian','indian':'Indian',
-  'mediterranean restaurant':'Mediterranean','mediterranean':'Mediterranean',
-  'pizza':'Pizza',
-  'asian fusion':'Asian Fusion','asian food':'Asian Fusion',
-  'korean restaurant':'Korean','korean':'Korean',
-  'chinese restaurant':'Chinese','chinese':'Chinese','dim sum':'Chinese','cantonese':'Chinese',
-  'thai restaurant':'Thai','thai':'Thai',
-  'vietnamese restaurant':'Vietnamese','vietnamese':'Vietnamese',
-  'spanish restaurant':'Spanish','spanish':'Spanish','iberian':'Spanish','basque':'Spanish',
-  'comfort food':'American','diners':'American','diner':'American',
-  'tapas/small plates':'Tapas','tapas restaurant':'Tapas','tapas bars':'Tapas',
-  'desserts':'Desserts','ice cream & frozen yogurt':'Desserts','chocolatiers & shops':'Desserts',
-  'cupcakes':'Desserts',
-  'sandwiches':'Sandwiches','delis':'Sandwiches',
-  'vegetarian':'Vegetarian / Vegan','vegan':'Vegetarian / Vegan','gluten-free':'Vegetarian / Vegan',
-  'modern european':'Modern European','brasseries':'Modern European','austrian':'Modern European',
-  'caribbean':'Caribbean','latin american':'Latin American',
-  'peruvian':'Latin American','puerto rican':'Latin American',
-  'greek restaurant':'Greek','greek':'Greek',
-  'middle eastern':'Middle Eastern','moroccan':'Middle Eastern','persian restaurant':'Middle Eastern',
-  'african':'African','ethiopian':'African',
-  'hawaiian':'Hawaiian',
-  'filipino restaurant':'Filipino','filipino':'Filipino',
-  'fast food restaurant':null,'food delivery services':null,'food stands':null,
-  'restaurants':null,'food and drink':null,'food':null,
-};
-
-function normaliseCuisine(raw) {
-  if (!raw) return null;
-  const key = raw.toLowerCase().trim();
-  if (key in CUISINE_MAP) return CUISINE_MAP[key];
-  // Title-case anything not explicitly mapped
-  return raw.replace(/\w\S*/g, w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
-}
 
 // ── Data loading ────────────────────────────────────────────────────────────
 async function loadData() {
@@ -1702,19 +1641,20 @@ function initFilters() {
     catSel.appendChild(opt);
   });
 
-  // Populate cuisine/type filter — sorted by frequency so common ones appear first
-  const cuisineCount = {};
-  allAwards.forEach(a => (a.cuisineTags || []).forEach(t => {
-    cuisineCount[t] = (cuisineCount[t] || 0) + 1;
-  }));
-  const cuisines = Object.keys(cuisineCount).sort((a, b) =>
-    cuisineCount[b] - cuisineCount[a] || a.localeCompare(b)
-  );
+  // Populate cuisine/type filter — canonical categories in fixed order
+  const CUISINE_CATEGORIES = [
+    'BBQ & Smokehouse', 'Steakhouse', 'Japanese', 'Chinese', 'Italian',
+    'French', 'Korean', 'Thai', 'Indian', 'Southeast Asian', 'Mexican',
+    'Mediterranean', 'Middle Eastern', 'Latin American', 'Seafood',
+    'Southern & Soul', 'African', 'European', 'American', 'Farm to Table',
+    'Vegetarian / Vegan', 'Bakery & Café', 'Wine & Spirits', 'Bars & Cocktails',
+    'Contemporary',
+  ];
   const cuisineSel = document.getElementById('filter-cuisine');
-  cuisines.forEach(c => {
+  CUISINE_CATEGORIES.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c;
-    opt.textContent = `${c} (${cuisineCount[c]})`;
+    opt.textContent = c;
     cuisineSel.appendChild(opt);
   });
 
@@ -1792,7 +1732,7 @@ function applyFilters() {
     if (michelinTier && a.michelinAward !== michelinTier) return false;
 
     // Shared filters
-    if (cuisine && !(a.cuisineTags || []).includes(cuisine)) return false;
+    if (cuisine && a.cuisineCategory !== cuisine) return false;
     if (search) {
       const haystack = `${a.name||''} ${a.restaurant||''}`.toLowerCase();
       if (!haystack.includes(search)) return false;
@@ -1923,8 +1863,8 @@ function buildPopup(loc) {
     html += `</div>`;
 
     const meta = [];
-    if (a.price)   meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
-    if (a.cuisine) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisine)}</span>`);
+    if (a.price)          meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
+    if (a.cuisineCategory) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisineCategory)}</span>`);
     if (meta.length) html += `<div style="font-family:sans-serif;font-size:0.78rem;margin-bottom:8px;">${meta.join(' · ')}</div>`;
 
     const links = [];
