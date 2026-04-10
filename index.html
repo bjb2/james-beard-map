@@ -188,6 +188,29 @@
       margin-top: 0;
     }
 
+    .my-list-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--white-dim);
+      font-size: 0.8rem;
+      transition: color 0.12s;
+    }
+    .my-list-link:last-child { border-bottom: none; }
+    .my-list-link:hover { color: var(--orange); }
+    .my-list-link .list-count {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.3);
+    }
+    .my-list-wtg {
+      color: var(--orange);
+      font-weight: 600;
+    }
+    .my-list-wtg:hover { color: #ffb84d; }
+
     /* Search */
     .search-box { position: relative; }
 
@@ -921,6 +944,12 @@
       </div>
     </div>
 
+    <!-- My Lists -->
+    <div class="sidebar-section collapsible" id="section-mylists" style="display:none;">
+      <h3>My Lists</h3>
+      <div class="section-body" id="my-lists-body"></div>
+    </div>
+
     <!-- Results list -->
     <div id="results-panel">
       <div class="result-count" id="result-count">Loading…</div>
@@ -986,10 +1015,12 @@ function setUser(user) {
   } else {
     signedIn.style.display  = 'none';
     signedOut.style.display = 'block';
-    visitedKeys  = new Set();
-    wantToGoKeys = new Set();
+    visitedKeys    = new Set();
+    wantToGoKeys   = new Set();
     wantToGoListId = null;
-    userLists = [];
+    wantToGoSlug   = null;
+    userLists      = [];
+    renderMyListsSidebar();
   }
 }
 
@@ -1007,8 +1038,9 @@ async function signOut() {
 // ── Community state ─────────────────────────────────────────────────────────
 let visitedKeys   = new Set(); // restaurant_keys the user has visited
 let wantToGoKeys  = new Set(); // restaurant_keys on the user's want-to-go list
-let wantToGoListId = null;     // Supabase list id for "Want to Go"
-let userLists     = [];        // [{ id, name, slug, is_public, keys: Set }]
+let wantToGoListId   = null;   // Supabase list id for "Want to Go"
+let wantToGoSlug     = null;   // slug for "Want to Go" list
+let userLists        = [];     // [{ id, name, slug, is_public, keys: Set }]
 
 async function loadCommunityState() {
   if (!currentUser) return;
@@ -1018,7 +1050,7 @@ async function loadCommunityState() {
   if (visits) visitedKeys = new Set(visits.map(v => v.restaurant_key));
 
   // Load or create "Want to Go" list (upsert on slug to avoid race-condition dupes)
-  let { data: lists } = await sb.from('lists').select('id,name').eq('user_id', currentUser.id);
+  let { data: lists } = await sb.from('lists').select('id,name,slug,is_public').eq('user_id', currentUser.id);
   // Deduplicate: if somehow multiple "Want to Go" exist, use the oldest
   const wtgAll = lists?.filter(l => l.name === 'Want to Go') || [];
   let wtg = wtgAll[0] || null;
@@ -1031,12 +1063,14 @@ async function loadCommunityState() {
   }
   if (wtg) {
     wantToGoListId = wtg.id;
+    wantToGoSlug   = wtg.slug;
     const { data: items } = await sb.from('list_items').select('restaurant_key').eq('list_id', wtg.id);
     if (items) wantToGoKeys = new Set(items.map(i => i.restaurant_key));
   }
 
   // Load user-created lists (excludes Want to Go)
   await loadUserLists(lists);
+  renderMyListsSidebar();
 
   // Re-render any open popup to reflect loaded state
   map?.eachLayer(l => { if (l.isPopupOpen?.()) l.openPopup(); });
@@ -1078,6 +1112,36 @@ async function loadUserLists(allListsData) {
     keys:  itemsByList.get(l.id)?.keys  || new Set(),
     notes: itemsByList.get(l.id)?.notes || new Map(),
   }));
+}
+
+function renderMyListsSidebar() {
+  const section = document.getElementById('section-mylists');
+  const body    = document.getElementById('my-lists-body');
+  if (!currentUser) { section.style.display = 'none'; return; }
+
+  section.style.display = '';
+  const wtgCount = wantToGoKeys.size;
+  const wtgHref  = wantToGoSlug ? `/list.html?slug=${wantToGoSlug}` : '/profile.html';
+
+  const rows = [
+    `<a class="my-list-link my-list-wtg" href="${wtgHref}">
+      ☆ Want to Go
+      <span class="list-count">${wtgCount} place${wtgCount !== 1 ? 's' : ''}</span>
+    </a>`,
+    ...userLists.map(l => {
+      const href  = `/list.html?slug=${encodeURIComponent(l.slug)}`;
+      const count = l.keys.size;
+      return `<a class="my-list-link" href="${href}">
+        ${escHtml(l.name)}
+        <span class="list-count">${count} place${count !== 1 ? 's' : ''}</span>
+      </a>`;
+    }),
+    `<a class="my-list-link" href="/profile.html" style="color:rgba(255,255,255,0.25);font-size:0.72rem;">
+      View all lists →
+    </a>`,
+  ];
+
+  body.innerHTML = rows.join('');
 }
 
 async function toggleVisited(restaurantKey) {
