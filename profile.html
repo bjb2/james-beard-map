@@ -403,6 +403,171 @@
     }
     .show-more-btn:hover { border-color: var(--white-dim); color: var(--white); }
 
+    /* ── My Lists ── */
+    .lists-section {}
+
+    .list-row {
+      background: var(--black-mid);
+      border-radius: 8px;
+      margin-bottom: 6px;
+      overflow: hidden;
+    }
+
+    .list-row-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.1s;
+    }
+    .list-row-header:hover { background: var(--black-light); }
+
+    .list-chevron {
+      font-size: 0.65rem;
+      color: var(--white-faint);
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .list-row.expanded .list-chevron { transform: rotate(90deg); }
+
+    .list-row-name {
+      font-size: 0.88rem;
+      font-weight: 500;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .list-row-count {
+      font-size: 0.72rem;
+      color: var(--white-faint);
+      flex-shrink: 0;
+    }
+
+    .list-row-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .list-action-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      color: var(--white-faint);
+      font-family: inherit;
+      line-height: 1;
+      transition: color 0.12s, background 0.12s;
+    }
+    .list-action-btn:hover { color: var(--white-dim); background: rgba(255,255,255,0.07); }
+    .list-action-btn.delete:hover { color: #e55; background: rgba(220,50,50,0.12); }
+    .list-action-btn.copied { color: var(--orange); }
+
+    .visibility-pill {
+      font-size: 0.62rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      border: 1px solid var(--border-light);
+      color: var(--white-faint);
+      cursor: pointer;
+      font-family: inherit;
+      background: transparent;
+      transition: border-color 0.12s, color 0.12s;
+      flex-shrink: 0;
+    }
+    .visibility-pill.public { border-color: rgba(254,162,25,0.4); color: var(--orange); }
+    .visibility-pill:hover { border-color: var(--white-dim); color: var(--white-dim); }
+
+    .list-row-body {
+      display: none;
+      padding: 0 14px 12px;
+      border-top: 1px solid var(--border);
+    }
+    .list-row.expanded .list-row-body { display: block; }
+
+    .list-body-loading {
+      padding: 16px 0;
+      font-size: 0.8rem;
+      color: var(--white-faint);
+      text-align: center;
+    }
+
+    .list-compact-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .list-compact-item:last-child { border-bottom: none; }
+
+    .list-compact-photo {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--black-light);
+    }
+    .list-compact-placeholder {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      background: var(--black-light);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .list-compact-info { flex: 1; min-width: 0; }
+    .list-compact-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .list-compact-sub {
+      font-size: 0.7rem;
+      color: var(--white-dim);
+      margin-top: 2px;
+    }
+    .list-compact-note {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.35);
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    .new-list-form {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .new-list-input {
+      flex: 1;
+      background: var(--black-light);
+      border: 1px solid var(--border-light);
+      color: var(--white);
+      font-family: inherit;
+      font-size: 0.82rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      outline: none;
+      min-width: 0;
+    }
+    .new-list-input:focus { border-color: var(--orange); }
+
     @media (max-width: 600px) {
       header { padding: 0 16px; }
       .page  { padding: 24px 16px 60px; }
@@ -622,7 +787,7 @@ function bindShowMore(type) {
   });
 }
 
-function renderProfile(profile, visits, wtgItems) {
+function renderProfile(profile, visits, wtgItems, customLists) {
   const stats = computeStats(visits, wtgItems);
 
   const avatarHtml = profile.avatar_url
@@ -679,6 +844,8 @@ function renderProfile(profile, visits, wtgItems) {
       </div>
       ${renderList(wtgItems, 'wantToGo')}
     </div>
+
+    ${renderListsSection(customLists)}
   `;
 
   document.getElementById('profile-content').innerHTML = html;
@@ -689,6 +856,220 @@ function renderProfile(profile, visits, wtgItems) {
 
   bindShowMore('visited');
   bindShowMore('wantToGo');
+}
+
+// ── My Lists section ─────────────────────────────────────────────────────────
+let profileLists = []; // live array updated by mutations
+
+function renderListsSection(lists) {
+  profileLists = lists || [];
+  if (!isOwnProfile && !profileLists.length) return '';
+
+  const rows = profileLists.map(l => renderListRow(l)).join('');
+
+  const newListForm = isOwnProfile ? `
+    <form class="new-list-form" id="new-list-form" onsubmit="createProfileList(event)">
+      <input class="new-list-input" id="new-list-name" type="text" placeholder="New list name…" maxlength="60">
+      <button type="submit" class="btn-orange" style="font-size:0.75rem;padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-family:inherit;font-weight:700;">Create</button>
+    </form>
+  ` : '';
+
+  return `
+    <div class="section lists-section" id="lists-section">
+      <div class="section-title">
+        My Lists
+        <span class="section-count" id="section-lists-count">${profileLists.length}</span>
+      </div>
+      <div id="lists-rows">
+        ${rows || `<div class="empty-state">No lists yet.</div>`}
+      </div>
+      ${newListForm}
+    </div>
+  `;
+}
+
+function renderListRow(list) {
+  const visibilityBtn = isOwnProfile ? `
+    <button class="visibility-pill ${list.is_public ? 'public' : ''}"
+      onclick="event.stopPropagation(); toggleListPublic('${escHtml(list.id)}')"
+    >${list.is_public ? 'Public' : 'Private'}</button>
+  ` : '';
+
+  const shareBtn = list.slug ? `
+    <button class="list-action-btn" id="share-list-${escHtml(list.id)}"
+      onclick="event.stopPropagation(); shareList('${escHtml(list.id)}', '${escHtml(list.slug)}')"
+      title="Share">⤴</button>
+  ` : '';
+
+  const deleteBtn = isOwnProfile ? `
+    <button class="list-action-btn delete"
+      onclick="event.stopPropagation(); deleteProfileList('${escHtml(list.id)}')"
+      title="Delete">✕</button>
+  ` : '';
+
+  return `
+    <div class="list-row" id="list-row-${escHtml(list.id)}">
+      <div class="list-row-header" onclick="toggleListExpand('${escHtml(list.id)}')">
+        <span class="list-chevron">▶</span>
+        <span class="list-row-name">${escHtml(list.name)}</span>
+        <span class="list-row-count">${list.count} place${list.count !== 1 ? 's' : ''}</span>
+        <div class="list-row-actions">
+          ${visibilityBtn}
+          ${shareBtn}
+          ${deleteBtn}
+        </div>
+      </div>
+      <div class="list-row-body" id="list-body-${escHtml(list.id)}"></div>
+    </div>
+  `;
+}
+
+function reRenderListsRows() {
+  const container = document.getElementById('lists-rows');
+  if (!container) return;
+  container.innerHTML = profileLists.length
+    ? profileLists.map(l => renderListRow(l)).join('')
+    : `<div class="empty-state">No lists yet.</div>`;
+  const countEl = document.getElementById('section-lists-count');
+  if (countEl) countEl.textContent = profileLists.length;
+}
+
+async function toggleListExpand(listId) {
+  const row  = document.getElementById(`list-row-${listId}`);
+  const body = document.getElementById(`list-body-${listId}`);
+  if (!row || !body) return;
+
+  const isExpanded = row.classList.contains('expanded');
+  if (isExpanded) {
+    row.classList.remove('expanded');
+    return;
+  }
+
+  row.classList.add('expanded');
+
+  // Lazy-load items if not already loaded
+  if (body.dataset.loaded) return;
+  body.innerHTML = `<div class="list-body-loading">Loading…</div>`;
+
+  const { data: items } = await sb
+    .from('list_items')
+    .select('restaurant_key, note, added_at')
+    .eq('list_id', listId)
+    .order('added_at', { ascending: false });
+
+  if (!items || !items.length) {
+    body.innerHTML = `<div class="list-body-loading">Nothing in this list yet.</div>`;
+    body.dataset.loaded = '1';
+    return;
+  }
+
+  const keys = items.map(i => i.restaurant_key);
+  const { data: rests } = await sb
+    .from('restaurants_with_summary')
+    .select('key, name, city, state, country, photo_url, award_summary')
+    .in('key', keys);
+
+  const restMap = {};
+  (rests || []).forEach(r => { restMap[r.key] = r; });
+
+  body.innerHTML = items.map(item => {
+    const r = restMap[item.restaurant_key] || {};
+    const name     = r.name || item.restaurant_key.split('|')[0];
+    const location = [r.city, r.state || r.country].filter(Boolean).join(', ');
+    const badge    = listBadgeText(r.award_summary);
+    const sub      = [badge, location].filter(Boolean).join(' · ');
+    const photo    = r.photo_url
+      ? `<img class="list-compact-photo" src="${escHtml(r.photo_url)}" alt="" loading="lazy">`
+      : `<div class="list-compact-placeholder">🍽</div>`;
+    const ek = encodeURIComponent(item.restaurant_key);
+    let mapHref = `/?popup=${ek}`;
+    if (r.lat && r.lng) mapHref += `&lat=${r.lat}&lng=${r.lng}`;
+
+    return `
+      <a class="list-compact-item" href="${mapHref}" style="text-decoration:none;color:inherit;">
+        ${photo}
+        <div class="list-compact-info">
+          <div class="list-compact-name">${escHtml(name)}</div>
+          ${sub ? `<div class="list-compact-sub">${escHtml(sub)}</div>` : ''}
+          ${item.note ? `<div class="list-compact-note">${escHtml(item.note)}</div>` : ''}
+        </div>
+      </a>
+    `;
+  }).join('');
+
+  body.dataset.loaded = '1';
+}
+
+function listBadgeText(summary) {
+  if (!summary) return '';
+  if (summary.includes('Winner')) return '🥇 Winner';
+  if (summary.startsWith('Michelin')) return summary;
+  return '';
+}
+
+async function toggleListPublic(listId) {
+  const list = profileLists.find(l => l.id === listId);
+  if (!list) return;
+  const newVal = !list.is_public;
+  list.is_public = newVal;
+
+  await sb.from('lists').update({ is_public: newVal }).eq('id', listId);
+
+  const pill = document.querySelector(`#list-row-${listId} .visibility-pill`);
+  if (pill) {
+    pill.textContent = newVal ? 'Public' : 'Private';
+    pill.classList.toggle('public', newVal);
+  }
+}
+
+async function shareList(listId, slug) {
+  const url = `${window.location.origin}/list.html?slug=${encodeURIComponent(slug)}`;
+  const btn = document.getElementById(`share-list-${listId}`);
+
+  if (navigator.share) {
+    try { await navigator.share({ url }); return; } catch (_) {}
+  }
+  await navigator.clipboard.writeText(url);
+  if (btn) {
+    btn.textContent = '✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '⤴'; btn.classList.remove('copied'); }, 2000);
+  }
+}
+
+async function deleteProfileList(listId) {
+  if (!confirm('Delete this list? This cannot be undone.')) return;
+
+  await sb.from('list_items').delete().eq('list_id', listId);
+  await sb.from('lists').delete().eq('id', listId);
+
+  profileLists = profileLists.filter(l => l.id !== listId);
+  reRenderListsRows();
+}
+
+async function createProfileList(e) {
+  e.preventDefault();
+  const input = document.getElementById('new-list-name');
+  const name  = input.value.trim();
+  if (!name || !currentUser) return;
+
+  const slug = slugifyProfile(name);
+  const { data: newList } = await sb.from('lists').insert({
+    user_id: currentUser.id, name, slug, is_public: true,
+  }).select('id, name, slug, is_public').single();
+
+  if (!newList) return;
+  input.value = '';
+  profileLists.push({ ...newList, count: 0 });
+  reRenderListsRows();
+}
+
+function slugifyProfile(name) {
+  const base = name.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '').trim()
+    .replace(/\s+/g, '-').slice(0, 40);
+  const suffix = Math.random().toString(36).slice(2, 6);
+  return `${base}-${suffix}`;
 }
 
 // ── Load ─────────────────────────────────────────────────────────────────────
@@ -708,34 +1089,54 @@ async function loadProfile(userId) {
 
   profileUser = profile;
 
-  // Fetch visits and want-to-go list in parallel
-  const [visitsRes, listsRes] = await Promise.all([
+  // Fetch visits and all lists in parallel
+  const [visitsRes, allListsRes] = await Promise.all([
     sb.from('visits')
       .select('restaurant_key, visited_on, created_at')
       .eq('user_id', userId)
       .order('visited_on', { ascending: false, nullsFirst: false })
       .order('created_at', { ascending: false }),
     sb.from('lists')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('name', 'Want to Go')
-      .limit(1),
+      .select('id, name, slug, is_public')
+      .eq('user_id', userId),
   ]);
 
-  const visits = visitsRes.data || [];
-  const lists  = listsRes.data || [];
+  const visits   = visitsRes.data || [];
+  const allLists = allListsRes.data || [];
+
+  const wtgList     = allLists.find(l => l.name === 'Want to Go');
+  const customLists = allLists.filter(l => l.name !== 'Want to Go');
+
+  // Only show public lists on other people's profiles
+  const viewingOwn = currentUser?.id === userId;
+  const visibleCustomLists = viewingOwn
+    ? customLists
+    : customLists.filter(l => l.is_public);
 
   let wtgItems = [];
-  if (lists.length) {
+  if (wtgList) {
     const { data: items } = await sb
       .from('list_items')
       .select('restaurant_key, added_at')
-      .eq('list_id', lists[0].id)
+      .eq('list_id', wtgList.id)
       .order('added_at', { ascending: false });
     wtgItems = items || [];
   }
 
-  // Batch-fetch restaurant display data for all unique keys
+  // Fetch item counts for custom lists
+  const listCounts = {};
+  if (visibleCustomLists.length) {
+    const ids = visibleCustomLists.map(l => l.id);
+    const { data: countRows } = await sb
+      .from('list_items')
+      .select('list_id')
+      .in('list_id', ids);
+    (countRows || []).forEach(r => {
+      listCounts[r.list_id] = (listCounts[r.list_id] || 0) + 1;
+    });
+  }
+
+  // Batch-fetch restaurant display data for visits + WTG
   const allKeys = [...new Set([
     ...visits.map(v => v.restaurant_key),
     ...wtgItems.map(i => i.restaurant_key),
@@ -754,9 +1155,11 @@ async function loadProfile(userId) {
   const enrichedVisits   = visits.map(v  => ({ ...v,  ...restaurantMap[v.restaurant_key]  }));
   const enrichedWtgItems = wtgItems.map(i => ({ ...i, ...restaurantMap[i.restaurant_key] }));
 
-  isOwnProfile = currentUser?.id === userId;
-  if (lists.length) wtgListId = lists[0].id;
-  renderProfile(profile, enrichedVisits, enrichedWtgItems);
+  const listsWithCounts = visibleCustomLists.map(l => ({ ...l, count: listCounts[l.id] || 0 }));
+
+  isOwnProfile = viewingOwn;
+  if (wtgList) wtgListId = wtgList.id;
+  renderProfile(profile, enrichedVisits, enrichedWtgItems, listsWithCounts);
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
