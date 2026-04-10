@@ -436,6 +436,32 @@
       font-weight: 600;
     }
 
+    /* ── Save to list buttons ── */
+    .save-to-list-btn {
+      background: none; border: 1px solid var(--border-light);
+      color: rgba(255,255,255,0.35); font-size: 0.68rem; font-family: inherit;
+      padding: 3px 8px; border-radius: 6px; cursor: pointer; margin-top: 4px;
+      transition: color 0.12s, border-color 0.12s;
+    }
+    .save-to-list-btn:hover { color: var(--orange); border-color: var(--orange); }
+
+    .drawer-save-btn {
+      flex-shrink: 0; background: none; border: 1px solid var(--border-light);
+      color: rgba(255,255,255,0.4); font-size: 0.85rem; line-height: 1;
+      width: 28px; height: 28px; border-radius: 6px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.12s, border-color 0.12s;
+    }
+    .drawer-save-btn:hover { color: var(--orange); border-color: var(--orange); }
+
+    .lp-save-btn {
+      width: 100%; background: none; border: 1px solid var(--border-light);
+      color: rgba(255,255,255,0.45); font-size: 0.72rem; font-family: inherit;
+      padding: 5px 0; border-radius: 6px; cursor: pointer; margin-top: 6px;
+      transition: color 0.12s, border-color 0.12s;
+    }
+    .lp-save-btn:hover { color: var(--orange); border-color: var(--orange); }
+
     /* ── States ── */
     .state-loading, .state-error, .state-empty {
       text-align: center;
@@ -524,9 +550,11 @@ const slug = new URLSearchParams(window.location.search).get('slug');
 let currentListId = null;
 let isOwner = false;
 let isLoggedIn = false;
+let currentUser = null;
 let listMap = null;
 let mapMarkers = []; // [{marker, key}]
 let allRestaurants = [];
+let userLists = []; // [{id, name, slug, is_public, keys: Set, notes: Map}]
 
 // ── Load ──────────────────────────────────────────────────────────────────────
 async function load() {
@@ -535,6 +563,7 @@ async function load() {
   const { data: { session } } = await sb.auth.getSession();
   const user = session?.user ?? null;
   isLoggedIn = !!user;
+  currentUser = user;
 
   const { data: lists, error: listErr } = await sb
     .from('lists')
@@ -603,8 +632,34 @@ async function load() {
     ? `<div class="state-empty"><h2>No places yet</h2><p>This list doesn\u2019t have any restaurants yet.</p></div>`
     : allRestaurants.map((r, i) => cardHtml(r, noteMap.get(r.key), i + 1)).join('');
 
+  // Load viewer's own lists (for Save button)
+  await loadUserLists();
+
   // Map
   if (hasPins) initMap(allRestaurants, noteMap);
+}
+
+// ── User lists (for Save button) ─────────────────────────────────────────────
+async function loadUserLists() {
+  if (!currentUser) return;
+  const { data: lists } = await sb.from('lists')
+    .select('id, name, slug, is_public').eq('user_id', currentUser.id);
+  if (!lists?.length) { userLists = []; return; }
+  const listIds = lists.map(l => l.id);
+  const { data: allItems } = await sb.from('list_items')
+    .select('list_id, restaurant_key, note').in('list_id', listIds);
+  const byList = new Map(listIds.map(id => [id, { keys: new Set(), notes: new Map() }]));
+  for (const item of (allItems || [])) {
+    const b = byList.get(item.list_id);
+    if (!b) continue;
+    b.keys.add(item.restaurant_key);
+    if (item.note) b.notes.set(item.restaurant_key, item.note);
+  }
+  userLists = lists.map(l => ({
+    id: l.id, name: l.name, slug: l.slug, is_public: l.is_public,
+    keys: byList.get(l.id)?.keys ?? new Set(),
+    notes: byList.get(l.id)?.notes ?? new Map(),
+  }));
 }
 
 // ── Meta bar ──────────────────────────────────────────────────────────────────
@@ -736,6 +791,7 @@ function cardHtml(r, note, num) {
           ${subParts.join('<span style="color:var(--border-light);">·</span>')}
         </div>
         ${links.length ? `<div class="rc-links">${links.join('')}</div>` : ''}
+        <button class="save-to-list-btn" onclick="event.stopPropagation();openListPicker('${escHtml(r.key).replace(/'/g,"\\'")}')">＋ Save to list</button>
         ${noteSection}
       </div>
     </div>
@@ -839,6 +895,7 @@ function popupHtml(r, note) {
       ${badge ? `<div class="lp-badge-row">${badge}</div>` : ''}
       ${links.length ? `<div class="lp-links">${links.join('')}</div>` : ''}
       ${note ? `<div class="lp-note">\u201c${escHtml(note)}\u201d</div>` : ''}
+      <button onclick="openListPicker('${escHtml(r.key).replace(/'/g,"\\'")}');" class="lp-save-btn">\uFF0B Save to list</button>
     </div>
   </div>`;
 }
@@ -891,14 +948,15 @@ function initMap(restaurants, noteMap = new Map()) {
             ${loc ? `<span class="drawer-loc">${escHtml(loc)}</span>` : ''}
           </div>
         </div>
+        <button class="drawer-save-btn" onclick="event.stopPropagation();openListPicker('${escHtml(r.key).replace(/'/g,"\\'")}')">＋</button>
       </div>
     `;
   }).join('');
 
   setTimeout(() => {
     listMap.invalidateSize();
-    if (bounds.length === 1) listMap.setView(bounds[0], 11);
-    else listMap.fitBounds(bounds, { padding: [40, 40], maxZoom: 10 });
+    if (bounds.length === 1) listMap.setView(bounds[0], 9);
+    else listMap.fitBounds(bounds, { padding: [60, 60], maxZoom: 8 });
   }, 0);
 }
 
@@ -941,5 +999,184 @@ function escHtml(s) {
 
 load();
 </script>
+
+<!-- ── List Picker Sheet ───────────────────────────────────────────────────── -->
+<div id="list-picker-backdrop" style="
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:2000;
+" onclick="closeListPicker()"></div>
+
+<div id="list-picker-sheet" style="
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:#1c1c1c;border-top:1px solid #333;border-radius:14px 14px 0 0;
+  z-index:2001;max-height:60vh;overflow-y:auto;
+  transform:translateY(100%);transition:transform 0.3s ease;
+  font-family:'Helvetica Neue',Arial,sans-serif;
+">
+  <div style="padding:12px 20px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2a2a2a;position:sticky;top:0;background:#1c1c1c;z-index:1;">
+    <span style="font-size:0.88rem;font-weight:600;color:#fff;">Save to list</span>
+    <button onclick="closeListPicker()" style="background:none;border:none;color:rgba(255,255,255,0.5);font-size:1.2rem;cursor:pointer;padding:0 4px;line-height:1;">×</button>
+  </div>
+  <div id="list-picker-items" style="padding:8px 0;"></div>
+  <div style="padding:8px 20px 32px;border-top:1px solid #2a2a2a;">
+    <div id="list-picker-new-form" style="display:none;">
+      <input id="list-picker-new-input" type="text" placeholder="List name…" maxlength="60" style="
+        width:100%;background:#141414;border:1px solid #333;border-radius:8px;
+        color:#fff;font-family:inherit;font-size:0.85rem;padding:8px 12px;
+        outline:none;margin-bottom:8px;
+      ">
+      <div style="display:flex;gap:8px;">
+        <button onclick="lpCreateAndAdd()" style="
+          flex:1;background:#FEA219;border:none;border-radius:8px;
+          color:#0d0d0d;font-family:inherit;font-size:0.8rem;font-weight:700;
+          padding:8px;cursor:pointer;">Create &amp; Add</button>
+        <button onclick="lpCancelNew()" style="
+          background:transparent;border:1px solid #333;border-radius:8px;
+          color:rgba(255,255,255,0.5);font-family:inherit;font-size:0.8rem;
+          padding:8px 14px;cursor:pointer;">Cancel</button>
+      </div>
+    </div>
+    <button id="list-picker-new-btn" onclick="lpShowNewForm()" style="
+      display:flex;align-items:center;gap:8px;width:100%;
+      background:transparent;border:none;color:rgba(255,255,255,0.5);
+      font-family:inherit;font-size:0.85rem;cursor:pointer;padding:6px 0;">
+      <span style="font-size:1.1rem;line-height:1;">+</span> New list…
+    </button>
+  </div>
+</div>
+
+<script>
+let listPickerKey = null;
+let lpExpandedNoteId = null;
+
+function openListPicker(restaurantKey) {
+  if (!currentUser) {
+    sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.href } });
+    return;
+  }
+  listPickerKey = restaurantKey;
+  lpRenderItems();
+  const backdrop = document.getElementById('list-picker-backdrop');
+  const sheet    = document.getElementById('list-picker-sheet');
+  backdrop.style.display = 'block';
+  sheet.style.display    = 'block';
+  requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
+}
+
+function closeListPicker() {
+  const sheet    = document.getElementById('list-picker-sheet');
+  const backdrop = document.getElementById('list-picker-backdrop');
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(() => {
+    sheet.style.display    = 'none';
+    backdrop.style.display = 'none';
+    lpCancelNew();
+    lpExpandedNoteId = null;
+  }, 300);
+  listPickerKey = null;
+}
+
+function lpRenderItems() {
+  const container = document.getElementById('list-picker-items');
+  if (!userLists.length) {
+    container.innerHTML = `<div style="padding:12px 20px;font-size:0.82rem;color:rgba(255,255,255,0.4);">No lists yet — create one below.</div>`;
+    return;
+  }
+  container.innerHTML = userLists.map(list => {
+    const checked  = list.keys.has(listPickerKey);
+    const note     = list.notes.get(listPickerKey) || '';
+    const expanded = checked && lpExpandedNoteId === list.id;
+    const notePreview = checked && note && !expanded
+      ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.4);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">${lpEscHtml(note)}</div>`
+      : '';
+    const noteField = expanded ? `
+      <div style="padding:0 20px 10px;" onclick="event.stopPropagation()">
+        <textarea id="lp-note-${lpEscJs(list.id)}" rows="2" maxlength="200"
+          placeholder="Why\u2019d you add it? (optional)"
+          style="width:100%;background:#141414;border:1px solid #444;border-radius:8px;color:#fff;font-family:inherit;font-size:0.82rem;padding:8px 10px;outline:none;resize:none;line-height:1.4;"
+          onblur="lpSaveNote('${lpEscJs(list.id)}','${lpEscJs(listPickerKey)}')"
+        >${lpEscHtml(note)}</textarea>
+      </div>` : '';
+    return `<div>
+      <button onclick="${checked ? `lpExpandNote('${lpEscJs(list.id)}')` : `lpToggle('${lpEscJs(list.id)}','${lpEscJs(listPickerKey)}')`}"
+        style="display:flex;align-items:center;gap:12px;width:100%;background:transparent;border:none;padding:10px 20px;cursor:pointer;text-align:left;color:#fff;font-family:inherit;">
+        <span style="width:20px;height:20px;border-radius:4px;border:1.5px solid ${checked ? '#FEA219' : '#444'};flex-shrink:0;
+          background:${checked ? 'rgba(254,162,25,0.15)' : 'transparent'};display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#FEA219;"
+          onclick="${checked ? `event.stopPropagation();lpToggle('${lpEscJs(list.id)}','${lpEscJs(listPickerKey)}')` : ''}">${checked ? '✓' : ''}</span>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.88rem;">${lpEscHtml(list.name)}</div>
+          ${notePreview}
+        </div>
+      </button>
+      ${noteField}
+    </div>`;
+  }).join('');
+}
+
+async function lpToggle(listId, restaurantKey) {
+  const list = userLists.find(l => l.id === listId);
+  if (!list) return;
+  if (list.keys.has(restaurantKey)) {
+    list.keys.delete(restaurantKey);
+    list.notes.delete(restaurantKey);
+    lpExpandedNoteId = null;
+    await sb.from('list_items').delete().eq('list_id', listId).eq('restaurant_key', restaurantKey);
+  } else {
+    list.keys.add(restaurantKey);
+    await sb.from('list_items').upsert({ list_id: listId, restaurant_key: restaurantKey });
+  }
+  lpRenderItems();
+}
+
+function lpExpandNote(listId) {
+  lpExpandedNoteId = lpExpandedNoteId === listId ? null : listId;
+  lpRenderItems();
+  if (lpExpandedNoteId) {
+    setTimeout(() => { const ta = document.getElementById(`lp-note-${listId}`); if (ta) ta.focus(); }, 50);
+  }
+}
+
+async function lpSaveNote(listId, restaurantKey) {
+  const input = document.getElementById(`lp-note-${listId}`);
+  if (!input) return;
+  const note = input.value.trim();
+  const list = userLists.find(l => l.id === listId);
+  if (list) { note ? list.notes.set(restaurantKey, note) : list.notes.delete(restaurantKey); }
+  await sb.from('list_items').update({ note: note || null }).eq('list_id', listId).eq('restaurant_key', restaurantKey);
+  lpExpandedNoteId = null;
+  lpRenderItems();
+}
+
+function lpShowNewForm() {
+  document.getElementById('list-picker-new-btn').style.display  = 'none';
+  document.getElementById('list-picker-new-form').style.display = 'block';
+  document.getElementById('list-picker-new-input').focus();
+}
+function lpCancelNew() {
+  const input = document.getElementById('list-picker-new-input');
+  if (input) input.value = '';
+  const form = document.getElementById('list-picker-new-form');
+  const btn  = document.getElementById('list-picker-new-btn');
+  if (form) form.style.display = 'none';
+  if (btn)  btn.style.display  = 'flex';
+}
+async function lpCreateAndAdd() {
+  const input = document.getElementById('list-picker-new-input');
+  const name  = input?.value.trim();
+  if (!name || !currentUser) return;
+  const sfx  = Math.random().toString(36).slice(2, 6);
+  const slug  = name.toLowerCase().replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-').slice(0,40) + '-' + sfx;
+  const { data: newList, error } = await sb.from('lists')
+    .insert({ user_id: currentUser.id, name, slug, is_public: true }).select().single();
+  if (error || !newList) return;
+  await sb.from('list_items').upsert({ list_id: newList.id, restaurant_key: listPickerKey });
+  userLists.push({ id: newList.id, name: newList.name, slug: newList.slug, is_public: true,
+    keys: new Set([listPickerKey]), notes: new Map() });
+  lpCancelNew();
+  lpRenderItems();
+}
+function lpEscJs(s)   { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+function lpEscHtml(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+
 </body>
 </html>
