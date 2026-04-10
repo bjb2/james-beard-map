@@ -814,8 +814,9 @@ function cardHtml(r, note, num) {
 
   // Quick links
   const links = [];
-  const mapsHref = r.address
-    ? `https://maps.google.com/?q=${encodeURIComponent(r.address)}`
+  const mapsQuery = r.address ? `${r.name}, ${r.address}` : (r.lat && r.lng ? null : null);
+  const mapsHref = mapsQuery
+    ? `https://maps.google.com/?q=${encodeURIComponent(mapsQuery)}`
     : (r.lat && r.lng ? `https://maps.google.com/?q=${r.lat},${r.lng}` : null);
   if (mapsHref)      links.push(`<a class="rc-link" href="${escHtml(mapsHref)}" target="_blank" rel="noopener">📍 Google Maps</a>`);
   if (r.website)     links.push(`<a class="rc-link" href="${escHtml(r.website)}" target="_blank" rel="noopener">🌐 Website</a>`);
@@ -986,8 +987,9 @@ async function saveNote(wrap, restaurantKey, note) {
 // ── Popup HTML ────────────────────────────────────────────────────────────────
 function popupHtml(r, note) {
   const location = [r.city, r.state || r.country].filter(Boolean).join(', ');
-  const mapsHref = r.address
-    ? `https://maps.google.com/?q=${encodeURIComponent(r.address)}`
+  const mapsQ    = r.address ? `${r.name}, ${r.address}` : null;
+  const mapsHref = mapsQ
+    ? `https://maps.google.com/?q=${encodeURIComponent(mapsQ)}`
     : (r.lat && r.lng ? `https://maps.google.com/?q=${r.lat},${r.lng}` : null);
 
   const links = [];
