@@ -35,11 +35,47 @@ const BATCH_SIZE  = 200;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+const STATE_ABBR = {
+  AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California',
+  CO:'Colorado', CT:'Connecticut', DC:'District of Columbia', DE:'Delaware',
+  FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois',
+  IN:'Indiana', IA:'Iowa', KS:'Kansas', KY:'Kentucky', LA:'Louisiana',
+  ME:'Maine', MD:'Maryland', MA:'Massachusetts', MI:'Michigan', MN:'Minnesota',
+  MS:'Mississippi', MO:'Missouri', MT:'Montana', NE:'Nebraska', NV:'Nevada',
+  NH:'New Hampshire', NJ:'New Jersey', NM:'New Mexico', NY:'New York',
+  NC:'North Carolina', ND:'North Dakota', OH:'Ohio', OK:'Oklahoma', OR:'Oregon',
+  PA:'Pennsylvania', RI:'Rhode Island', SC:'South Carolina', SD:'South Dakota',
+  TN:'Tennessee', TX:'Texas', UT:'Utah', VT:'Vermont', VA:'Virginia',
+  WA:'Washington', WV:'West Virginia', WI:'Wisconsin', WY:'Wyoming',
+};
+
+/**
+ * Some data sources (e.g. Michelin) embed the state abbreviation in the city
+ * field ("San Antonio, TX") with no separate state and country="USA".
+ * Normalize these so all US restaurants share the same city/state format.
+ * Returns { city, state, country }.
+ */
+function normalizeLocation(entry) {
+  let city    = (entry.city    || '').trim();
+  let state   = (entry.state   || '').trim() || null;
+  let country = (entry.country || '').trim() || null;
+
+  // Strip embedded state abbreviation from city: "San Antonio, TX" → city="San Antonio", state="Texas"
+  const m = city.match(/^(.+),\s*([A-Z]{2})$/);
+  if (m && STATE_ABBR[m[2]]) {
+    city    = m[1].trim();
+    state   = state || STATE_ABBR[m[2]];
+    country = (country === 'USA' || !country) ? null : country;
+  }
+
+  return { city: city || null, state, country };
+}
+
 function makeKey(entry) {
   const name  = (entry.restaurant || entry.name || '').trim();
-  const city  = (entry.city  || '').trim();
-  const place = (entry.state || entry.country || '').trim();
-  return [name, city, place].join('|');
+  const { city, state, country } = normalizeLocation(entry);
+  const place = state || country || '';
+  return [name, city || '', place].join('|');
 }
 
 /**
@@ -82,26 +118,28 @@ function buildRestaurant(entry, key) {
   const yelp    = entry.yelpDetail || {};
   const photo   = entry.googlePhoto || yelp.image || null;
   const cuisine = entry.cuisineTags || (entry.cuisine ? [entry.cuisine] : null) || null;
+  const { city, state, country } = normalizeLocation(entry);
 
   return {
     key,
-    name:            (entry.restaurant || entry.name || '').trim(),
-    city:            entry.city  || null,
-    state:           entry.state || null,
-    country:         entry.country || null,
-    address:         entry.address || yelp.address || null,
-    lat:             entry.lat  ?? null,
-    lng:             entry.lng  ?? null,
-    photo_url:       photo,
-    cuisine_tags:    cuisine,
-    business_status: entry.businessStatus || null,
-    is_closed:       yelp.isClosed ?? false,
-    website:         entry.website || null,
-    phone:           entry.phone || yelp.phone || null,
-    yelp_url:        yelp.url || null,
-    michelin_url:    entry.michelinUrl || null,
-    price:           entry.price || yelp.price || null,
-    updated_at:      new Date().toISOString(),
+    name:             (entry.restaurant || entry.name || '').trim(),
+    city,
+    state,
+    country,
+    address:          entry.address || yelp.address || null,
+    lat:              entry.lat  ?? null,
+    lng:              entry.lng  ?? null,
+    photo_url:        photo,
+    cuisine_tags:     cuisine,
+    cuisine_category: entry.cuisineCategory || null,
+    business_status:  entry.businessStatus || null,
+    is_closed:        yelp.isClosed ?? false,
+    website:          entry.website || null,
+    phone:            entry.phone || yelp.phone || null,
+    yelp_url:         yelp.url || null,
+    michelin_url:     entry.michelinUrl || null,
+    price:            entry.price || yelp.price || null,
+    updated_at:       new Date().toISOString(),
   };
 }
 
@@ -151,7 +189,8 @@ async function main() {
         if (!existing.address   && update.address)   existing.address   = update.address;
         if (!existing.phone     && update.phone)     existing.phone     = update.phone;
         if (!existing.michelin_url && update.michelin_url) existing.michelin_url = update.michelin_url;
-        if (!existing.cuisine_tags && update.cuisine_tags) existing.cuisine_tags = update.cuisine_tags;
+        if (!existing.cuisine_tags     && update.cuisine_tags)     existing.cuisine_tags     = update.cuisine_tags;
+        if (!existing.cuisine_category && update.cuisine_category) existing.cuisine_category = update.cuisine_category;
       }
     }
 
