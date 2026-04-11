@@ -175,8 +175,9 @@ async function scrapeDetail(page, url, cache) {
 
 function buildRecord(entry, detail) {
   const jl  = detail?.jsonLd || null;
-  const lat = jl?.geo?.latitude  != null ? parseFloat(jl.geo.latitude)  : null;
-  const lng = jl?.geo?.longitude != null ? parseFloat(jl.geo.longitude) : null;
+  // Repsol's JSON-LD has geo.latitude and geo.longitude swapped
+  const lat = jl?.geo?.longitude != null ? parseFloat(jl.geo.longitude) : null;
+  const lng = jl?.geo?.latitude  != null ? parseFloat(jl.geo.latitude)  : null;
 
   const addressParts = jl?.address;
   const address = addressParts
