@@ -130,6 +130,8 @@ async function parseListing(page) {
         }
 
         if (name.length < 2) continue;
+        // Skip if the name is just the county name — parsing error
+        if (county && name.toLowerCase() === county.toLowerCase()) continue;
 
         results.push({
           name,
@@ -168,6 +170,8 @@ async function geocode(name, postcode, county, country) {
       });
       if (res.data?.length > 0) {
         const r = res.data[0];
+        // Reject county/administrative centroid results — these are not restaurant locations
+        if (r.class === 'boundary' || r.type === 'administrative' || r.addresstype === 'county') continue;
         return {
           lat:     parseFloat(r.lat),
           lng:     parseFloat(r.lon),
