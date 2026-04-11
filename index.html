@@ -702,9 +702,37 @@
       background: var(--black-mid);
       border: 1px solid var(--border);
       border-radius: 2px;
-      padding: 10px 14px;
       font-size: 0.7rem;
+      cursor: pointer;
+      user-select: none;
     }
+
+    .legend-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 7px 12px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .legend-toggle-arrow {
+      font-size: 0.6rem;
+      transition: transform 0.2s;
+    }
+
+    .map-legend.open .legend-toggle-arrow { transform: rotate(180deg); }
+
+    .legend-body {
+      display: none;
+      padding: 0 12px 10px;
+    }
+
+    .map-legend.open .legend-body { display: block; }
 
     .legend-item {
       display: flex;
@@ -1618,16 +1646,35 @@ function initMap() {
   legend.onAdd = () => {
     const div = L.DomUtil.create('div', 'map-legend');
     div.innerHTML = `
-      <div class="legend-section">James Beard</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#FEA219"></div> Winner</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#c0c0c0"></div> Semifinalist</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#cd7f32"></div> Nominee</div>
-      <div class="legend-section" style="margin-top:6px;">Michelin</div>
-      <div class="legend-item"><div class="legend-diamond" style="background:#E4002B;width:12px;height:12px;"></div> 3 Stars</div>
-      <div class="legend-item"><div class="legend-diamond" style="background:#E4002B;width:10px;height:10px;"></div> 1–2 Stars</div>
-      <div class="legend-item"><div class="legend-diamond" style="background:#E8611A;width:9px;height:9px;"></div> Bib Gourmand</div>
-      <div class="legend-item"><div class="legend-diamond" style="background:#9B3050;width:7px;height:7px;"></div> Selected</div>
+      <div class="legend-toggle">
+        Legend <span class="legend-toggle-arrow">▲</span>
+      </div>
+      <div class="legend-body">
+        <div class="legend-section">James Beard</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#FEA219"></div> Winner</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c0c0c0"></div> Semifinalist</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#cd7f32"></div> Nominee</div>
+        <div class="legend-section" style="margin-top:6px;">Michelin</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:#E4002B;width:12px;height:12px;"></div> 3 Stars</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:#E4002B;width:10px;height:10px;"></div> 1–2 Stars</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:#E8611A;width:9px;height:9px;"></div> Bib Gourmand</div>
+        <div class="legend-item"><div class="legend-diamond" style="background:#9B3050;width:7px;height:7px;"></div> Selected</div>
+        <div class="legend-section" style="margin-top:6px;">Tabelog</div>
+        <div class="legend-item"><div style="width:12px;height:12px;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);background:#D4AF37;flex-shrink:0;"></div> Gold</div>
+        <div class="legend-item"><div style="width:10px;height:10px;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);background:#9BA7B4;flex-shrink:0;"></div> Silver</div>
+        <div class="legend-item"><div style="width:9px;height:9px;clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);background:#C47A35;flex-shrink:0;"></div> Bronze</div>
+        <div class="legend-section" style="margin-top:6px;">AA Rosettes</div>
+        <div class="legend-item"><div style="width:13px;height:13px;clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);background:#1B3A6B;flex-shrink:0;"></div> 5 Rosettes</div>
+        <div class="legend-item"><div style="width:10px;height:10px;clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);background:#1B3A6B;flex-shrink:0;"></div> 4 Rosettes</div>
+        <div class="legend-item"><div style="width:8px;height:8px;clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);background:#1B3A6B;flex-shrink:0;"></div> 3 Rosettes</div>
+        <div class="legend-section" style="margin-top:6px;">Guía Repsol</div>
+        <div class="legend-item"><div style="width:13px;height:13px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 3 Soles</div>
+        <div class="legend-item"><div style="width:10px;height:10px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 2 Soles</div>
+        <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 1 Sol</div>
+      </div>
     `;
+    div.addEventListener('click', () => div.classList.toggle('open'));
+    L.DomEvent.disableClickPropagation(div);
     return div;
   };
   legend.addTo(map);
