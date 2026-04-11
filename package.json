@@ -8,7 +8,15 @@
     "geocode": "node geocode.js",
     "start": "node server.js",
     "setup": "node fetch-data.js && node geocode.js",
-    "enrich": "node enrich.js"
+    "enrich": "node enrich.js",
+    "fetch:tabelog": "node fetch-tabelog.js",
+    "fetch:tabelog:listing": "node fetch-tabelog.js --listing-only",
+    "merge:tabelog": "node merge-tabelog.js && node normalize-cuisine.js && node split-data.js",
+    "fetch:aarosette": "node fetch-aarosette.js",
+    "fetch:repsol": "node fetch-repsol.js",
+    "merge:aarosette": "node merge-aarosette.js && node normalize-cuisine.js && node split-data.js",
+    "merge:repsol": "node merge-repsol.js && node normalize-cuisine.js && node split-data.js",
+    "merge:all": "node merge-aarosette.js && node merge-repsol.js && node normalize-cuisine.js && node split-data.js"
   },
   "keywords": [],
   "author": "",

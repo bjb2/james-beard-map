@@ -27,6 +27,11 @@ find-addresses.js
 apply-addresses.js
 resolve-addresses.js
 
+# Scraper caches (large, can be regenerated)
+data/tabelog-cache.json
+data/repsol-cache.json
+data/aarosette-geo-cache.json
+
 # Backups and intermediate data
 data/*.backup.json
 data/awards.jbf.json

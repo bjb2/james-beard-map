@@ -18,6 +18,8 @@ const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 // ── Config ────────────────────────────────────────────────────────────────────
+const YEAR = '2025'; // Tabelog award year
+
 const SUPABASE_URL = process.env.SUPABASE_URL || 'https://bnlnlfnrkwizviiabhex.supabase.co';
 // Accept key from env var OR as first CLI argument
 const SUPABASE_KEY = process.env.SUPABASE_KEY || process.argv[2];
@@ -137,7 +139,10 @@ function buildRestaurant(entry, key) {
     website:          entry.website || null,
     phone:            entry.phone || yelp.phone || null,
     yelp_url:         yelp.url || null,
-    michelin_url:     entry.michelinUrl || null,
+    michelin_url:     entry.michelinUrl    || null,
+    tabelog_url:      entry.tabelogUrl    || null,
+    aarosette_url:    entry.aaRosetteUrl  || null,
+    repsol_url:       entry.repsolUrl     || null,
     price:            entry.price || yelp.price || null,
     updated_at:       new Date().toISOString(),
   };
@@ -189,6 +194,9 @@ async function main() {
         if (!existing.address   && update.address)   existing.address   = update.address;
         if (!existing.phone     && update.phone)     existing.phone     = update.phone;
         if (!existing.michelin_url && update.michelin_url) existing.michelin_url = update.michelin_url;
+        if (!existing.tabelog_url   && update.tabelog_url)   existing.tabelog_url   = update.tabelog_url;
+        if (!existing.aarosette_url && update.aarosette_url) existing.aarosette_url = update.aarosette_url;
+        if (!existing.repsol_url    && update.repsol_url)    existing.repsol_url    = update.repsol_url;
         if (!existing.cuisine_tags     && update.cuisine_tags)     existing.cuisine_tags     = update.cuisine_tags;
         if (!existing.cuisine_category && update.cuisine_category) existing.cuisine_category = update.cuisine_category;
       }
@@ -204,6 +212,30 @@ async function main() {
         award_type:     'Top 50',
         award_detail:   'Texas Monthly Top 50 BBQ',
         year:           entry.tmYear || null,
+      });
+    } else if (entry.source === 'tabelog') {
+      awardRows.push({
+        restaurant_key: key,
+        source:         'tabelog',
+        award_type:     entry.tabelogAward || 'Award',
+        award_detail:   `The Tabelog Award ${YEAR}`,
+        year:           parseInt(YEAR, 10),
+      });
+    } else if (entry.source === 'aarosette') {
+      awardRows.push({
+        restaurant_key: key,
+        source:         'aarosette',
+        award_type:     `${entry.aaRosettes} Rosettes`,
+        award_detail:   'AA Rosettes 2025',
+        year:           2025,
+      });
+    } else if (entry.source === 'repsol') {
+      awardRows.push({
+        restaurant_key: key,
+        source:         'repsol',
+        award_type:     entry.repsolAward || 'Sol',
+        award_detail:   'Guía Repsol 2025',
+        year:           2025,
       });
     } else {
       // JBF — only org nominations are restaurant awards; individual nominees link chef to restaurant

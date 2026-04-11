@@ -1,0 +1,5234 @@
+[
+  {
+    "name": "4000 Chinese Restaurant",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13229559/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "400℃ PIZZA",
+    "url": "https://tabelog.com/en/okayama/A3301/A330101/33015797/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Okayama",
+    "genre": "Italian / Okayama",
+    "score": null
+  },
+  {
+    "name": "6",
+    "url": "https://tabelog.com/en/okinawa/A4702/A470202/47022252/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Okinawa",
+    "genre": "Innovative / Okinawa",
+    "score": null
+  },
+  {
+    "name": "Abon",
+    "url": "https://tabelog.com/en/hyogo/A2803/A280302/28000052/",
+    "awardTier": "SILVER",
+    "area": "Tonkatsu/Fried foods / Hyogo",
+    "genre": "Tonkatsu/Fried foods / Hyogo",
+    "score": null
+  },
+  {
+    "name": "acá 1°",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130202/13249117/",
+    "awardTier": "GOLD",
+    "area": "Spanish / Tokyo",
+    "genre": "Spanish / Tokyo",
+    "score": null
+  },
+  {
+    "name": "ad hoc",
+    "url": "https://tabelog.com/en/osaka/A2701/A270108/27080791/",
+    "awardTier": "BRONZE",
+    "area": "French / Osaka",
+    "genre": "French / Osaka",
+    "score": null
+  },
+  {
+    "name": "affetto akita",
+    "url": "https://tabelog.com/en/akita/A0506/A050601/5008365/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Akita",
+    "genre": "Italian / Akita",
+    "score": null
+  },
+  {
+    "name": "agnel d'or",
+    "url": "https://tabelog.com/en/osaka/A2701/A270105/27074473/",
+    "awardTier": "BRONZE",
+    "area": "French / Osaka",
+    "genre": "French / Osaka",
+    "score": null
+  },
+  {
+    "name": "Aji Arai",
+    "url": "https://tabelog.com/en/oita/A4404/A440401/44006115/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Oita",
+    "genre": "Japanese Cuisine / Oita",
+    "score": null
+  },
+  {
+    "name": "Ajidocoro",
+    "url": "https://tabelog.com/en/hokkaido/A0107/A010704/1016052/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Hokkaido",
+    "genre": "Japanese Cuisine / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Ajihiro",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131301/13200027/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ajiman",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13001332/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Tokyo",
+    "genre": "Seafood / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ajiyuki",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131301/13277529/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "AKAI",
+    "url": "https://tabelog.com/en/hiroshima/A3402/A340205/34025803/",
+    "awardTier": "SILVER",
+    "area": "BEST REGIONAL RESTAURANTS",
+    "genre": "Innovative / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "Akakichi",
+    "url": "https://tabelog.com/en/ehime/A3802/A380201/38005035/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Ehime",
+    "genre": "Sushi / Ehime",
+    "score": null
+  },
+  {
+    "name": "Akasaka Kikunoi",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13002514/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Akasaka Kitafuku",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13149065/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Tokyo",
+    "genre": "Seafood / Tokyo",
+    "score": null
+  },
+  {
+    "name": "aki nagao",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010103/1028665/",
+    "awardTier": "BRONZE",
+    "area": "French / Hokkaido",
+    "genre": "French / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Akira",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130302/13241432/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "akordu",
+    "url": "https://tabelog.com/en/nara/A2901/A290101/29010346/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Nara",
+    "genre": "Innovative / Nara",
+    "score": null
+  },
+  {
+    "name": "Alarde",
+    "url": "https://tabelog.com/en/osaka/A2701/A270106/27090095/",
+    "awardTier": "BRONZE",
+    "area": "Spanish / Osaka",
+    "genre": "Spanish / Osaka",
+    "score": null
+  },
+  {
+    "name": "Amaki",
+    "url": "https://tabelog.com/en/aichi/A2301/A230102/23088371/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Aichi",
+    "genre": "Sushi / Aichi",
+    "score": null
+  },
+  {
+    "name": "Amamoto",
+    "url": "https://tabelog.com/en/tokyo/A1314/A131401/13196420/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Amandier",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13270090/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Amegen",
+    "url": "https://tabelog.com/en/saga/A4102/A410201/41000056/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Saga",
+    "genre": "Japanese Cuisine / Saga",
+    "score": null
+  },
+  {
+    "name": "Ankyu",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26018405/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "AO",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400106/40051882/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Fukuoka",
+    "genre": "Innovative / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Ao",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13243463/",
+    "awardTier": "GOLD",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "AO",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130602/13246982/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Aoki",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27076702/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "APICIUS",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130102/13000145/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Arai",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13188186/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Araki",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010103/1048079/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Hokkaido",
+    "genre": "Tempura / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Arata",
+    "url": "https://tabelog.com/en/osaka/A2701/A270301/27012977/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Osaka",
+    "genre": "Yakiniku/Meat dishes / Osaka",
+    "score": null
+  },
+  {
+    "name": "Arima",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010102/1000457/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "aru",
+    "url": "https://tabelog.com/en/aichi/A2306/A230601/23066781/",
+    "awardTier": "BRONZE",
+    "area": "French / Aichi",
+    "genre": "French / Aichi",
+    "score": null
+  },
+  {
+    "name": "Asago",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40003973/",
+    "awardTier": "BRONZE",
+    "area": "Soba / Fukuoka",
+    "genre": "Soba / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "ASAHINA Gastronome",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130203/13227385/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Asanuma",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130202/13275655/",
+    "awardTier": "SILVER",
+    "area": "Tempura / Tokyo",
+    "genre": "Tempura / Tokyo",
+    "score": null
+  },
+  {
+    "name": "AUBE",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27106973/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Osaka",
+    "genre": "Chinese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Auberge eaufeu",
+    "url": "https://tabelog.com/en/ishikawa/A1702/A170202/17013500/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Ishikawa",
+    "genre": "Innovative / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "AZUR et MASA UEKI",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13206559/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "BAMBOU",
+    "url": "https://tabelog.com/en/chiba/A1202/A120202/12050758/",
+    "awardTier": "BRONZE",
+    "area": "Tonkatsu/Fried foods / Chiba",
+    "genre": "Tonkatsu/Fried foods / Chiba",
+    "score": null
+  },
+  {
+    "name": "bb9",
+    "url": "https://tabelog.com/en/hyogo/A2801/A280102/28039815/",
+    "awardTier": "SILVER",
+    "area": "Spanish / Hyogo",
+    "genre": "Spanish / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Bekk",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400401/40043710/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Fukuoka",
+    "genre": "Italian / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Bia",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13270211/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Bleston Court Yukawatan",
+    "url": "https://tabelog.com/en/nagano/A2003/A200301/20014528/",
+    "awardTier": "BRONZE",
+    "area": "French / Nagano",
+    "genre": "French / Nagano",
+    "score": null
+  },
+  {
+    "name": "Bon.nu",
+    "url": "https://tabelog.com/en/tokyo/A1304/A130401/13184186/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "BOTANI:CURRY",
+    "url": "https://tabelog.com/en/osaka/A2701/A270102/27073555/",
+    "awardTier": "BRONZE",
+    "area": "Asian/Ethnic/Curry / Osaka",
+    "genre": "Asian/Ethnic/Curry / Osaka",
+    "score": null
+  },
+  {
+    "name": "Cá sento",
+    "url": "https://tabelog.com/en/hyogo/A2801/A280102/28009509/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Hyogo",
+    "genre": "Innovative / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Caravan",
+    "url": "https://tabelog.com/en/saga/A4102/A410201/41002233/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Saga",
+    "genre": "Yakiniku/Meat dishes / Saga",
+    "score": null
+  },
+  {
+    "name": "Casa del cibo",
+    "url": "https://tabelog.com/en/aomori/A0203/A020301/2006500/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Aomori",
+    "genre": "Italian / Aomori",
+    "score": null
+  },
+  {
+    "name": "ca’enne",
+    "url": "https://tabelog.com/en/nagano/A2004/A200403/20023769/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Nagano",
+    "genre": "Italian / Nagano",
+    "score": null
+  },
+  {
+    "name": "cenci",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260302/26024914/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Kyoto",
+    "genre": "Italian / Kyoto",
+    "score": null
+  },
+  {
+    "name": "cépages",
+    "url": "https://tabelog.com/en/gunma/A1001/A100101/10024050/",
+    "awardTier": "BRONZE",
+    "area": "French / Gunma",
+    "genre": "French / Gunma",
+    "score": null
+  },
+  {
+    "name": "CERCA TROVA",
+    "url": "https://tabelog.com/en/miyazaki/A4505/A450501/45003573/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Miyazaki",
+    "genre": "Italian / Miyazaki",
+    "score": null
+  },
+  {
+    "name": "Chataro",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130301/13157208/",
+    "awardTier": "SILVER",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Chez Inno",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130202/13000510/",
+    "awardTier": "GOLD",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Chiba Takaoka",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130201/13282854/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Chikamatsu",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40000415/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Chiso Nakamura",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400102/40042470/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukuoka",
+    "genre": "Japanese Cuisine / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Chiso Nishikenichi",
+    "url": "https://tabelog.com/en/shizuoka/A2203/A220301/22039375/",
+    "awardTier": "GOLD",
+    "area": "French / Shizuoka",
+    "genre": "French / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Chiso Sottakuito",
+    "url": "https://tabelog.com/en/hiroshima/A3401/A340117/34023887/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Hiroshima",
+    "genre": "Japanese Cuisine / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "CHIUnE",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13295095/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "CÔTE D'OR",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13001681/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "CUCCAGNA",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400103/40039583/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Fukuoka",
+    "genre": "Italian / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Cucina Italiana Gallura",
+    "url": "https://tabelog.com/en/aichi/A2301/A230108/23000441/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Aichi",
+    "genre": "Italian / Aichi",
+    "score": null
+  },
+  {
+    "name": "Daichan",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26039693/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Kyoto",
+    "genre": "Yakiniku/Meat dishes / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Daiichi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260203/26000493/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Kyoto",
+    "genre": "Seafood / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Daimon",
+    "url": "https://tabelog.com/en/toyama/A1602/A160202/16006504/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Toyama",
+    "genre": "Sushi / Toyama",
+    "score": null
+  },
+  {
+    "name": "DEN",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130603/13046855/",
+    "awardTier": "SILVER",
+    "area": "Creative cuisine / Tokyo",
+    "genre": "Creative cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Dewaya",
+    "url": "https://tabelog.com/en/yamagata/A0605/A060505/6000120/",
+    "awardTier": "SILVER",
+    "area": "BEST REGIONAL RESTAURANTS",
+    "genre": "Japanese Cuisine / Yamagata",
+    "score": null
+  },
+  {
+    "name": "Dojin",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26030764/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Doyama",
+    "url": "https://tabelog.com/en/nagasaki/A4201/A420101/42000763/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Nagasaki",
+    "genre": "Japanese Cuisine / Nagasaki",
+    "score": null
+  },
+  {
+    "name": "Ebisu YORONIKU",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130302/13211927/",
+    "awardTier": "SILVER",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Édition Koji Shimomura",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13042074/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Edomae Shinsaku",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130204/13270572/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Tokyo",
+    "genre": "Tempura / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Eigetsu",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13116523/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Eiki",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130302/13230923/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Eizan",
+    "url": "https://tabelog.com/en/hiroshima/A3401/A340108/34026172/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Hiroshima",
+    "genre": "Japanese Cuisine / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "En",
+    "url": "https://tabelog.com/en/okayama/A3301/A330101/33001952/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Okayama",
+    "genre": "Sushi / Okayama",
+    "score": null
+  },
+  {
+    "name": "Endo",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130302/13231081/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Enoteca La Ricolma",
+    "url": "https://tabelog.com/en/hokkaido/A0105/A010501/1002207/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Hokkaido",
+    "genre": "Italian / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "entre nous",
+    "url": "https://tabelog.com/en/hyogo/A2801/A280101/28065011/",
+    "awardTier": "BRONZE",
+    "area": "French / Hyogo",
+    "genre": "French / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Eragon",
+    "url": "https://tabelog.com/en/hyogo/A2803/A280302/28010196/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Hyogo",
+    "genre": "Yakitori/Poultry / Hyogo",
+    "score": null
+  },
+  {
+    "name": "ESqUISSE",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13142530/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "été",
+    "url": "https://tabelog.com/en/tokyo/A1318/A131811/13249143/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "f",
+    "url": "https://tabelog.com/en/akita/A0501/A050101/5009499/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Akita",
+    "genre": "Italian / Akita",
+    "score": null
+  },
+  {
+    "name": "Fenêtre",
+    "url": "https://tabelog.com/en/hokkaido/A0112/A011204/1064822/",
+    "awardTier": "BRONZE",
+    "area": "French / Hokkaido",
+    "genre": "French / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Fogliolina della Porta Fortuna",
+    "url": "https://tabelog.com/en/nagano/A2003/A200301/20011920/",
+    "awardTier": "SILVER",
+    "area": "Italian / Nagano",
+    "genre": "Italian / Nagano",
+    "score": null
+  },
+  {
+    "name": "FUJI",
+    "url": "https://tabelog.com/en/shizuoka/A2201/A220101/22027669/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Shizuoka",
+    "genre": "Japanese Cuisine / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Fujii",
+    "url": "https://tabelog.com/en/toyama/A1601/A160101/16005789/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Toyama",
+    "genre": "Japanese Cuisine / Toyama",
+    "score": null
+  },
+  {
+    "name": "Fujisawa",
+    "url": "https://tabelog.com/en/aichi/A2301/A230107/23005527/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Aichi",
+    "genre": "Sushi / Aichi",
+    "score": null
+  },
+  {
+    "name": "Fujiya 1935",
+    "url": "https://tabelog.com/en/osaka/A2701/A270106/27001070/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Osaka",
+    "genre": "Innovative / Osaka",
+    "score": null
+  },
+  {
+    "name": "Fujiyama",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13232735/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Fukamachi",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130202/13004105/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Tokyo",
+    "genre": "Tempura / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Fukunaga",
+    "url": "https://tabelog.com/en/shiga/A2502/A250203/25007783/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Shiga",
+    "genre": "Yakiniku/Meat dishes / Shiga",
+    "score": null
+  },
+  {
+    "name": "Funachef",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27117389/",
+    "awardTier": "BRONZE",
+    "area": "French / Osaka",
+    "genre": "French / Osaka",
+    "score": null
+  },
+  {
+    "name": "FUREIKA",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130702/13004967/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Furuta",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131301/13176780/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "利用規約",
+    "url": "https://tabelog.com/help/rules/",
+    "awardTier": "",
+    "area": "",
+    "genre": "",
+    "score": null
+  },
+  {
+    "name": "fuxing",
+    "url": "https://tabelog.com/en/hyogo/A2801/A280102/28048384/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Hyogo",
+    "genre": "Chinese Cuisine / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Gahojin",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400103/40055175/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Gamou",
+    "url": "https://tabelog.com/en/kagawa/A3702/A370201/37000019/",
+    "awardTier": "BRONZE",
+    "area": "Udon / Kagawa",
+    "genre": "Udon / Kagawa",
+    "score": null
+  },
+  {
+    "name": "GapricE",
+    "url": "https://tabelog.com/en/aichi/A2301/A230106/23082728/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Aichi",
+    "genre": "Italian / Aichi",
+    "score": null
+  },
+  {
+    "name": "Gatagataya",
+    "url": "https://tabelog.com/en/kanagawa/A1405/A140505/14012400/",
+    "awardTier": "BRONZE",
+    "area": "Creative cuisine / Kanagawa",
+    "genre": "Creative cuisine / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Gessen",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27082740/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Osaka",
+    "genre": "Chinese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Ginza Kitafuku",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13183900/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Tokyo",
+    "genre": "Seafood / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Gion Endo",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26019418/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "giueme",
+    "url": "https://tabelog.com/en/akita/A0504/A050402/5006765/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Akita",
+    "genre": "Italian / Akita",
+    "score": null
+  },
+  {
+    "name": "Goichi Higobashi",
+    "url": "https://tabelog.com/en/osaka/A2701/A270102/27112024/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Osaka",
+    "genre": "Yakitori/Poultry / Osaka",
+    "score": null
+  },
+  {
+    "name": "GOURMANDISE",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13190448/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Guchokuni",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13251541/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "gucite",
+    "url": "https://tabelog.com/en/osaka/A2701/A270104/27093817/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Osaka",
+    "genre": "Italian / Osaka",
+    "score": null
+  },
+  {
+    "name": "Guu",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26038550/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Kyoto",
+    "genre": "Chinese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Gyoten",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40032025/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Hachisen",
+    "url": "https://tabelog.com/en/aichi/A2301/A230107/23001725/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "HAGI",
+    "url": "https://tabelog.com/en/fukushima/A0704/A070401/7008647/",
+    "awardTier": "SILVER",
+    "area": "French / Fukushima",
+    "genre": "French / Fukushima",
+    "score": null
+  },
+  {
+    "name": "HAJIME",
+    "url": "https://tabelog.com/en/osaka/A2701/A270102/27015488/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Osaka",
+    "genre": "Innovative / Osaka",
+    "score": null
+  },
+  {
+    "name": "Hakkoku",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13217157/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hakuun",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130603/13255456/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hanaichi",
+    "url": "https://tabelog.com/en/aichi/A2301/A230109/23013684/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Haramasa",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130903/13151542/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Haru",
+    "url": "https://tabelog.com/en/tokyo/A1314/A131401/13233057/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Harutaka",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130103/13032283/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hasegawa Minoru",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13220575/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hashiguchi",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13134517/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hashimoto",
+    "url": "https://tabelog.com/en/kumamoto/A4301/A430101/43000997/",
+    "awardTier": "BRONZE",
+    "area": "Other / Kumamoto",
+    "genre": "Other / Kumamoto",
+    "score": null
+  },
+  {
+    "name": "Hashimoto",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131301/13238306/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hashimotoya",
+    "url": "https://tabelog.com/en/osaka/A2701/A270201/27107555/",
+    "awardTier": "BRONZE",
+    "area": "Asian/Ethnic/Curry / Osaka",
+    "genre": "Asian/Ethnic/Curry / Osaka",
+    "score": null
+  },
+  {
+    "name": "Hassun",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26002259/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Hasunomi",
+    "url": "https://tabelog.com/en/okayama/A3301/A330101/33007719/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Okayama",
+    "genre": "Chinese Cuisine / Okayama",
+    "score": null
+  },
+  {
+    "name": "Hato",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13245540/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hatsunezushi",
+    "url": "https://tabelog.com/en/tokyo/A1315/A131503/13017742/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hayashi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260302/26000305/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Hide",
+    "url": "https://tabelog.com/en/osaka/A2701/A270201/27013057/",
+    "awardTier": "BRONZE",
+    "area": "Izakaya / Osaka",
+    "genre": "Izakaya / Osaka",
+    "score": null
+  },
+  {
+    "name": "Hidetaka",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010103/1038603/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Higashiyama Ogata",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26036476/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Higebozu",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010103/1070763/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Hokkaido",
+    "genre": "Yakitori/Poultry / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Higuchi",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130601/13001215/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hijikata",
+    "url": "https://tabelog.com/en/aichi/A2301/A230103/23050373/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Aichi",
+    "genre": "Sushi / Aichi",
+    "score": null
+  },
+  {
+    "name": "Hijikata",
+    "url": "https://tabelog.com/en/aichi/A2301/A230103/23071169/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Hinode",
+    "url": "https://tabelog.com/en/mie/A2402/A240203/24000026/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Mie",
+    "genre": "Japanese Cuisine / Mie",
+    "score": null
+  },
+  {
+    "name": "Hinotori",
+    "url": "https://tabelog.com/en/osaka/A2701/A270102/27085978/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Osaka",
+    "genre": "Chinese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Hirasansou",
+    "url": "https://tabelog.com/en/shiga/A2501/A250101/25000772/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Shiga",
+    "genre": "Japanese Cuisine / Shiga",
+    "score": null
+  },
+  {
+    "name": "hiro",
+    "url": "https://tabelog.com/en/gifu/A2101/A210101/21010875/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Gifu",
+    "genre": "Chinese Cuisine / Gifu",
+    "score": null
+  },
+  {
+    "name": "HIRO NAGOYA",
+    "url": "https://tabelog.com/en/aichi/A2301/A230109/23059055/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Aichi",
+    "genre": "Yakiniku/Meat dishes / Aichi",
+    "score": null
+  },
+  {
+    "name": "Hirokado",
+    "url": "https://tabelog.com/en/oita/A4402/A440202/44012162/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Oita",
+    "genre": "Japanese Cuisine / Oita",
+    "score": null
+  },
+  {
+    "name": "Hirosaku",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130103/13015266/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Hirosawa",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26039000/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Kyoto",
+    "genre": "Chinese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Hirovanna",
+    "url": "https://tabelog.com/en/aichi/A2301/A230101/23077563/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Aichi",
+    "genre": "Italian / Aichi",
+    "score": null
+  },
+  {
+    "name": "Hisada",
+    "url": "https://tabelog.com/en/okayama/A3301/A330104/33000059/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Okayama",
+    "genre": "Sushi / Okayama",
+    "score": null
+  },
+  {
+    "name": "Hitotsu",
+    "url": "https://tabelog.com/en/miyazaki/A4501/A450101/45011700/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Miyazaki",
+    "genre": "Sushi / Miyazaki",
+    "score": null
+  },
+  {
+    "name": "Hiyama",
+    "url": "https://tabelog.com/en/saitama/A1102/A110201/11010989/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Saitama",
+    "genre": "Japanese Cuisine / Saitama",
+    "score": null
+  },
+  {
+    "name": "HOMMAGE",
+    "url": "https://tabelog.com/en/tokyo/A1311/A131102/13008700/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Honkogetsu",
+    "url": "https://tabelog.com/en/osaka/A2701/A270202/27001286/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "hôtel de yoshino",
+    "url": "https://tabelog.com/en/wakayama/A3001/A300101/30000022/",
+    "awardTier": "BRONZE",
+    "area": "French / Wakayama",
+    "genre": "French / Wakayama",
+    "score": null
+  },
+  {
+    "name": "Ichikawa",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13210722/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ichirin Hanare",
+    "url": "https://tabelog.com/en/kanagawa/A1404/A140402/14066990/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Kanagawa",
+    "genre": "Chinese Cuisine / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Ichitaka",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400105/40052388/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Ifuki",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26017706/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Iida",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26016833/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "IIDASHOUTEN",
+    "url": "https://tabelog.com/en/kanagawa/A1410/A141002/14038776/",
+    "awardTier": "SILVER",
+    "area": "Ramen / Kanagawa",
+    "genre": "Ramen / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Ikko",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010102/1044489/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "il AOYAMA",
+    "url": "https://tabelog.com/en/aichi/A2301/A230104/23087381/",
+    "awardTier": "SILVER",
+    "area": "Italian / Aichi",
+    "genre": "Italian / Aichi",
+    "score": null
+  },
+  {
+    "name": "IL GARAGE",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26031986/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Kyoto",
+    "genre": "Italian / Kyoto",
+    "score": null
+  },
+  {
+    "name": "IL NODO",
+    "url": "https://tabelog.com/en/kanagawa/A1404/A140402/14072960/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Kanagawa",
+    "genre": "Italian / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Imai",
+    "url": "https://tabelog.com/en/hyogo/A2803/A280302/28056034/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Hyogo",
+    "genre": "Italian / Hyogo",
+    "score": null
+  },
+  {
+    "name": "IMAISHIHANTEN SUZUKA",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40052108/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Fukuoka",
+    "genre": "Chinese Cuisine / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Imoto",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40040809/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukuoka",
+    "genre": "Japanese Cuisine / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Ino",
+    "url": "https://tabelog.com/en/ehime/A3801/A380101/38010409/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Ehime",
+    "genre": "Sushi / Ehime",
+    "score": null
+  },
+  {
+    "name": "Inomata",
+    "url": "https://tabelog.com/en/saitama/A1102/A110201/11036797/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Saitama",
+    "genre": "Sushi / Saitama",
+    "score": null
+  },
+  {
+    "name": "Installation Table ENSO L'asymetrie du calme",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17009914/",
+    "awardTier": "BRONZE",
+    "area": "French / Ishikawa",
+    "genre": "French / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Ishibashi",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40049664/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukuoka",
+    "genre": "Japanese Cuisine / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Ishikawa",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13004079/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ishimaru",
+    "url": "https://tabelog.com/en/saitama/A1101/A110101/11054495/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Saitama",
+    "genre": "Sushi / Saitama",
+    "score": null
+  },
+  {
+    "name": "Isoda",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130204/13258330/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Isshinzushi Koyo",
+    "url": "https://tabelog.com/en/miyazaki/A4501/A450101/45000157/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Miyazaki",
+    "genre": "Sushi / Miyazaki",
+    "score": null
+  },
+  {
+    "name": "Ito",
+    "url": "https://tabelog.com/en/fukushima/A0704/A070401/7000924/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukushima",
+    "genre": "Sushi / Fukushima",
+    "score": null
+  },
+  {
+    "name": "Ito",
+    "url": "https://tabelog.com/en/oita/A4401/A440105/44002995/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Oita",
+    "genre": "Yakiniku/Meat dishes / Oita",
+    "score": null
+  },
+  {
+    "name": "Itto",
+    "url": "https://tabelog.com/en/fukui/A1801/A180101/18008141/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukui",
+    "genre": "Japanese Cuisine / Fukui",
+    "score": null
+  },
+  {
+    "name": "iwanaga",
+    "url": "https://tabelog.com/en/miyazaki/A4501/A450101/45009812/",
+    "awardTier": "BRONZE",
+    "area": "Other / Miyazaki",
+    "genre": "Other / Miyazaki",
+    "score": null
+  },
+  {
+    "name": "Iyuki",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13030881/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Izumo",
+    "url": "https://tabelog.com/en/aichi/A2301/A230103/23008421/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Jambo Hanare",
+    "url": "https://tabelog.com/en/tokyo/A1310/A131004/13160962/",
+    "awardTier": "SILVER",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Jambo Shinozaki Honten",
+    "url": "https://tabelog.com/en/tokyo/A1312/A131205/13003075/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Jinsei",
+    "url": "https://tabelog.com/en/osaka/A2701/A270201/27000411/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "Jiyu San",
+    "url": "https://tabelog.com/en/tokyo/A1321/A132101/13025978/",
+    "awardTier": "BRONZE",
+    "area": "Soba / Tokyo",
+    "genre": "Soba / Tokyo",
+    "score": null
+  },
+  {
+    "name": "JO",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13209614/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Joël Robuchon",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130302/13009310/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "JOTAKI",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13267801/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Jubei",
+    "url": "https://tabelog.com/en/fukui/A1801/A180101/18001608/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Fukui",
+    "genre": "Sushi / Fukui",
+    "score": null
+  },
+  {
+    "name": "Kabuto",
+    "url": "https://tabelog.com/en/tokyo/A1305/A130501/13016660/",
+    "awardTier": "SILVER",
+    "area": "Unagi / Tokyo",
+    "genre": "Unagi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kadowaki",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130702/13001664/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "KAHALA",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27000188/",
+    "awardTier": "BRONZE",
+    "area": "Creative cuisine / Osaka",
+    "genre": "Creative cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "KAI",
+    "url": "https://tabelog.com/en/kagoshima/A4602/A460204/46016438/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Kagoshima",
+    "genre": "Italian / Kagoshima",
+    "score": null
+  },
+  {
+    "name": "Kaikatei",
+    "url": "https://tabelog.com/en/gifu/A2101/A210101/21000011/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Gifu",
+    "genre": "Chinese Cuisine / Gifu",
+    "score": null
+  },
+  {
+    "name": "Kalpasi",
+    "url": "https://tabelog.com/en/tokyo/A1318/A131813/13202529/",
+    "awardTier": "BRONZE",
+    "area": "Asian/Ethnic/Curry / Tokyo",
+    "genre": "Asian/Ethnic/Curry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "kamoshiya Kusumoto",
+    "url": "https://tabelog.com/en/osaka/A2701/A270108/27010572/",
+    "awardTier": "BRONZE",
+    "area": "Creative cuisine / Osaka",
+    "genre": "Creative cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Kaniyoshi",
+    "url": "https://tabelog.com/en/tottori/A3101/A310101/31000300/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Tottori",
+    "genre": "Seafood / Tottori",
+    "score": null
+  },
+  {
+    "name": "Kanjo",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13267945/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kaoru HIROO",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13238442/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Karashima",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400105/40048710/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Karatsu",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26029825/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Karyu",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13278579/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kasahara",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13266251/",
+    "awardTier": "GOLD",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kashiwaya",
+    "url": "https://tabelog.com/en/osaka/A2706/A270602/27001141/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Kashu",
+    "url": "https://tabelog.com/en/aomori/A0201/A020101/2011353/",
+    "awardTier": "BRONZE",
+    "area": "French / Aomori",
+    "genre": "French / Aomori",
+    "score": null
+  },
+  {
+    "name": "Kataori",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17011166/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Ishikawa",
+    "genre": "Japanese Cuisine / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Katatsumuri",
+    "url": "https://tabelog.com/en/gifu/A2102/A210204/21012387/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Gifu",
+    "genre": "Japanese Cuisine / Gifu",
+    "score": null
+  },
+  {
+    "name": "kate cuore",
+    "url": "https://tabelog.com/en/saga/A4102/A410202/41006295/",
+    "awardTier": "SILVER",
+    "area": "Italian / Saga",
+    "genre": "Italian / Saga",
+    "score": null
+  },
+  {
+    "name": "Kawada",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130204/13232330/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kawaguchi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26006453/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kawaki",
+    "url": "https://tabelog.com/en/fukui/A1801/A180102/18000003/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Fukui",
+    "genre": "Seafood / Fukui",
+    "score": null
+  },
+  {
+    "name": "Kawamura",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13016506/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kawashima",
+    "url": "https://tabelog.com/en/ishikawa/A1703/A170302/17012454/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Ishikawa",
+    "genre": "Japanese Cuisine / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Kenya",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260302/26035592/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kibatani",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17010062/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Ishikawa",
+    "genre": "Sushi / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Kikunoi Honten",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26001346/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kikuzushi",
+    "url": "https://tabelog.com/en/fukuoka/A4003/A400301/40010675/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Kimoto",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13226856/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kinoshita",
+    "url": "https://tabelog.com/en/hyogo/A2801/A280101/28057663/",
+    "awardTier": "GOLD",
+    "area": "Italian / Hyogo",
+    "genre": "Italian / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Kinryusan",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13001625/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kioicho Mitani",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13198197/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kitagawa",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13275790/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kitagawa",
+    "url": "https://tabelog.com/en/mie/A2401/A240102/24013156/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Mie",
+    "genre": "Chinese Cuisine / Mie",
+    "score": null
+  },
+  {
+    "name": "Kitajima",
+    "url": "https://tabelog.com/en/kanagawa/A1404/A140402/14083457/",
+    "awardTier": "SILVER",
+    "area": "BEST REGIONAL RESTAURANTS",
+    "genre": "Japanese Cuisine / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Kitajimatei",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130902/13000945/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kitchen Ribbon",
+    "url": "https://tabelog.com/en/aichi/A2301/A230108/23000494/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Aichi",
+    "genre": "Yakiniku/Meat dishes / Aichi",
+    "score": null
+  },
+  {
+    "name": "kitchen Toshiki",
+    "url": "https://tabelog.com/en/aichi/A2301/A230104/23080497/",
+    "awardTier": "BRONZE",
+    "area": "Other / Aichi",
+    "genre": "Other / Aichi",
+    "score": null
+  },
+  {
+    "name": "Kiu",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26034605/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Kyoto",
+    "genre": "Sushi / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kiyama",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26029017/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kiyota Hanare",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13256392/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kizaki",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13221218/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kizuna",
+    "url": "https://tabelog.com/en/osaka/A2701/A270107/27041868/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "Kobanzushi",
+    "url": "https://tabelog.com/en/fukushima/A0703/A070304/7000810/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukushima",
+    "genre": "Sushi / Fukushima",
+    "score": null
+  },
+  {
+    "name": "Kobayashi",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13162454/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kodaiji Wakuden",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26000535/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kohaku",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13049130/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kohane",
+    "url": "https://tabelog.com/en/shizuoka/A2202/A220201/22040511/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Shizuoka",
+    "genre": "Yakitori/Poultry / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Koho",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13194122/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Koki",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130802/13274319/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Komada",
+    "url": "https://tabelog.com/en/mie/A2403/A240301/24012212/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Mie",
+    "genre": "Sushi / Mie",
+    "score": null
+  },
+  {
+    "name": "Komatsu",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17010847/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Ishikawa",
+    "genre": "Japanese Cuisine / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Komatsu Yasuke",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17010524/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Ishikawa",
+    "genre": "Sushi / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Kondo",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13004993/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Tokyo",
+    "genre": "Tempura / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Konishiya",
+    "url": "https://tabelog.com/en/hyogo/A2807/A280703/28015514/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Hyogo",
+    "genre": "Japanese Cuisine / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Korakuan",
+    "url": "https://tabelog.com/en/shiga/A2501/A250101/25001485/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Shiga",
+    "genre": "Japanese Cuisine / Shiga",
+    "score": null
+  },
+  {
+    "name": "Korian",
+    "url": "https://tabelog.com/en/shiga/A2505/A250501/25000624/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Shiga",
+    "genre": "Japanese Cuisine / Shiga",
+    "score": null
+  },
+  {
+    "name": "Koshiba",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130903/13200286/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kotan",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400105/40059069/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Kotowari wo Hakarumise Bando",
+    "url": "https://tabelog.com/en/aichi/A2301/A230106/23062836/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Kuishinbo YAMANAKA",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260401/26002126/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Kyoto",
+    "genre": "Yakiniku/Meat dishes / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kuko",
+    "url": "https://tabelog.com/en/nara/A2901/A290101/29012623/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Nara",
+    "genre": "Chinese Cuisine / Nara",
+    "score": null
+  },
+  {
+    "name": "Kurogi",
+    "url": "https://tabelog.com/en/tokyo/A1314/A131401/13094789/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "KUROMORI",
+    "url": "https://tabelog.com/en/miyagi/A0401/A040105/4022461/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Miyagi",
+    "genre": "Chinese Cuisine / Miyagi",
+    "score": null
+  },
+  {
+    "name": "Kurosaki",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130602/13268824/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kuruma",
+    "url": "https://tabelog.com/en/gunma/A1002/A100204/10014909/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Gunma",
+    "genre": "Tempura / Gunma",
+    "score": null
+  },
+  {
+    "name": "Kurumasushi",
+    "url": "https://tabelog.com/en/ehime/A3801/A380101/38002524/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Ehime",
+    "genre": "Sushi / Ehime",
+    "score": null
+  },
+  {
+    "name": "Kusunoki",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130902/13223239/",
+    "awardTier": "SILVER",
+    "area": "Tempura / Tokyo",
+    "genre": "Tempura / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kutan",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131301/13220750/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Kyo Seika",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26006497/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Kyoto",
+    "genre": "Chinese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kyoaji Motoi",
+    "url": "https://tabelog.com/en/aichi/A2301/A230107/23077259/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Kyodaizushi",
+    "url": "https://tabelog.com/en/niigata/A1501/A150101/15023066/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Niigata",
+    "genre": "Sushi / Niigata",
+    "score": null
+  },
+  {
+    "name": "Kyogokuzushi",
+    "url": "https://tabelog.com/en/shiga/A2504/A250402/25002045/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Shiga",
+    "genre": "Sushi / Shiga",
+    "score": null
+  },
+  {
+    "name": "Kyotenjin Noguchi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260501/26018304/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "KYOTO KITCHO Arashiyama",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260403/26001312/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Kyu",
+    "url": "https://tabelog.com/en/akita/A0501/A050101/5009110/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Akita",
+    "genre": "Yakiniku/Meat dishes / Akita",
+    "score": null
+  },
+  {
+    "name": "L'AFFINAGE",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13227264/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "L'ALGORITHME",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13213150/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "L'Atelier de NOTO",
+    "url": "https://tabelog.com/en/ishikawa/A1704/A170401/17009200/",
+    "awardTier": "BRONZE",
+    "area": "French / Ishikawa",
+    "genre": "French / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "L'écrin",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13002444/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "L'Effervescence",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130602/13116356/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "L'évo",
+    "url": "https://tabelog.com/en/toyama/A1605/A160502/16009727/",
+    "awardTier": "GOLD",
+    "area": "Innovative / Toyama",
+    "genre": "Innovative / Toyama",
+    "score": null
+  },
+  {
+    "name": "L'OSIER",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13002607/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "La Blanche",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130301/13002111/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "LA CASA DI Tetsuo Ota",
+    "url": "https://tabelog.com/en/nagano/A2003/A200301/20023219/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Nagano",
+    "genre": "Innovative / Nagano",
+    "score": null
+  },
+  {
+    "name": "La Cime",
+    "url": "https://tabelog.com/en/osaka/A2701/A270106/27049485/",
+    "awardTier": "BRONZE",
+    "area": "French / Osaka",
+    "genre": "French / Osaka",
+    "score": null
+  },
+  {
+    "name": "La Clairière",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13194179/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "La Floraison de TAKEUCHI",
+    "url": "https://tabelog.com/en/aichi/A2301/A230102/23048448/",
+    "awardTier": "BRONZE",
+    "area": "French / Aichi",
+    "genre": "French / Aichi",
+    "score": null
+  },
+  {
+    "name": "La Kanro",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27119203/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Osaka",
+    "genre": "Innovative / Osaka",
+    "score": null
+  },
+  {
+    "name": "La Mer",
+    "url": "https://tabelog.com/en/mie/A2403/A240303/24005111/",
+    "awardTier": "BRONZE",
+    "area": "French / Mie",
+    "genre": "French / Mie",
+    "score": null
+  },
+  {
+    "name": "La Mer the CLASSIC",
+    "url": "https://tabelog.com/en/mie/A2403/A240303/24000053/",
+    "awardTier": "BRONZE",
+    "area": "French / Mie",
+    "genre": "French / Mie",
+    "score": null
+  },
+  {
+    "name": "La Stalla",
+    "url": "https://tabelog.com/en/ibaraki/A0802/A080201/8017738/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Ibaraki",
+    "genre": "Italian / Ibaraki",
+    "score": null
+  },
+  {
+    "name": "LA VAGABONDE",
+    "url": "https://tabelog.com/en/aichi/A2301/A230105/23040370/",
+    "awardTier": "BRONZE",
+    "area": "French / Aichi",
+    "genre": "French / Aichi",
+    "score": null
+  },
+  {
+    "name": "LATURE",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130301/13198692/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Le Mange-Tout",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13000469/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Le Musée IDEA",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010105/1064856/",
+    "awardTier": "BRONZE",
+    "area": "French / Hokkaido",
+    "genre": "French / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "le-sorcier",
+    "url": "https://tabelog.com/en/yamaguchi/A3505/A350501/35009481/",
+    "awardTier": "BRONZE",
+    "area": "French / Yamaguchi",
+    "genre": "French / Yamaguchi",
+    "score": null
+  },
+  {
+    "name": "Les champs d'or",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26001319/",
+    "awardTier": "BRONZE",
+    "area": "French / Kyoto",
+    "genre": "French / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Les Saisons",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130102/13002294/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "LURRA°",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26032601/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Kyoto",
+    "genre": "Innovative / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Maeda",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26020923/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Maekawa",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17012585/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Ishikawa",
+    "genre": "Yakitori/Poultry / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Maison DIA Mizuguchi",
+    "url": "https://tabelog.com/en/aichi/A2301/A230102/23078987/",
+    "awardTier": "BRONZE",
+    "area": "French / Aichi",
+    "genre": "French / Aichi",
+    "score": null
+  },
+  {
+    "name": "maison FUJIYA Hakodate",
+    "url": "https://tabelog.com/en/hokkaido/A0105/A010501/1065131/",
+    "awardTier": "BRONZE",
+    "area": "French / Hokkaido",
+    "genre": "French / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Maison KEI",
+    "url": "https://tabelog.com/en/shizuoka/A2204/A220402/22037630/",
+    "awardTier": "BRONZE",
+    "area": "French / Shizuoka",
+    "genre": "French / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "MAISON LAFITE",
+    "url": "https://tabelog.com/en/fukuoka/A4003/A400301/40023784/",
+    "awardTier": "BRONZE",
+    "area": "French / Fukuoka",
+    "genre": "French / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Makimura",
+    "url": "https://tabelog.com/en/tokyo/A1315/A131502/13003338/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Makino",
+    "url": "https://tabelog.com/en/tokyo/A1311/A131101/13003708/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Tokyo",
+    "genre": "Seafood / Tokyo",
+    "score": null
+  },
+  {
+    "name": "MAKINONCÎ",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17012300/",
+    "awardTier": "BRONZE",
+    "area": "French / Ishikawa",
+    "genre": "French / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "MAKITORI SHINKOBE",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13291292/",
+    "awardTier": "SILVER",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "malca",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130603/13277748/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Tokyo",
+    "genre": "Italian / Tokyo",
+    "score": null
+  },
+  {
+    "name": "MANGER",
+    "url": "https://tabelog.com/en/osaka/A2707/A270705/27013624/",
+    "awardTier": "BRONZE",
+    "area": "Tonkatsu/Fried foods / Osaka",
+    "genre": "Tonkatsu/Fried foods / Osaka",
+    "score": null
+  },
+  {
+    "name": "Manzan",
+    "url": "https://tabelog.com/en/chiba/A1201/A120102/12020350/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Chiba",
+    "genre": "Chinese Cuisine / Chiba",
+    "score": null
+  },
+  {
+    "name": "Marushin",
+    "url": "https://tabelog.com/en/fukushima/A0702/A070201/7001521/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukushima",
+    "genre": "Japanese Cuisine / Fukushima",
+    "score": null
+  },
+  {
+    "name": "Maruyasu",
+    "url": "https://tabelog.com/en/hyogo/A2803/A280301/28001348/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Hyogo",
+    "genre": "Seafood / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Mas de Lavande",
+    "url": "https://tabelog.com/en/aichi/A2301/A230104/23055994/",
+    "awardTier": "BRONZE",
+    "area": "French / Aichi",
+    "genre": "French / Aichi",
+    "score": null
+  },
+  {
+    "name": "Masachan",
+    "url": "https://tabelog.com/en/osaka/A2701/A270406/27023255/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Osaka",
+    "genre": "Yakiniku/Meat dishes / Osaka",
+    "score": null
+  },
+  {
+    "name": "Masuda",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130602/13268503/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Matayoshi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26006471/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Matsuishi",
+    "url": "https://tabelog.com/en/miyagi/A0401/A040105/4025539/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Miyagi",
+    "genre": "Chinese Cuisine / Miyagi",
+    "score": null
+  },
+  {
+    "name": "Matsuka",
+    "url": "https://tabelog.com/en/nagano/A2002/A200201/20000103/",
+    "awardTier": "BRONZE",
+    "area": "Unagi / Nagano",
+    "genre": "Unagi / Nagano",
+    "score": null
+  },
+  {
+    "name": "Matsukawa",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13124391/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Matsumoto",
+    "url": "https://tabelog.com/en/hyogo/A2803/A280301/28006932/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hyogo",
+    "genre": "Sushi / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Matsuura",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13239788/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Matsuyama",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400404/40028665/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Fukuoka",
+    "genre": "Japanese Cuisine / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "MAZ",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130803/13270953/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Meino",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130702/13292357/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Mekumi",
+    "url": "https://tabelog.com/en/ishikawa/A1702/A170203/17000700/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Ishikawa",
+    "genre": "Sushi / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Mikadoya",
+    "url": "https://tabelog.com/en/shimane/A3204/A320402/32000061/",
+    "awardTier": "SILVER",
+    "area": "BEST REGIONAL RESTAURANTS",
+    "genre": "Japanese Cuisine / Shimane",
+    "score": null
+  },
+  {
+    "name": "mikami limited50",
+    "url": "https://tabelog.com/en/osaka/A2701/A270201/27124954/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "Mikasa",
+    "url": "https://tabelog.com/en/kanagawa/A1405/A140507/14000813/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Kanagawa",
+    "genre": "Tempura / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Mikawa",
+    "url": "https://tabelog.com/en/akita/A0501/A050101/5007142/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Akita",
+    "genre": "Tempura / Akita",
+    "score": null
+  },
+  {
+    "name": "Mikawa Zezankyo",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131303/13090866/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Tokyo",
+    "genre": "Tempura / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Mimuro",
+    "url": "https://tabelog.com/en/kumamoto/A4304/A430403/43015724/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Kumamoto",
+    "genre": "Sushi / Kumamoto",
+    "score": null
+  },
+  {
+    "name": "Minato",
+    "url": "https://tabelog.com/en/hokkaido/A0104/A010401/1001719/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Mita",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260302/26016620/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Mitaka",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130103/13228116/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Mitani",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130902/13042204/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Mitsuki",
+    "url": "https://tabelog.com/en/tottori/A3101/A310101/31004889/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tottori",
+    "genre": "Japanese Cuisine / Tottori",
+    "score": null
+  },
+  {
+    "name": "Mitsuyasu",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260501/26022648/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Miyakawa",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010105/1073214/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Miyamasou",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260504/26001066/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Miyamoto",
+    "url": "https://tabelog.com/en/shizuoka/A2203/A220302/22000036/",
+    "awardTier": "BRONZE",
+    "area": "Soba / Shizuoka",
+    "genre": "Soba / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Miyamoto",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27068283/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Miyasaka",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130602/13264981/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Miyazaki",
+    "url": "https://tabelog.com/en/fukui/A1801/A180101/18007783/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukui",
+    "genre": "Japanese Cuisine / Fukui",
+    "score": null
+  },
+  {
+    "name": "Miyoshi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26002222/",
+    "awardTier": "SILVER",
+    "area": "Yakiniku/Meat dishes / Kyoto",
+    "genre": "Yakiniku/Meat dishes / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Mizai",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26002279/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Mizukami",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130803/13220742/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Mizuki",
+    "url": "https://tabelog.com/en/gifu/A2101/A210101/21012245/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Gifu",
+    "genre": "Yakitori/Poultry / Gifu",
+    "score": null
+  },
+  {
+    "name": "Mochizuki",
+    "url": "https://tabelog.com/en/aichi/A2301/A230113/23000794/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Moe es",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13259508/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Mokkosu",
+    "url": "https://tabelog.com/en/gunma/A1001/A100102/10000668/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Gunma",
+    "genre": "Tempura / Gunma",
+    "score": null
+  },
+  {
+    "name": "Molière",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010105/1000022/",
+    "awardTier": "BRONZE",
+    "area": "French / Hokkaido",
+    "genre": "French / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Momen",
+    "url": "https://tabelog.com/en/osaka/A2701/A270201/27017665/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Morifuji",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13240181/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "MOTOÏ",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26019431/",
+    "awardTier": "BRONZE",
+    "area": "French / Kyoto",
+    "genre": "French / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Mumyo",
+    "url": "https://tabelog.com/en/nagano/A2004/A200403/20002726/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Nagano",
+    "genre": "Japanese Cuisine / Nagano",
+    "score": null
+  },
+  {
+    "name": "Murakami",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27100646/",
+    "awardTier": "BRONZE",
+    "area": "French / Osaka",
+    "genre": "French / Osaka",
+    "score": null
+  },
+  {
+    "name": "Murakami",
+    "url": "https://tabelog.com/en/kumamoto/A4301/A430101/43014482/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Kumamoto",
+    "genre": "Sushi / Kumamoto",
+    "score": null
+  },
+  {
+    "name": "Muroi",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13286652/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Muroi",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13292026/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Muromachi Wakuden",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26000621/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Mutsuki",
+    "url": "https://tabelog.com/en/aichi/A2304/A230402/23013911/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Aichi",
+    "genre": "Sushi / Aichi",
+    "score": null
+  },
+  {
+    "name": "Myojaku",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13270958/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Myoken Ishiharaso Shokusai Ishikura",
+    "url": "https://tabelog.com/en/kagoshima/A4603/A460301/46001299/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kagoshima",
+    "genre": "Japanese Cuisine / Kagoshima",
+    "score": null
+  },
+  {
+    "name": "N.",
+    "url": "https://tabelog.com/en/akita/A0501/A050101/5003686/",
+    "awardTier": "BRONZE",
+    "area": "Izakaya / Akita",
+    "genre": "Izakaya / Akita",
+    "score": null
+  },
+  {
+    "name": "Nabeno-Ism",
+    "url": "https://tabelog.com/en/tokyo/A1311/A131102/13194700/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "NAKADO",
+    "url": "https://tabelog.com/en/hiroshima/A3401/A340108/34026765/",
+    "awardTier": "BRONZE",
+    "area": "French / Hiroshima",
+    "genre": "French / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "NAKAHARA",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130904/13175110/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Nakajo",
+    "url": "https://tabelog.com/en/kanagawa/A1401/A140104/14065294/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Kanagawa",
+    "genre": "Sushi / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Nakamura",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27113956/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Nakamura",
+    "url": "https://tabelog.com/en/shizuoka/A2203/A220301/22041228/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Shizuoka",
+    "genre": "Tempura / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Nakamura",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13134663/",
+    "awardTier": "BRONZE",
+    "area": "Steak/Teppanyaki / Tokyo",
+    "genre": "Steak/Teppanyaki / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Nakashima",
+    "url": "https://tabelog.com/en/hiroshima/A3401/A340118/34016189/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Hiroshima",
+    "genre": "Japanese Cuisine / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "Namba",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130102/13219857/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Nanachome",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13200559/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Narikura",
+    "url": "https://tabelog.com/en/tokyo/A1319/A131905/13236380/",
+    "awardTier": "BRONZE",
+    "area": "Tonkatsu/Fried foods / Tokyo",
+    "genre": "Tonkatsu/Fried foods / Tokyo",
+    "score": null
+  },
+  {
+    "name": "NARISAWA",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130603/13005423/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Naruse",
+    "url": "https://tabelog.com/en/shizuoka/A2201/A220101/22037788/",
+    "awardTier": "GOLD",
+    "area": "Tempura / Shizuoka",
+    "genre": "Tempura / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Nawaya",
+    "url": "https://tabelog.com/en/kyoto/A2609/A260903/26015836/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Naz",
+    "url": "https://tabelog.com/en/nagano/A2003/A200301/20024041/",
+    "awardTier": "GOLD",
+    "area": "Innovative / Nagano",
+    "genre": "Innovative / Nagano",
+    "score": null
+  },
+  {
+    "name": "NH",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27133396/",
+    "awardTier": "SILVER",
+    "area": "French / Osaka",
+    "genre": "French / Osaka",
+    "score": null
+  },
+  {
+    "name": "Nijikichi",
+    "url": "https://tabelog.com/en/ehime/A3802/A380201/38015606/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Ehime",
+    "genre": "Seafood / Ehime",
+    "score": null
+  },
+  {
+    "name": "Nikaku",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400401/40000768/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Nikon",
+    "url": "https://tabelog.com/en/nara/A2901/A290101/29010206/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Nara",
+    "genre": "Japanese Cuisine / Nara",
+    "score": null
+  },
+  {
+    "name": "Nikutoieba Matsuda Nara Honten",
+    "url": "https://tabelog.com/en/nara/A2903/A290302/29013493/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Nara",
+    "genre": "Yakiniku/Meat dishes / Nara",
+    "score": null
+  },
+  {
+    "name": "Nikuya Setsugekka Nagoya",
+    "url": "https://tabelog.com/en/aichi/A2301/A230101/23061072/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Aichi",
+    "genre": "Yakiniku/Meat dishes / Aichi",
+    "score": null
+  },
+  {
+    "name": "Nikuya Tanaka Ginza",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13237628/",
+    "awardTier": "SILVER",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ninomae",
+    "url": "https://tabelog.com/en/hyogo/A2803/A280302/28063007/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Hyogo",
+    "genre": "Japanese Cuisine / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Ninshurou",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260503/26033124/",
+    "awardTier": "GOLD",
+    "area": "Chinese Cuisine / Kyoto",
+    "genre": "Chinese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Nishi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26027852/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Nishibuchi Hanten",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26022200/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Kyoto",
+    "genre": "Chinese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Nishikawa",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26007611/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Nishizaki",
+    "url": "https://tabelog.com/en/tokyo/A1318/A131811/13270984/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "NK",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130905/13249655/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "No Name",
+    "url": "https://tabelog.com/en/ehime/A3801/A380101/38009262/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Ehime",
+    "genre": "Italian / Ehime",
+    "score": null
+  },
+  {
+    "name": "Noguchi",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27126154/",
+    "awardTier": "SILVER",
+    "area": "Tonkatsu/Fried foods / Osaka",
+    "genre": "Tonkatsu/Fried foods / Osaka",
+    "score": null
+  },
+  {
+    "name": "Noguchi Taro",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27046071/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "NONOKA RESTAURANT",
+    "url": "https://tabelog.com/en/fukuoka/A4008/A400804/40051634/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Fukuoka",
+    "genre": "Innovative / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Nozawa",
+    "url": "https://tabelog.com/en/aichi/A2301/A230109/23063362/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Numata",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27119864/",
+    "awardTier": "SILVER",
+    "area": "Tempura / Osaka",
+    "genre": "Tempura / Osaka",
+    "score": null
+  },
+  {
+    "name": "Obana",
+    "url": "https://tabelog.com/en/gunma/A1002/A100204/10002097/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Gunma",
+    "genre": "Sushi / Gunma",
+    "score": null
+  },
+  {
+    "name": "Oga",
+    "url": "https://tabelog.com/en/osaka/A2705/A270501/27104114/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "Ogata",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26012136/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Ogawa",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26013892/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Ogino",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13245499/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ohata",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27057420/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "OHKUSA",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130903/13240980/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ohtani",
+    "url": "https://tabelog.com/en/aichi/A2301/A230113/23050424/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Oishi",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13238352/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Omino",
+    "url": "https://tabelog.com/en/tokyo/A1312/A131203/13206654/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Omino Kamiyacho",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130704/13255846/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Oniya",
+    "url": "https://tabelog.com/en/niigata/A1501/A150101/15015730/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Niigata",
+    "genre": "Yakitori/Poultry / Niigata",
+    "score": null
+  },
+  {
+    "name": "Onjaku",
+    "url": "https://tabelog.com/en/shizuoka/A2203/A220301/22006811/",
+    "awardTier": "GOLD",
+    "area": "BEST REGIONAL RESTAURANTS",
+    "genre": "Japanese Cuisine / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Ono",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27112164/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Onozawa",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130903/13247076/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Onza",
+    "url": "https://tabelog.com/en/shiga/A2501/A250101/25000920/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Shiga",
+    "genre": "Yakitori/Poultry / Shiga",
+    "score": null
+  },
+  {
+    "name": "Osamu",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400202/40000001/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Osamuchan",
+    "url": "https://tabelog.com/en/osaka/A2705/A270501/27052134/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Osaka",
+    "genre": "Yakiniku/Meat dishes / Osaka",
+    "score": null
+  },
+  {
+    "name": "OSTERIA ENOTECA DA SASINO",
+    "url": "https://tabelog.com/en/aomori/A0202/A020201/2000293/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Aomori",
+    "genre": "Italian / Aomori",
+    "score": null
+  },
+  {
+    "name": "Otagi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260503/26031202/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Otomezushi",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17000107/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Ishikawa",
+    "genre": "Sushi / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Otowa restaurant",
+    "url": "https://tabelog.com/en/tochigi/A0901/A090101/9002357/",
+    "awardTier": "BRONZE",
+    "area": "French / Tochigi",
+    "genre": "French / Tochigi",
+    "score": null
+  },
+  {
+    "name": "Owatari",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26014312/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "PARCO FIERA",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010203/1064202/",
+    "awardTier": "SILVER",
+    "area": "Italian / Hokkaido",
+    "genre": "Italian / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "PELLEGRINO",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130302/13072775/",
+    "awardTier": "GOLD",
+    "area": "Italian / Tokyo",
+    "genre": "Italian / Tokyo",
+    "score": null
+  },
+  {
+    "name": "pesceco",
+    "url": "https://tabelog.com/en/nagasaki/A4203/A420302/42008914/",
+    "awardTier": "SILVER",
+    "area": "BEST REGIONAL RESTAURANTS",
+    "genre": "Innovative / Nagasaki",
+    "score": null
+  },
+  {
+    "name": "Point",
+    "url": "https://tabelog.com/en/osaka/A2706/A270601/27115254/",
+    "awardTier": "BRONZE",
+    "area": "French / Osaka",
+    "genre": "French / Osaka",
+    "score": null
+  },
+  {
+    "name": "Pome",
+    "url": "https://tabelog.com/en/osaka/A2701/A270201/27119987/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Osaka",
+    "genre": "Yakiniku/Meat dishes / Osaka",
+    "score": null
+  },
+  {
+    "name": "PRESENTE Sugi",
+    "url": "https://tabelog.com/en/chiba/A1204/A120402/12038574/",
+    "awardTier": "GOLD",
+    "area": "Italian / Chiba",
+    "genre": "Italian / Chiba",
+    "score": null
+  },
+  {
+    "name": "PRISMA",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130602/13123890/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Tokyo",
+    "genre": "Italian / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Quintessence",
+    "url": "https://tabelog.com/en/tokyo/A1314/A131405/13159567/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "RADICE",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26023199/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Kyoto",
+    "genre": "Italian / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Raimon",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13224635/",
+    "awardTier": "SILVER",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ranmaru",
+    "url": "https://tabelog.com/en/tokyo/A1317/A131710/13217903/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Rantei Vivian",
+    "url": "https://tabelog.com/en/fukushima/A0702/A070201/7000278/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukushima",
+    "genre": "Japanese Cuisine / Fukushima",
+    "score": null
+  },
+  {
+    "name": "Remède nikaho",
+    "url": "https://tabelog.com/en/akita/A0506/A050602/5008507/",
+    "awardTier": "BRONZE",
+    "area": "French / Akita",
+    "genre": "French / Akita",
+    "score": null
+  },
+  {
+    "name": "Reminiscence",
+    "url": "https://tabelog.com/en/aichi/A2301/A230106/23085308/",
+    "awardTier": "SILVER",
+    "area": "French / Aichi",
+    "genre": "French / Aichi",
+    "score": null
+  },
+  {
+    "name": "Ren Mishina",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13221959/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "respiración",
+    "url": "https://tabelog.com/en/ishikawa/A1701/A170101/17010732/",
+    "awardTier": "SILVER",
+    "area": "Spanish / Ishikawa",
+    "genre": "Spanish / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Restaurant HONJIN",
+    "url": "https://tabelog.com/en/aichi/A2302/A230201/23079824/",
+    "awardTier": "BRONZE",
+    "area": "French / Aichi",
+    "genre": "French / Aichi",
+    "score": null
+  },
+  {
+    "name": "Restaurant l'equateur",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130702/13121866/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Restaurant La FinS",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130103/13139171/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "RESTAURANT Ohtsu",
+    "url": "https://tabelog.com/en/ibaraki/A0801/A080101/8000180/",
+    "awardTier": "BRONZE",
+    "area": "French / Ibaraki",
+    "genre": "French / Ibaraki",
+    "score": null
+  },
+  {
+    "name": "restaurant Ryu",
+    "url": "https://tabelog.com/en/mie/A2401/A240103/24002060/",
+    "awardTier": "BRONZE",
+    "area": "French / Mie",
+    "genre": "French / Mie",
+    "score": null
+  },
+  {
+    "name": "RESTAURANT Ryuzu",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13122126/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Restaurant SNOW",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40054526/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Fukuoka",
+    "genre": "Innovative / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Restaurant Sola",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400102/40050652/",
+    "awardTier": "BRONZE",
+    "area": "French / Fukuoka",
+    "genre": "French / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "RESTAURANT TAKATSU",
+    "url": "https://tabelog.com/en/yamaguchi/A3502/A350201/35010129/",
+    "awardTier": "BRONZE",
+    "area": "French / Yamaguchi",
+    "genre": "French / Yamaguchi",
+    "score": null
+  },
+  {
+    "name": "Restaurant UOZEN",
+    "url": "https://tabelog.com/en/niigata/A1501/A150102/15015200/",
+    "awardTier": "SILVER",
+    "area": "French / Niigata",
+    "genre": "French / Niigata",
+    "score": null
+  },
+  {
+    "name": "Ribatei",
+    "url": "https://tabelog.com/en/kanagawa/A1401/A140102/14001650/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Kanagawa",
+    "genre": "Yakitori/Poultry / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Rin",
+    "url": "https://tabelog.com/en/shizuoka/A2202/A220201/22037448/",
+    "awardTier": "BRONZE",
+    "area": "Unagi / Shizuoka",
+    "genre": "Unagi / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "ristorante NAKAMOTO",
+    "url": "https://tabelog.com/en/kyoto/A2607/A260705/26018907/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Kyoto",
+    "genre": "Italian / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Ristorante SHIKAZAWA",
+    "url": "https://tabelog.com/en/iwate/A0301/A030101/3006532/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Iwate",
+    "genre": "Italian / Iwate",
+    "score": null
+  },
+  {
+    "name": "Roan Matsuda Sasayama",
+    "url": "https://tabelog.com/en/hyogo/A2807/A280702/28000070/",
+    "awardTier": "BRONZE",
+    "area": "Soba / Hyogo",
+    "genre": "Soba / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Rokkan",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131301/13178685/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ryobo",
+    "url": "https://tabelog.com/en/kagawa/A3701/A370101/37008167/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Kagawa",
+    "genre": "Italian / Kagawa",
+    "score": null
+  },
+  {
+    "name": "RYORIYA STEPHAN PANTEL",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26023370/",
+    "awardTier": "BRONZE",
+    "area": "French / Kyoto",
+    "genre": "French / Kyoto",
+    "score": null
+  },
+  {
+    "name": "RyuGin",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130102/13001457/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ryujiro",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130603/13240787/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Saeki",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13239506/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Saeki Hanten",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131601/13233311/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "SAGRA",
+    "url": "https://tabelog.com/en/hokkaido/A0106/A010602/1057186/",
+    "awardTier": "SILVER",
+    "area": "BEST REGIONAL RESTAURANTS",
+    "genre": "Italian / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Saika",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260304/26023771/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Kyoto",
+    "genre": "Chinese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Saito",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130802/13015251/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sakagawa",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26001726/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Sakai",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400103/40034544/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Sakana",
+    "url": "https://tabelog.com/en/gifu/A2104/A210401/21010387/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Gifu",
+    "genre": "Japanese Cuisine / Gifu",
+    "score": null
+  },
+  {
+    "name": "Sangencha",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26005351/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Sanroku",
+    "url": "https://tabelog.com/en/kumamoto/A4303/A430301/43001156/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Kumamoto",
+    "genre": "Yakitori/Poultry / Kumamoto",
+    "score": null
+  },
+  {
+    "name": "Sanshin",
+    "url": "https://tabelog.com/en/osaka/A2701/A270204/27095402/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "Sanwa",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13264755/",
+    "awardTier": "SILVER",
+    "area": "Italian / Tokyo",
+    "genre": "Italian / Tokyo",
+    "score": null
+  },
+  {
+    "name": "SASAKI",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26001863/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Sato",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400401/40000240/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukuoka",
+    "genre": "Japanese Cuisine / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "SATO Briand Honten",
+    "url": "https://tabelog.com/en/tokyo/A1319/A131905/13127046/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "SATO Briand Nigo",
+    "url": "https://tabelog.com/en/tokyo/A1319/A131905/13159782/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sawada",
+    "url": "https://tabelog.com/en/osaka/A2701/A270108/27137065/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Sawada",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13001043/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sawaishi",
+    "url": "https://tabelog.com/en/kanagawa/A1405/A140504/14091558/",
+    "awardTier": "SILVER",
+    "area": "Yakiniku/Meat dishes / Kanagawa",
+    "genre": "Yakiniku/Meat dishes / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "Sazenka",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13205298/",
+    "awardTier": "GOLD",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Seirin",
+    "url": "https://tabelog.com/en/shizuoka/A2202/A220201/22034729/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Shizuoka",
+    "genre": "Japanese Cuisine / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Seiryuen",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131303/13237978/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "SEIZAN",
+    "url": "https://tabelog.com/en/tokyo/A1314/A131402/13127807/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sen",
+    "url": "https://tabelog.com/en/kanagawa/A1401/A140104/14083143/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Kanagawa",
+    "genre": "Yakitori/Poultry / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "SEN",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26030495/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Senpachi",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40065474/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "SENSE",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130202/13020361/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "SENTI.U",
+    "url": "https://tabelog.com/en/kagoshima/A4604/A460401/46013967/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Kagoshima",
+    "genre": "Italian / Kagoshima",
+    "score": null
+  },
+  {
+    "name": "Sessonan",
+    "url": "https://tabelog.com/en/ibaraki/A0805/A080502/8001285/",
+    "awardTier": "BRONZE",
+    "area": "French / Ibaraki",
+    "genre": "French / Ibaraki",
+    "score": null
+  },
+  {
+    "name": "Setsugekka Ginza",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13249568/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Setsugekka Tanaka Satoru",
+    "url": "https://tabelog.com/en/aichi/A2301/A230103/23071686/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Aichi",
+    "genre": "Yakiniku/Meat dishes / Aichi",
+    "score": null
+  },
+  {
+    "name": "SÉZANNE",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130201/13256878/",
+    "awardTier": "SILVER",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Shimazu",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13252991/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Shimbashi Hoshino",
+    "url": "https://tabelog.com/en/tokyo/A1314/A131401/13136847/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Shimbashi Sasada",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130103/13020781/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Shimbashi Shimizu",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130103/13002892/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Shimizu",
+    "url": "https://tabelog.com/en/aichi/A2301/A230104/23080047/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Shimizu",
+    "url": "https://tabelog.com/en/aichi/A2301/A230109/23081320/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Aichi",
+    "genre": "Sushi / Aichi",
+    "score": null
+  },
+  {
+    "name": "shimoyamitenaeizuru",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010104/1061277/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Hokkaido",
+    "genre": "Innovative / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Shinchaya",
+    "url": "https://tabelog.com/en/iwate/A0303/A030302/3006494/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Iwate",
+    "genre": "Japanese Cuisine / Iwate",
+    "score": null
+  },
+  {
+    "name": "Shinoda",
+    "url": "https://tabelog.com/en/ehime/A3802/A380201/38006443/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Ehime",
+    "genre": "Japanese Cuisine / Ehime",
+    "score": null
+  },
+  {
+    "name": "Shinohara",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13200949/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "ShinoiS",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131602/13241948/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Shintaku",
+    "url": "https://tabelog.com/en/niigata/A1505/A150504/15001790/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Niigata",
+    "genre": "Japanese Cuisine / Niigata",
+    "score": null
+  },
+  {
+    "name": "Shinzenbi",
+    "url": "https://tabelog.com/en/aichi/A2301/A230104/23075825/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Aichi",
+    "genre": "Chinese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Shizuku",
+    "url": "https://tabelog.com/en/osaka/A2701/A270201/27093524/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "Shofukuro Honten",
+    "url": "https://tabelog.com/en/shiga/A2503/A250302/25000052/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Shiga",
+    "genre": "Japanese Cuisine / Shiga",
+    "score": null
+  },
+  {
+    "name": "SHÓKUDŌ YArn",
+    "url": "https://tabelog.com/en/ishikawa/A1702/A170202/17009741/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Ishikawa",
+    "genre": "Innovative / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Shota",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010102/1073448/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "SHUN",
+    "url": "https://tabelog.com/en/shizuoka/A2201/A220101/22019273/",
+    "awardTier": "SILVER",
+    "area": "Unagi / Shizuoka",
+    "genre": "Unagi / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Shunji",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13282687/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Shunseki Suzue",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26014309/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Shunsuke",
+    "url": "https://tabelog.com/en/tokyo/A1319/A131905/13127515/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Shutei Tanaka",
+    "url": "https://tabelog.com/en/tokyo/A1312/A131203/13285811/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sincère",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130901/13194253/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "sio",
+    "url": "https://tabelog.com/en/tokyo/A1318/A131811/13150395/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sizen Mukuan",
+    "url": "https://tabelog.com/en/wakayama/A3004/A300402/30008100/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Wakayama",
+    "genre": "Japanese Cuisine / Wakayama",
+    "score": null
+  },
+  {
+    "name": "Sobiki",
+    "url": "https://tabelog.com/en/hiroshima/A3407/A340701/34023121/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Hiroshima",
+    "genre": "Japanese Cuisine / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "Sojiki Nakahigashi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260302/26001800/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Sonoji",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130204/13201969/",
+    "awardTier": "SILVER",
+    "area": "Tempura / Tokyo",
+    "genre": "Tempura / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Soshi",
+    "url": "https://tabelog.com/en/hiroshima/A3401/A340112/34022477/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hiroshima",
+    "genre": "Sushi / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "Sottaku Tsukamoto",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26013373/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Souan Nabeshima",
+    "url": "https://tabelog.com/en/saga/A4104/A410402/41007161/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Saga",
+    "genre": "Japanese Cuisine / Saga",
+    "score": null
+  },
+  {
+    "name": "Sous-sus",
+    "url": "https://tabelog.com/en/akita/A0501/A050101/5009178/",
+    "awardTier": "BRONZE",
+    "area": "French / Akita",
+    "genre": "French / Akita",
+    "score": null
+  },
+  {
+    "name": "STEAK HOUSE Baron",
+    "url": "https://tabelog.com/en/kumamoto/A4301/A430101/43000201/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Kumamoto",
+    "genre": "Yakiniku/Meat dishes / Kumamoto",
+    "score": null
+  },
+  {
+    "name": "Sudo Haruyoshi",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400103/40043061/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Fukuoka",
+    "genre": "Yakiniku/Meat dishes / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Suetomi",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130301/13259485/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "SUGALABO",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130704/13182678/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  },
+  {
+    "name": "SUGALABO V",
+    "url": "https://tabelog.com/en/osaka/A2701/A270202/27116163/",
+    "awardTier": "BRONZE",
+    "area": "French / Osaka",
+    "genre": "French / Osaka",
+    "score": null
+  },
+  {
+    "name": "Sugaya",
+    "url": "https://tabelog.com/en/tokyo/A1314/A131401/13228776/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sugita",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130204/13018162/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sushi Josuke",
+    "url": "https://tabelog.com/en/hyogo/A2801/A280103/28006575/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Hyogo",
+    "genre": "Sushi / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Sushiei",
+    "url": "https://tabelog.com/en/chiba/A1201/A120101/12052833/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Chiba",
+    "genre": "Sushi / Chiba",
+    "score": null
+  },
+  {
+    "name": "Sushikin",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010103/1002644/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Sushikoma",
+    "url": "https://tabelog.com/en/akita/A0506/A050601/5006041/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Akita",
+    "genre": "Sushi / Akita",
+    "score": null
+  },
+  {
+    "name": "Sushimichi Sakurada",
+    "url": "https://tabelog.com/en/aichi/A2301/A230103/23070288/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Aichi",
+    "genre": "Sushi / Aichi",
+    "score": null
+  },
+  {
+    "name": "Sushinokura",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010103/1045430/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Sushisai Wakichi",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010105/1000645/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hokkaido",
+    "genre": "Sushi / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Sushisho",
+    "url": "https://tabelog.com/en/akita/A0501/A050101/5007025/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Akita",
+    "genre": "Sushi / Akita",
+    "score": null
+  },
+  {
+    "name": "Sushisho",
+    "url": "https://tabelog.com/en/tokyo/A1309/A130902/13000852/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sushisho Nomura",
+    "url": "https://tabelog.com/en/kagoshima/A4601/A460101/46000087/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Kagoshima",
+    "genre": "Sushi / Kagoshima",
+    "score": null
+  },
+  {
+    "name": "Sushisho Saito",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130801/13023988/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Sushishunbi Nishikawa",
+    "url": "https://tabelog.com/en/aichi/A2301/A230101/23023439/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Aichi",
+    "genre": "Sushi / Aichi",
+    "score": null
+  },
+  {
+    "name": "Sutaminaen",
+    "url": "https://tabelog.com/en/tokyo/A1323/A132305/13003777/",
+    "awardTier": "SILVER",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Suyama",
+    "url": "https://tabelog.com/en/hokkaido/A0101/A010104/1060884/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Hokkaido",
+    "genre": "Japanese Cuisine / Hokkaido",
+    "score": null
+  },
+  {
+    "name": "Suzaki Shokuryohinten",
+    "url": "https://tabelog.com/en/kagawa/A3703/A370303/37000143/",
+    "awardTier": "BRONZE",
+    "area": "Udon / Kagawa",
+    "genre": "Udon / Kagawa",
+    "score": null
+  },
+  {
+    "name": "Suzuki",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13184367/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Suzutashiki",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13293100/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "TACUBO",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130303/13109940/",
+    "awardTier": "SILVER",
+    "area": "Italian / Tokyo",
+    "genre": "Italian / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tada",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27003367/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "Tagawa",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26028604/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Tagetsu",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130602/13160021/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Takajo Kotobuki",
+    "url": "https://tabelog.com/en/tokyo/A1311/A131102/13003661/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Takamitsu",
+    "url": "https://tabelog.com/en/tokyo/A1317/A131701/13128483/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Takamura",
+    "url": "https://tabelog.com/en/akita/A0501/A050101/5000664/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Akita",
+    "genre": "Japanese Cuisine / Akita",
+    "score": null
+  },
+  {
+    "name": "Takarazushibunten",
+    "url": "https://tabelog.com/en/akita/A0501/A050101/5004621/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Akita",
+    "genre": "Sushi / Akita",
+    "score": null
+  },
+  {
+    "name": "TAKAYAMA",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26033554/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Kyoto",
+    "genre": "Innovative / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Takeru",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13271362/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Takeuchi",
+    "url": "https://tabelog.com/en/fukuoka/A4003/A400301/40013636/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Fukuoka",
+    "genre": "Tempura / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Takiya",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130702/13185763/",
+    "awardTier": "SILVER",
+    "area": "Tempura / Tokyo",
+    "genre": "Tempura / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Takumi Shingo",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130603/13155925/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tamawarai",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130601/13129390/",
+    "awardTier": "BRONZE",
+    "area": "Soba / Tokyo",
+    "genre": "Soba / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tamura",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400103/40000441/",
+    "awardTier": "BRONZE",
+    "area": "Asian/Ethnic/Curry / Fukuoka",
+    "genre": "Asian/Ethnic/Curry / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Tanaka Yoshihide",
+    "url": "https://tabelog.com/en/osaka/A2701/A270107/27135992/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Osaka",
+    "genre": "Chinese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Taniguchi",
+    "url": "https://tabelog.com/en/hyogo/A2803/A280304/28051479/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Hyogo",
+    "genre": "Yakitori/Poultry / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Tanryu",
+    "url": "https://tabelog.com/en/hyogo/A2805/A280501/28054576/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Hyogo",
+    "genre": "Japanese Cuisine / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Tashiro",
+    "url": "https://tabelog.com/en/aichi/A2303/A230302/23003045/",
+    "awardTier": "BRONZE",
+    "area": "Unagi / Aichi",
+    "genre": "Unagi / Aichi",
+    "score": null
+  },
+  {
+    "name": "Tempura Kusunoki",
+    "url": "https://tabelog.com/en/aichi/A2301/A230101/23082892/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Aichi",
+    "genre": "Tempura / Aichi",
+    "score": null
+  },
+  {
+    "name": "Tenhaku",
+    "url": "https://tabelog.com/en/chiba/A1201/A120101/12037698/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Chiba",
+    "genre": "Tempura / Chiba",
+    "score": null
+  },
+  {
+    "name": "Tenzushi Kyomachi",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400401/40000721/",
+    "awardTier": "GOLD",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Terasawa",
+    "url": "https://tabelog.com/en/iwate/A0302/A030202/3005625/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Iwate",
+    "genre": "Japanese Cuisine / Iwate",
+    "score": null
+  },
+  {
+    "name": "Terroir Aitoibukuro",
+    "url": "https://tabelog.com/en/yamanashi/A1902/A190201/19009934/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Yamanashi",
+    "genre": "Innovative / Yamanashi",
+    "score": null
+  },
+  {
+    "name": "TERUZUSHI",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400402/40001637/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "TOBIUME",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400404/40019957/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Fukuoka",
+    "genre": "Japanese Cuisine / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Tokiwa",
+    "url": "https://tabelog.com/en/niigata/A1505/A150502/15001390/",
+    "awardTier": "SILVER",
+    "area": "Sushi / Niigata",
+    "genre": "Sushi / Niigata",
+    "score": null
+  },
+  {
+    "name": "Tokuhamotonari",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260503/26040349/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Tokuyamazushi",
+    "url": "https://tabelog.com/en/shiga/A2504/A250403/25002104/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Shiga",
+    "genre": "Japanese Cuisine / Shiga",
+    "score": null
+  },
+  {
+    "name": "Tokyo Nikushabuya",
+    "url": "https://tabelog.com/en/tokyo/A1304/A130401/13196268/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tokyo Nikushabuya Subin",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13287203/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "TOM Curiosa",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27135015/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Osaka",
+    "genre": "Italian / Osaka",
+    "score": null
+  },
+  {
+    "name": "Tomato",
+    "url": "https://tabelog.com/en/tokyo/A1319/A131906/13001113/",
+    "awardTier": "BRONZE",
+    "area": "Asian/Ethnic/Curry / Tokyo",
+    "genre": "Asian/Ethnic/Curry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tomidokoro",
+    "url": "https://tabelog.com/en/tokyo/A1314/A131401/13223846/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tomisuke",
+    "url": "https://tabelog.com/en/hiroshima/A3401/A340109/34006208/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Hiroshima",
+    "genre": "Japanese Cuisine / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "Tomoei",
+    "url": "https://tabelog.com/en/kanagawa/A1410/A141001/14001626/",
+    "awardTier": "SILVER",
+    "area": "Unagi / Kanagawa",
+    "genre": "Unagi / Kanagawa",
+    "score": null
+  },
+  {
+    "name": "TOMONO",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27121125/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Osaka",
+    "genre": "Chinese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Tomura",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130802/13005027/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Toraya Kochuan",
+    "url": "https://tabelog.com/en/tokushima/A3601/A360104/36000369/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokushima",
+    "genre": "Japanese Cuisine / Tokushima",
+    "score": null
+  },
+  {
+    "name": "torila",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400104/40001934/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Fukuoka",
+    "genre": "Yakitori/Poultry / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Torisaki",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260202/26033122/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Kyoto",
+    "genre": "Yakitori/Poultry / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Torisawa22",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13222625/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Torishige",
+    "url": "https://tabelog.com/en/tokyo/A1304/A130401/13001067/",
+    "awardTier": "BRONZE",
+    "area": "Izakaya / Tokyo",
+    "genre": "Izakaya / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Torishige",
+    "url": "https://tabelog.com/en/shizuoka/A2203/A220301/22039162/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Shizuoka",
+    "genre": "Yakitori/Poultry / Shizuoka",
+    "score": null
+  },
+  {
+    "name": "Torishiki",
+    "url": "https://tabelog.com/en/tokyo/A1316/A131601/13041029/",
+    "awardTier": "SILVER",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Torisho Ishii",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27117938/",
+    "awardTier": "SILVER",
+    "area": "Yakitori/Poultry / Osaka",
+    "genre": "Yakitori/Poultry / Osaka",
+    "score": null
+  },
+  {
+    "name": "Torisho Ishii Hina",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130702/13271040/",
+    "awardTier": "BRONZE",
+    "area": "Yakitori/Poultry / Tokyo",
+    "genre": "Yakitori/Poultry / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Toshi",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13225413/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "TOUR D'ARGENT TOKYO",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130803/13000288/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tout La Joie Ism",
+    "url": "https://tabelog.com/en/aichi/A2301/A230105/23078483/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Aichi",
+    "genre": "Innovative / Aichi",
+    "score": null
+  },
+  {
+    "name": "Toyonaga",
+    "url": "https://tabelog.com/en/osaka/A2701/A270103/27105145/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Osaka",
+    "genre": "Sushi / Osaka",
+    "score": null
+  },
+  {
+    "name": "Tsubaki",
+    "url": "https://tabelog.com/en/gifu/A2101/A210101/21017221/",
+    "awardTier": "BRONZE",
+    "area": "Other / Gifu",
+    "genre": "Other / Gifu",
+    "score": null
+  },
+  {
+    "name": "Tsubasa",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400401/40043591/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Tsubomi",
+    "url": "https://tabelog.com/en/tokyo/A1317/A131701/13221782/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tsuchiya",
+    "url": "https://tabelog.com/en/osaka/A2706/A270602/27017728/",
+    "awardTier": "BRONZE",
+    "area": "Tempura / Osaka",
+    "genre": "Tempura / Osaka",
+    "score": null
+  },
+  {
+    "name": "Tsugumi",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400103/40054472/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Fukuoka",
+    "genre": "Japanese Cuisine / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Tsugumian",
+    "url": "https://tabelog.com/en/tokyo/A1323/A132301/13080463/",
+    "awardTier": "BRONZE",
+    "area": "Unagi / Tokyo",
+    "genre": "Unagi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Tsukasa",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26036658/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Tsukioka",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26035778/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Tsukumo",
+    "url": "https://tabelog.com/en/nara/A2901/A290101/29012612/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Nara",
+    "genre": "Japanese Cuisine / Nara",
+    "score": null
+  },
+  {
+    "name": "Tsunechan",
+    "url": "https://tabelog.com/en/osaka/A2705/A270501/27079111/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Osaka",
+    "genre": "Yakiniku/Meat dishes / Osaka",
+    "score": null
+  },
+  {
+    "name": "Tsushima",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13245835/",
+    "awardTier": "BRONZE",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "TSUSHIMI",
+    "url": "https://tabelog.com/en/yamanashi/A1902/A190202/19012518/",
+    "awardTier": "SILVER",
+    "area": "French / Yamanashi",
+    "genre": "French / Yamanashi",
+    "score": null
+  },
+  {
+    "name": "TTOAHISU",
+    "url": "https://tabelog.com/en/fukuoka/A4001/A400105/40042997/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Fukuoka",
+    "genre": "Innovative / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "U.KAI",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27116521/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Osaka",
+    "genre": "Innovative / Osaka",
+    "score": null
+  },
+  {
+    "name": "Ueda",
+    "url": "https://tabelog.com/en/hyogo/A2801/A280102/28053397/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Hyogo",
+    "genre": "Sushi / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Ueda",
+    "url": "https://tabelog.com/en/aichi/A2301/A230105/23014106/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Aichi",
+    "genre": "Sushi / Aichi",
+    "score": null
+  },
+  {
+    "name": "Uemura",
+    "url": "https://tabelog.com/en/hyogo/A2801/A280101/28006093/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Hyogo",
+    "genre": "Japanese Cuisine / Hyogo",
+    "score": null
+  },
+  {
+    "name": "Umi",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130603/13001179/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "unis",
+    "url": "https://tabelog.com/en/tokyo/A1308/A130802/13253159/",
+    "awardTier": "BRONZE",
+    "area": "French / Tokyo",
+    "genre": "French / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Uomasa",
+    "url": "https://tabelog.com/en/tokyo/A1324/A132403/13035339/",
+    "awardTier": "SILVER",
+    "area": "Unagi / Tokyo",
+    "genre": "Unagi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Uotora",
+    "url": "https://tabelog.com/en/fukuoka/A4004/A400404/40021924/",
+    "awardTier": "BRONZE",
+    "area": "Izakaya / Fukuoka",
+    "genre": "Izakaya / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Uozuya",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260401/26000319/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Uran",
+    "url": "https://tabelog.com/en/shiga/A2501/A250101/25004102/",
+    "awardTier": "GOLD",
+    "area": "BEST REGIONAL RESTAURANTS",
+    "genre": "Unagi / Shiga",
+    "score": null
+  },
+  {
+    "name": "USHIGORO S. GINZA",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13222093/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Ushimaru",
+    "url": "https://tabelog.com/en/chiba/A1205/A120502/12000598/",
+    "awardTier": "SILVER",
+    "area": "Italian / Chiba",
+    "genre": "Italian / Chiba",
+    "score": null
+  },
+  {
+    "name": "Vesta",
+    "url": "https://tabelog.com/en/tokyo/A1302/A130202/13185496/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "villa aida",
+    "url": "https://tabelog.com/en/wakayama/A3001/A300102/30000104/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Wakayama",
+    "genre": "Italian / Wakayama",
+    "score": null
+  },
+  {
+    "name": "Villa del nido",
+    "url": "https://tabelog.com/en/nagasaki/A4203/A420301/42009254/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Nagasaki",
+    "genre": "Italian / Nagasaki",
+    "score": null
+  },
+  {
+    "name": "Villa della Pace",
+    "url": "https://tabelog.com/en/ishikawa/A1703/A170302/17012559/",
+    "awardTier": "BRONZE",
+    "area": "Italian / Ishikawa",
+    "genre": "Italian / Ishikawa",
+    "score": null
+  },
+  {
+    "name": "Wadakin",
+    "url": "https://tabelog.com/en/mie/A2401/A240102/24000069/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Mie",
+    "genre": "Yakiniku/Meat dishes / Mie",
+    "score": null
+  },
+  {
+    "name": "Wagyu lab K",
+    "url": "https://tabelog.com/en/hiroshima/A3401/A340103/34029605/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Hiroshima",
+    "genre": "Yakiniku/Meat dishes / Hiroshima",
+    "score": null
+  },
+  {
+    "name": "WASA",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130302/13251804/",
+    "awardTier": "SILVER",
+    "area": "Chinese Cuisine / Tokyo",
+    "genre": "Chinese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Yamadaya",
+    "url": "https://tabelog.com/en/oita/A4401/A440104/44000241/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Oita",
+    "genre": "Seafood / Oita",
+    "score": null
+  },
+  {
+    "name": "Yamagishi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260201/26026316/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Yamaguchi",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26018397/",
+    "awardTier": "SILVER",
+    "area": "Italian / Kyoto",
+    "genre": "Italian / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Yamaguchi",
+    "url": "https://tabelog.com/en/osaka/A2701/A270102/27086624/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Yamanomi",
+    "url": "https://tabelog.com/en/nagano/A2001/A200104/20000397/",
+    "awardTier": "BRONZE",
+    "area": "Soba / Nagano",
+    "genre": "Soba / Nagano",
+    "score": null
+  },
+  {
+    "name": "Yamasaryokan",
+    "url": "https://tabelog.com/en/oita/A4404/A440402/44001011/",
+    "awardTier": "BRONZE",
+    "area": "Seafood / Oita",
+    "genre": "Seafood / Oita",
+    "score": null
+  },
+  {
+    "name": "Yamasei",
+    "url": "https://tabelog.com/en/nagano/A2002/A200201/20026525/",
+    "awardTier": "BRONZE",
+    "area": "Unagi / Nagano",
+    "genre": "Unagi / Nagano",
+    "score": null
+  },
+  {
+    "name": "Yamato",
+    "url": "https://tabelog.com/en/tokyo/A1313/A131301/13262384/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Yamazaki",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13225691/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Yanagiya",
+    "url": "https://tabelog.com/en/gifu/A2103/A210301/21000023/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Gifu",
+    "genre": "Japanese Cuisine / Gifu",
+    "score": null
+  },
+  {
+    "name": "Yanagiyanishiki",
+    "url": "https://tabelog.com/en/aichi/A2301/A230103/23060455/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Yassan",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26000268/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Kyoto",
+    "genre": "Yakiniku/Meat dishes / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Yonemasu",
+    "url": "https://tabelog.com/en/osaka/A2701/A270108/27095726/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "Yonemura",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26032575/",
+    "awardTier": "BRONZE",
+    "area": "Innovative / Kyoto",
+    "genre": "Innovative / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Yoroniku",
+    "url": "https://tabelog.com/en/tokyo/A1306/A130602/13042979/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "YORONIKU TOKYO AZABUDAIHILLS",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13291424/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Yoshicho",
+    "url": "https://tabelog.com/en/ibaraki/A0802/A080202/8004634/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Ibaraki",
+    "genre": "Japanese Cuisine / Ibaraki",
+    "score": null
+  },
+  {
+    "name": "Yoshida",
+    "url": "https://tabelog.com/en/fukuoka/A4008/A400801/40010507/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Fukuoka",
+    "genre": "Sushi / Fukuoka",
+    "score": null
+  },
+  {
+    "name": "Yoshihisa",
+    "url": "https://tabelog.com/en/kyoto/A2601/A260301/26031203/",
+    "awardTier": "SILVER",
+    "area": "Japanese Cuisine / Kyoto",
+    "genre": "Japanese Cuisine / Kyoto",
+    "score": null
+  },
+  {
+    "name": "Yoshii",
+    "url": "https://tabelog.com/en/aichi/A2301/A230104/23044914/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Aichi",
+    "genre": "Japanese Cuisine / Aichi",
+    "score": null
+  },
+  {
+    "name": "Yoshitake",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13024076/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Yu",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130701/13201640/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Yuji",
+    "url": "https://tabelog.com/en/tokyo/A1303/A130301/13001794/",
+    "awardTier": "BRONZE",
+    "area": "Yakiniku/Meat dishes / Tokyo",
+    "genre": "Yakiniku/Meat dishes / Tokyo",
+    "score": null
+  },
+  {
+    "name": "YUKIMOTO",
+    "url": "https://tabelog.com/en/nagano/A2006/A200603/20004238/",
+    "awardTier": "GOLD",
+    "area": "Japanese Cuisine / Nagano",
+    "genre": "Japanese Cuisine / Nagano",
+    "score": null
+  },
+  {
+    "name": "Yukimura",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130702/13005316/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Tokyo",
+    "genre": "Japanese Cuisine / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Zai",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13233764/",
+    "awardTier": "BRONZE",
+    "area": "Sushi / Tokyo",
+    "genre": "Sushi / Tokyo",
+    "score": null
+  },
+  {
+    "name": "Zenryomaru",
+    "url": "https://tabelog.com/en/miyazaki/A4505/A450501/45004060/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Miyazaki",
+    "genre": "Japanese Cuisine / Miyazaki",
+    "score": null
+  },
+  {
+    "name": "Zeshin",
+    "url": "https://tabelog.com/en/osaka/A2701/A270101/27077650/",
+    "awardTier": "BRONZE",
+    "area": "Japanese Cuisine / Osaka",
+    "genre": "Japanese Cuisine / Osaka",
+    "score": null
+  },
+  {
+    "name": "ZURRIOLA",
+    "url": "https://tabelog.com/en/tokyo/A1301/A130101/13125046/",
+    "awardTier": "BRONZE",
+    "area": "Spanish / Tokyo",
+    "genre": "Spanish / Tokyo",
+    "score": null
+  },
+  {
+    "name": "τρεῖς",
+    "url": "https://tabelog.com/en/tokyo/A1307/A130703/13246316/",
+    "awardTier": "SILVER",
+    "area": "Innovative / Tokyo",
+    "genre": "Innovative / Tokyo",
+    "score": null
+  }
+]

@@ -431,6 +431,9 @@
     .badge-nominee { background: var(--border-light); color: var(--white); }
     .badge-michelin { background: #E4002B; color: #fff; }
     .badge-tm { background: #1a6fa8; color: #fff; }
+    .badge-tabelog   { background: #C0392B; color: #fff; }
+    .badge-aarosette { background: #1B3A6B; color: #fff; }
+    .badge-repsol    { background: #D4870A; color: #fff; }
 
     .result-loc {
       font-size: 0.68rem;
@@ -923,6 +926,9 @@
             <option value="jbf">James Beard Only</option>
             <option value="michelin">Michelin Only</option>
             <option value="texasmonthly">Texas Monthly Only</option>
+            <option value="tabelog">Tabelog Award Only</option>
+            <option value="aarosette">AA Rosettes Only</option>
+            <option value="repsol">Guía Repsol Only</option>
           </select>
         </div>
 
@@ -1670,13 +1676,69 @@ function markerIcon(status, michelinTier) {
     });
   }
 
-  // Texas Monthly pin: burnt-orange square
+  // Texas Monthly pin: blue square
   if (status === 'texasmonthly') {
     return L.divIcon({
       html: `<div style="width:9px;height:9px;background:#1a6fa8;border:1.5px solid #0e4a73;box-shadow:0 0 5px #1a6fa880;"></div>`,
       className: '',
       iconSize: [9, 9],
       iconAnchor: [4.5, 4.5],
+    });
+  }
+
+  // Tabelog Award pin: 5-pointed star, sized + coloured by tier
+  if (status === 'tabelog') {
+    const tierColors = {
+      'Gold':          { fill: '#D4AF37', stroke: '#9a7a0a', size: 14 },
+      'Silver':        { fill: '#9BA7B4', stroke: '#5a6a75', size: 11 },
+      'Bronze':        { fill: '#C47A35', stroke: '#7a4a15', size: 10 },
+      'Special Award': { fill: '#E8357E', stroke: '#9a1545', size: 10 },
+    };
+    const c = tierColors[michelinTier] || { fill: '#C47A35', stroke: '#7a4a15', size: 10 };
+    const s = c.size;
+    const outer = Math.round(s * 1.6);
+    return L.divIcon({
+      html: `<div style="width:${outer}px;height:${outer}px;display:flex;align-items:center;justify-content:center;">
+        <div style="width:${s}px;height:${s}px;background:${c.fill};border:1.5px solid ${c.stroke};
+          clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+          box-shadow:0 0 5px ${c.fill}80;"></div>
+      </div>`,
+      className: '',
+      iconSize: [outer, outer],
+      iconAnchor: [outer / 2, outer / 2],
+    });
+  }
+
+  // AA Rosette pin: navy hexagon, sized by rosette count
+  if (status === 'aarosette') {
+    const count = michelinTier || 3; // rosette count passed via michelinTier slot
+    const s = count === 5 ? 13 : count === 4 ? 10 : 8;
+    const outer = Math.round(s * 1.6);
+    return L.divIcon({
+      html: `<div style="width:${outer}px;height:${outer}px;display:flex;align-items:center;justify-content:center;">
+        <div style="width:${s}px;height:${s}px;background:#1B3A6B;border:1.5px solid #0d1f3c;
+          clip-path:polygon(25% 0%,75% 0%,100% 50%,75% 100%,25% 100%,0% 50%);
+          box-shadow:0 0 5px #1B3A6B80;"></div>
+      </div>`,
+      className: '',
+      iconSize: [outer, outer],
+      iconAnchor: [outer / 2, outer / 2],
+    });
+  }
+
+  // Repsol pin: amber/gold sunburst circle, sized by Sol tier
+  if (status === 'repsol') {
+    const tierSizes = { '3 Soles': 13, '2 Soles': 10, '1 Sol': 8, 'Recommended': 6 };
+    const s = tierSizes[michelinTier] || 8;
+    const outer = Math.round(s * 1.6);
+    return L.divIcon({
+      html: `<div style="width:${outer}px;height:${outer}px;display:flex;align-items:center;justify-content:center;">
+        <div style="width:${s}px;height:${s}px;background:#D4870A;border:1.5px solid #8a5500;border-radius:50%;
+          box-shadow:0 0 6px #D4870A90;"></div>
+      </div>`,
+      className: '',
+      iconSize: [outer, outer],
+      iconAnchor: [outer / 2, outer / 2],
     });
   }
 
@@ -1714,6 +1776,9 @@ async function loadData() {
     { file: './data/awards-p2.json', label: 'James Beard awards' },
     { file: './data/awards-p3.json', label: 'Michelin 1★ & Bib Gourmand' },
     { file: './data/awards-p4.json', label: 'Michelin Selected' },
+    { file: './data/awards-p5.json', label: 'Tabelog Award (Japan)',        optional: true },
+    { file: './data/awards-p6.json', label: 'AA Rosettes (UK)',             optional: true },
+    { file: './data/awards-p7.json', label: 'Guía Repsol Soles',           optional: true },
   ];
 
   let firstChunkLoaded = false;
@@ -1746,6 +1811,8 @@ async function loadData() {
         if (popupKey) handlePopupDeepLink(popupKey, popupLat, popupLng);
       }
     } catch (e) {
+      // Optional chunks (e.g. Tabelog) may not exist yet — skip silently
+      if (chunk.optional) continue;
       loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
       loadingSub.textContent = e.message;
       return;
@@ -1867,14 +1934,21 @@ function applyFilters() {
     if (hideClosed && (a.businessStatus === 'CLOSED_PERMANENTLY' || a.yelpDetail?.isClosed)) return false;
     const isMichelin = a.source === 'michelin';
     const isTM       = a.source === 'texasmonthly';
+    const isTabelog   = a.source === 'tabelog';
+    const isAARosette = a.source === 'aarosette';
+    const isRepsol    = a.source === 'repsol';
 
     // Source filter
-    if (source === 'jbf'          && (isMichelin || isTM))  return false;
-    if (source === 'michelin'     && !isMichelin)            return false;
-    if (source === 'texasmonthly' && !isTM)                  return false;
+    const isNonJbf = isMichelin || isTM || isTabelog || isAARosette || isRepsol;
+    if (source === 'jbf'          && isNonJbf)       return false;
+    if (source === 'michelin'     && !isMichelin)     return false;
+    if (source === 'texasmonthly' && !isTM)           return false;
+    if (source === 'tabelog'      && !isTabelog)      return false;
+    if (source === 'aarosette'    && !isAARosette)    return false;
+    if (source === 'repsol'       && !isRepsol)       return false;
 
     // JBF-specific filters
-    if (!isMichelin && !isTM) {
+    if (!isMichelin && !isTM && !isTabelog && !isAARosette && !isRepsol) {
       if (year     && a.year     !== year)     return false;
       if (category && a.category !== category) return false;
       if (!activeStatuses.has(a.status))       return false;
@@ -1962,12 +2036,15 @@ function updateMap() {
 
   markers = [];
   for (const [, loc] of locationMap) {
-    const hasJBF = loc.awards.some(a => a.source !== 'michelin' && a.source !== 'texasmonthly');
-    const hasTM  = loc.awards.some(a => a.source === 'texasmonthly');
+    const NON_JBF    = ['michelin','texasmonthly','tabelog','aarosette','repsol'];
+    const hasJBF     = loc.awards.some(a => !NON_JBF.includes(a.source));
+    const hasTM      = loc.awards.some(a => a.source === 'texasmonthly');
+    const hasTabelog = loc.awards.some(a => a.source === 'tabelog');
+    const hasRosette = loc.awards.some(a => a.source === 'aarosette');
+    const hasRepsol  = loc.awards.some(a => a.source === 'repsol');
 
     let bestStatus, michelinTier;
     if (hasJBF) {
-      // JBF pin — colour by best JBF status
       bestStatus = loc.awards.some(a => a.status === 'Winner') ? 'Winner'
         : loc.awards.some(a => a.status === 'Semifinalist') ? 'Semifinalist'
         : 'Nominee';
@@ -1975,6 +2052,20 @@ function updateMap() {
     } else if (hasTM) {
       bestStatus   = 'texasmonthly';
       michelinTier = null;
+    } else if (hasTabelog) {
+      const tabelogTierOrder = ['Gold', 'Silver', 'Bronze', 'Special Award'];
+      michelinTier = tabelogTierOrder.find(t => loc.awards.some(a => a.tabelogAward === t)) || null;
+      bestStatus = 'tabelog';
+    } else if (hasRosette) {
+      michelinTier = loc.awards.reduce((best, a) => {
+        if (a.source !== 'aarosette') return best;
+        return (!best || a.aaRosettes > best) ? a.aaRosettes : best;
+      }, null);
+      bestStatus = 'aarosette';
+    } else if (hasRepsol) {
+      const repsolTierOrder = ['3 Soles', '2 Soles', '1 Sol', 'Recommended'];
+      michelinTier = repsolTierOrder.find(t => loc.awards.some(a => a.repsolAward === t)) || null;
+      bestStatus = 'repsol';
     } else {
       // Michelin-only — pick highest tier present
       const tierOrder = ['3 Stars','2 Stars','1 Star','Bib Gourmand','Selected'];
@@ -2006,10 +2097,35 @@ function michelinBadge(tier) {
   return `<span style="font-family:sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.85);">${label}</span>`;
 }
 
+function aaRosetteBadge(count) {
+  if (!count) return '';
+  const stars = '✦'.repeat(count);
+  return `<span style="font-family:sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.85);"><span style="color:#8BABD8;font-weight:700;">${stars}</span> AA ${count} Rosette${count !== 1 ? 's' : ''}</span>`;
+}
+
+function repsolBadge(tier) {
+  if (!tier) return '';
+  const icons = { '3 Soles': '☀☀☀', '2 Soles': '☀☀', '1 Sol': '☀', 'Recommended': '◈' };
+  const icon  = icons[tier] || '☀';
+  return `<span style="font-family:sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.85);"><span style="color:#D4870A;font-weight:700;">${icon}</span> Repsol ${escHtml(tier)}</span>`;
+}
+
+function tabelogBadge(tier) {
+  if (!tier) return '';
+  const icons = { 'Gold': '★', 'Silver': '★', 'Bronze': '★' };
+  const colors = { 'Gold': '#D4AF37', 'Silver': '#9BA7B4', 'Bronze': '#C47A35', 'Special Award': '#E8357E' };
+  const color = colors[tier] || '#C0392B';
+  const icon  = icons[tier]  || '★';
+  return `<span style="font-family:sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.85);"><span style="color:${color};font-weight:700;">${icon}</span> Tabelog ${escHtml(tier)}</span>`;
+}
+
 function buildPopup(loc) {
   const awards = loc.awards;
   const isMichelinOnly = awards.every(a => a.source === 'michelin');
   const isTMOnly       = awards.every(a => a.source === 'texasmonthly');
+  const isTabelogOnly   = awards.every(a => a.source === 'tabelog');
+  const isAARosetteOnly = awards.every(a => a.source === 'aarosette');
+  const isRepsolOnly    = awards.every(a => a.source === 'repsol');
 
   // ── Michelin-only popup ────────────────────────────────────────────────────
   if (isMichelinOnly) {
@@ -2145,14 +2261,155 @@ function buildPopup(loc) {
     return html;
   }
 
+  // ── Tabelog-only popup ─────────────────────────────────────────────────────
+  if (isTabelogOnly) {
+    const a = awards[0];
+    const location = [a.city, a.country].filter(Boolean).join(', ');
+    const mapsUrl  = buildFallbackMapsUrl(a);
+    const photo    = a.photo_url || null;
+
+    let html = `<div class="jb-popup">`;
+
+    if (photo) {
+      html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+        <img src="${escHtml(photo)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
+          style="width:100%;height:110px;object-fit:cover;display:block;">
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+          <div class="popup-name">${escHtml(a.restaurant)}</div>
+          <div class="popup-restaurant">${escHtml(location)}</div>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="popup-header">
+        <div class="popup-name">${escHtml(a.restaurant)}</div>
+        <div class="popup-restaurant">${escHtml(location)}</div>
+      </div>`;
+    }
+
+    html += `<div class="popup-body">
+      <div class="popup-tabs">
+        <button class="popup-tab-btn active" data-tab="info"      onclick="switchPopupTab('info')">Info</button>
+        <button class="popup-tab-btn"        data-tab="community" onclick="switchPopupTab('community')">Community</button>
+      </div>`;
+
+    html += `<div class="popup-tab-content active" data-tab="info">`;
+
+    html += `<div style="margin-bottom:8px;">${tabelogBadge(a.tabelogAward)}`;
+    if (a.tabelogScore) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.5);">${a.tabelogScore}</span>`;
+    html += `</div>`;
+
+    const meta = [];
+    if (a.price)          meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
+    if (a.cuisineCategory) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisineCategory)}</span>`);
+    else if (a.cuisine)   meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisine)}</span>`);
+    if (meta.length) html += `<div style="font-family:sans-serif;font-size:0.78rem;margin-bottom:8px;">${meta.join(' · ')}</div>`;
+
+    const links = [];
+    if (mapsUrl)        links.push(`<a href="${escHtml(mapsUrl)}"        target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
+    if (a.website)      links.push(`<a href="${escHtml(a.website)}"      target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+    if (a.tabelogUrl)   links.push(`<a href="${escHtml(a.tabelogUrl)}"   target="_blank" rel="noopener" style="color:#C0392B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Tabelog</a>`);
+    if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
+
+    html += `</div>`;
+    html += `<div class="popup-tab-content" data-tab="community">
+      <div id="comm-section" style="min-height:60px;">
+        <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div>
+      </div>
+    </div>`;
+    html += buildCommButtons(favKey(a));
+    html += `</div></div>`;
+    return html;
+  }
+
+  // ── AA Rosette-only popup ──────────────────────────────────────────────────
+  if (isAARosetteOnly) {
+    const a = awards[0];
+    const location = [a.city, a.country].filter(Boolean).join(', ');
+    const mapsUrl  = buildFallbackMapsUrl(a);
+    const photo    = a.photo_url || null;
+    let html = `<div class="jb-popup">`;
+    if (photo) {
+      html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+        <img src="${escHtml(photo)}" onerror="this.parentElement.style.minHeight='0';this.remove()" style="width:100%;height:110px;object-fit:cover;display:block;">
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+          <div class="popup-name">${escHtml(a.restaurant)}</div>
+          <div class="popup-restaurant">${escHtml(location)}</div>
+        </div></div>`;
+    } else {
+      html += `<div class="popup-header"><div class="popup-name">${escHtml(a.restaurant)}</div><div class="popup-restaurant">${escHtml(location)}</div></div>`;
+    }
+    html += `<div class="popup-body"><div class="popup-tabs">
+      <button class="popup-tab-btn active" data-tab="info" onclick="switchPopupTab('info')">Info</button>
+      <button class="popup-tab-btn" data-tab="community" onclick="switchPopupTab('community')">Community</button>
+    </div>`;
+    html += `<div class="popup-tab-content active" data-tab="info">`;
+    html += `<div style="margin-bottom:8px;">${aaRosetteBadge(a.aaRosettes)}</div>`;
+    const meta = [];
+    if (a.cuisineCategory) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisineCategory)}</span>`);
+    if (meta.length) html += `<div style="font-family:sans-serif;font-size:0.78rem;margin-bottom:8px;">${meta.join(' · ')}</div>`;
+    const links = [];
+    if (mapsUrl)       links.push(`<a href="${escHtml(mapsUrl)}"       target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
+    if (a.website)     links.push(`<a href="${escHtml(a.website)}"     target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+    if (a.aaRosetteUrl) links.push(`<a href="${escHtml(a.aaRosetteUrl)}" target="_blank" rel="noopener" style="color:#8BABD8;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">✦ AA Rosettes</a>`);
+    if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
+    html += `</div><div class="popup-tab-content" data-tab="community">
+      <div id="comm-section" style="min-height:60px;"><div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div></div>
+    </div>`;
+    html += buildCommButtons(favKey(a));
+    html += `</div></div>`;
+    return html;
+  }
+
+  // ── Repsol-only popup ──────────────────────────────────────────────────────
+  if (isRepsolOnly) {
+    const a = awards[0];
+    const location = [a.city, a.country].filter(Boolean).join(', ');
+    const mapsUrl  = buildFallbackMapsUrl(a);
+    const photo    = a.photo_url || null;
+    let html = `<div class="jb-popup">`;
+    if (photo) {
+      html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+        <img src="${escHtml(photo)}" onerror="this.parentElement.style.minHeight='0';this.remove()" style="width:100%;height:110px;object-fit:cover;display:block;">
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+          <div class="popup-name">${escHtml(a.restaurant)}</div>
+          <div class="popup-restaurant">${escHtml(location)}</div>
+        </div></div>`;
+    } else {
+      html += `<div class="popup-header"><div class="popup-name">${escHtml(a.restaurant)}</div><div class="popup-restaurant">${escHtml(location)}</div></div>`;
+    }
+    html += `<div class="popup-body"><div class="popup-tabs">
+      <button class="popup-tab-btn active" data-tab="info" onclick="switchPopupTab('info')">Info</button>
+      <button class="popup-tab-btn" data-tab="community" onclick="switchPopupTab('community')">Community</button>
+    </div>`;
+    html += `<div class="popup-tab-content active" data-tab="info">`;
+    html += `<div style="margin-bottom:8px;">${repsolBadge(a.repsolAward)}</div>`;
+    const meta = [];
+    if (a.price)          meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
+    if (a.cuisineCategory) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisineCategory)}</span>`);
+    else if (a.cuisine)   meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisine)}</span>`);
+    if (meta.length) html += `<div style="font-family:sans-serif;font-size:0.78rem;margin-bottom:8px;">${meta.join(' · ')}</div>`;
+    const links = [];
+    if (mapsUrl)      links.push(`<a href="${escHtml(mapsUrl)}"      target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
+    if (a.website)    links.push(`<a href="${escHtml(a.website)}"    target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+    if (a.repsolUrl)  links.push(`<a href="${escHtml(a.repsolUrl)}"  target="_blank" rel="noopener" style="color:#D4870A;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">☀ Repsol</a>`);
+    if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
+    html += `</div><div class="popup-tab-content" data-tab="community">
+      <div id="comm-section" style="min-height:60px;"><div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div></div>
+    </div>`;
+    html += buildCommButtons(favKey(a));
+    html += `</div></div>`;
+    return html;
+  }
+
   // ── JBF (or mixed JBF+Michelin) popup ─────────────────────────────────────
   const city = awards[0].city;
   const state = awards[0].state;
 
   // Group by restaurant
   const byRestaurant = new Map();
+  const NON_JBF_SOURCES = ['michelin','texasmonthly','tabelog','aarosette','repsol'];
   for (const a of awards) {
-    if (a.source === 'michelin' || a.source === 'texasmonthly') continue; // show JBF entries only
+    if (NON_JBF_SOURCES.includes(a.source)) continue; // show JBF entries only
     const key = a.restaurant || a.name || '?';
     if (!byRestaurant.has(key)) byRestaurant.set(key, { awards: [], meta: a });
     byRestaurant.get(key).awards.push(a);
@@ -2170,6 +2427,16 @@ function buildPopup(loc) {
   const michelinUrl     = firstMeta.michelinUrl     || michelinRecord?.michelinUrl     || null;
   const greenStar       = firstMeta.greenStar       || michelinRecord?.greenStar       || false;
   const tmYears         = tmRecord ? [...new Set(awards.filter(a => a.source === 'texasmonthly').map(a => a.tmYear).filter(Boolean))].sort() : null;
+  const tabelogRecord   = awards.find(a => a.source === 'tabelog');
+  const aaRecord        = awards.find(a => a.source === 'aarosette');
+  const repsolRecord    = awards.find(a => a.source === 'repsol');
+  const aaRosettes      = aaRecord?.aaRosettes    || null;
+  const aaRosetteUrl    = aaRecord?.aaRosetteUrl  || null;
+  const repsolAwardJbf  = repsolRecord?.repsolAward || null;
+  const repsolUrlJbf    = repsolRecord?.repsolUrl   || null;
+  const tabelogAward    = firstMeta.tabelogAward  || tabelogRecord?.tabelogAward  || null;
+  const tabelogUrl      = firstMeta.tabelogUrl    || tabelogRecord?.tabelogUrl    || null;
+  const tabelogScore    = firstMeta.tabelogScore  || tabelogRecord?.tabelogScore  || null;
   const googlePhoto     = firstMeta.googlePhoto || michelinRecord?.googlePhoto || null;
   const businessStatus  = firstMeta.businessStatus || michelinRecord?.businessStatus || null;
 
@@ -2222,6 +2489,14 @@ function buildPopup(loc) {
     </div>`;
   }
 
+  if (tabelogAward) {
+    html += `<div style="margin-bottom:8px;">${tabelogBadge(tabelogAward)}`;
+    if (tabelogScore) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.5);">${tabelogScore}</span>`;
+    html += `</div>`;
+  }
+  if (aaRosettes) html += `<div style="margin-bottom:8px;">${aaRosetteBadge(aaRosettes)}</div>`;
+  if (repsolAwardJbf) html += `<div style="margin-bottom:8px;">${repsolBadge(repsolAwardJbf)}</div>`;
+
   if (businessStatus === 'CLOSED_PERMANENTLY' || yelpDetail?.isClosed) {
     html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
   } else if (businessStatus === 'CLOSED_TEMPORARILY') {
@@ -2241,6 +2516,9 @@ function buildPopup(loc) {
   if (yelpDetail?.menuUrl) links.push(`<a href="${escHtml(yelpDetail.menuUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📋 Menu</a>`);
   if (yelpDetail?.url) links.push(`<a href="${escHtml(yelpDetail.url)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Yelp</a>`);
   if (michelinUrl) links.push(`<a href="${escHtml(michelinUrl)}" target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
+  if (tabelogUrl)    links.push(`<a href="${escHtml(tabelogUrl)}"    target="_blank" rel="noopener" style="color:#C0392B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Tabelog</a>`);
+  if (aaRosetteUrl)  links.push(`<a href="${escHtml(aaRosetteUrl)}"  target="_blank" rel="noopener" style="color:#8BABD8;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">✦ AA Rosettes</a>`);
+  if (repsolUrlJbf)  links.push(`<a href="${escHtml(repsolUrlJbf)}"  target="_blank" rel="noopener" style="color:#D4870A;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">☀ Repsol</a>`);
   if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
 
   html += `<div class="popup-awards-list">`;
@@ -2325,19 +2603,28 @@ function updateSidebar() {
   const display = sorted.slice(0, 300);
 
   const items = display.map(a => {
-    const isMichelin = a.source === 'michelin';
-    const isTM       = a.source === 'texasmonthly';
-    const badgeClass = isMichelin ? 'badge-michelin'
-      : isTM ? 'badge-tm'
+    const isMichelin  = a.source === 'michelin';
+    const isTM        = a.source === 'texasmonthly';
+    const isTabelog   = a.source === 'tabelog';
+    const isAARosette = a.source === 'aarosette';
+    const isRepsol    = a.source === 'repsol';
+    const badgeClass = isMichelin  ? 'badge-michelin'
+      : isTM        ? 'badge-tm'
+      : isTabelog   ? 'badge-tabelog'
+      : isAARosette ? 'badge-aarosette'
+      : isRepsol    ? 'badge-repsol'
       : a.status === 'Winner' ? 'badge-winner'
       : a.status === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
     const badgeText = isMichelin
       ? ({ '3 Stars':'★★★ 3 Stars','2 Stars':'★★ 2 Stars','1 Star':'★ 1 Star','Bib Gourmand':'Ⓑ Bib Gourmand','Selected':'◆ Selected' }[a.michelinAward] || '◆ Michelin')
-      : isTM ? '🔥 TX Top 50 BBQ'
+      : isTM        ? '🔥 TX Top 50 BBQ'
+      : isTabelog   ? `★ Tabelog ${a.tabelogAward || 'Award'}`
+      : isAARosette ? `✦ AA ${a.aaRosettes || ''} Rosettes`
+      : isRepsol    ? `☀ Repsol ${a.repsolAward || 'Sol'}`
       : a.status === 'Winner' ? '🥇 Winner' : a.status === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
     const displayName = a.restaurant || a.name || '?';
-    const displayRest = (!isMichelin && !isTM) && a.name && a.name !== a.restaurant ? a.restaurant : '';
-    const locText = isMichelin
+    const displayRest = (!isMichelin && !isTM && !isTabelog && !isAARosette && !isRepsol) && a.name && a.name !== a.restaurant ? a.restaurant : '';
+    const locText = (isMichelin || isTabelog || isAARosette || isRepsol)
       ? [a.city, a.country].filter(Boolean).join(', ')
       : [a.city, a.state].filter(Boolean).join(', ');
     const yearText = isTM ? a.tmYear : a.year;

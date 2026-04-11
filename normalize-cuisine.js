@@ -48,6 +48,16 @@ const TAXONOMY = [
       'sushi restaurant', 'japanese tempura', 'fugu / pufferfish', 'kushiage',
       'udon', 'okonomiyaki', 'yoshoku', 'obanzai', 'yakiniku', 'shabu-shabu',
       'sukiyaki', 'japanese steakhouse', 'oden', 'shojin',
+      // Tabelog-specific Japanese cuisine terms
+      'kaiseki', 'kaiseki/kappo', 'kappo', 'kappo cuisine',
+      'washoku', 'japanese cuisine', 'nihon ryori',
+      'robatayaki', 'robata', 'irori cuisine',
+      'sashimi', 'fugu', 'unagi', 'eel',
+      'donburi', 'katsu', 'katsudon', 'gyudon', 'unadon',
+      'wagyu', 'wagyu beef',
+      'oden restaurant', 'kushikatsu',
+      '懐石', '会席', '割烹', '寿司', '天ぷら', '焼き鳥', 'そば', 'ラーメン',
+      'すき焼き', 'しゃぶしゃぶ', '和食',
     ],
   },
   {
@@ -296,6 +306,14 @@ const JUNK = new Set([
 function resolveCategory(entry) {
   // Texas Monthly: always BBQ
   if (entry.source === 'texasmonthly') return 'BBQ & Smokehouse';
+
+  // Tabelog: use cuisine field directly if cuisineTags is empty
+  if (entry.source === 'tabelog' && !entry.cuisineTags?.length && entry.cuisine) {
+    const raw = entry.cuisine.toLowerCase().trim();
+    for (const { category, tags: catTags } of TAXONOMY) {
+      if (catTags.some(t => raw.includes(t.toLowerCase()))) return category;
+    }
+  }
 
   const tags = (entry.cuisineTags || []).map(t => t.toLowerCase().trim());
 
