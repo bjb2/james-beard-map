@@ -27,6 +27,20 @@ const JBF_STATUS_ORDER = { 'Winner': 0, 'Semifinalist': 1, 'Nominee': 2 };
 
 function normName(s) { return (s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
 
+// Strip embedded state abbreviation from city before normalizing.
+// e.g. "New York, NY" → "New York",  "San Antonio, TX" → "San Antonio"
+const STATE_ABBR_SET = new Set([
+  'AL','AK','AZ','AR','CA','CO','CT','DC','DE','FL','GA','HI','ID','IL','IN',
+  'IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH',
+  'NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT',
+  'VT','VA','WA','WV','WI','WY',
+]);
+function normCity(city) {
+  const m = (city || '').match(/^(.+),\s*([A-Z]{2})$/);
+  if (m && STATE_ABBR_SET.has(m[2])) return normName(m[1].trim());
+  return normName(city);
+}
+
 function bestOf(a, b, order) {
   if (a === null) return b;
   if (b === null) return a;
@@ -92,7 +106,7 @@ function main() {
   for (const a of awards) {
     const name = (a.restaurant || a.name || '').trim();
     const city = (a.city || '').trim();
-    const gk   = `${normName(name)}|${normName(city)}`;
+    const gk   = `${normName(name)}|${normCity(city)}`;
     if (!gk || gk === '|') continue;
     if (!groups.has(gk)) groups.set(gk, []);
     groups.get(gk).push(a);

@@ -391,6 +391,24 @@
     }
     .combo-token-x:hover { opacity: 1; }
 
+    .combo-op-badge {
+      background: none;
+      border: 1px solid var(--border-light);
+      color: var(--white-faint);
+      padding: 2px 7px;
+      border-radius: 3px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.12s, color 0.12s, background 0.12s;
+      flex-shrink: 0;
+    }
+    .combo-op-badge:hover { border-color: var(--orange); color: var(--orange); }
+    .combo-op-badge.op-or { border-color: rgba(0,150,199,0.5); color: #0096C7; }
+
     .combo-add-btn {
       background: none;
       border: 1px dashed var(--border-light);
@@ -1679,15 +1697,50 @@ function favKey(a) {
 }
 
 // ── Award combobox filter ──────────────────────────────────────────────────
-// filterSet holds values like 'jbf:Winner', 'm:1 Star', 'src:tabelog', etc.
-// Empty = no restriction = show everything.
-const filterSet = new Set();
+// filterGroups: ordered array of { key, tokens: Set<string>, op: 'AND'|'OR' }
+// 'op' is the operator connecting this group to the NEXT group.
+// Empty array = no restriction = show everything.
+let filterGroups = [];
+
+function tokenGroupKey(t) {
+  if (t.startsWith('jbf:') || t.startsWith('jbf-cat:')) return 'jbf';
+  if (t === 'src:michelin'     || t.startsWith('m:'))   return 'michelin';
+  if (t === 'src:tabelog'      || t.startsWith('ta:'))  return 'tabelog';
+  if (t === 'src:aarosette'    || t.startsWith('aa:'))  return 'aarosette';
+  if (t === 'src:repsol'       || t.startsWith('ra:'))  return 'repsol';
+  if (t === 'src:w50best'      || t.startsWith('w50:')) return 'w50best';
+  if (t === 'src:texasmonthly')                         return 'texasmonthly';
+  return t;
+}
+
+function hasToken(val) {
+  return filterGroups.some(g => g.tokens.has(val));
+}
+
+function totalTokenCount() {
+  return filterGroups.reduce((n, g) => n + g.tokens.size, 0);
+}
+
+function matchToken(t, p) {
+  const hasSrc = s => p.sources.includes(s);
+  if (t === 'jbf:Winner')        return hasSrc('jbf') && p.jbf === 'Winner';
+  if (t === 'jbf:Semifinalist')  return hasSrc('jbf') && p.jbf === 'Semifinalist';
+  if (t === 'jbf:Nominee')       return hasSrc('jbf') && p.jbf === 'Nominee';
+  if (t.startsWith('jbf-cat:'))  return (p.cats||[]).includes(t.slice(8));
+  if (t.startsWith('src:'))      return hasSrc(t.slice(4));
+  if (t.startsWith('m:'))        return p.ma === t.slice(2);
+  if (t.startsWith('ta:'))       return p.ta === t.slice(3);
+  if (t.startsWith('aa:'))       return p.aa === parseInt(t.slice(3));
+  if (t.startsWith('ra:'))       return p.ra === t.slice(3);
+  if (t.startsWith('w50:'))      return p.wa === t.slice(4);
+  return false;
+}
 
 const FILTER_OPTS = [
   { group: 'James Beard', items: [
-    { val: 'jbf:Winner',        label: '🥇 Winners',        color: '#FEA219', bg: 'rgba(254,162,25,0.15)' },
-    { val: 'jbf:Semifinalist',  label: '🥈 Semifinalists',  color: '#d0d0d0', bg: 'rgba(200,200,200,0.12)' },
-    { val: 'jbf:Nominee',       label: '🥉 Nominees',       color: '#cd7f32', bg: 'rgba(205,127,50,0.15)' },
+    { val: 'jbf:Winner',        label: '🥇 JBF Winners',        color: '#FEA219', bg: 'rgba(254,162,25,0.15)' },
+    { val: 'jbf:Semifinalist',  label: '🥈 JBF Semifinalists',  color: '#d0d0d0', bg: 'rgba(200,200,200,0.12)' },
+    { val: 'jbf:Nominee',       label: '🥉 JBF Nominees',       color: '#cd7f32', bg: 'rgba(205,127,50,0.15)' },
   ]},
   { group: 'Michelin Guide', items: [
     { val: 'src:michelin',      label: 'All Michelin',      color: '#E4002B', bg: 'rgba(228,0,43,0.1)' },
@@ -1780,7 +1833,7 @@ function buildAwardPicker() {
     picker.appendChild(grp);
   }
 
-  if (filterSet.size > 0) {
+  if (totalTokenCount() > 0) {
     const row = document.createElement('div');
     row.className = 'combo-clear-row';
     const btn = document.createElement('button');
@@ -1796,10 +1849,11 @@ function buildAwardPicker() {
 function makeCpOpt(val, label, color, bg) {
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'cp-opt' + (filterSet.has(val) ? ' sel' : '');
+  const active = hasToken(val);
+  btn.className = 'cp-opt' + (active ? ' sel' : '');
   btn.textContent = label;
   btn.dataset.val = val;
-  if (filterSet.has(val)) {
+  if (active) {
     btn.style.color = color;
     btn.style.borderColor = color;
     btn.style.background = bg;
@@ -1811,48 +1865,91 @@ function makeCpOpt(val, label, color, bg) {
 function renderAwardTokens() {
   const tokensEl = document.getElementById('award-tokens');
   tokensEl.innerHTML = '';
-  for (const val of filterSet) {
-    const meta = getFilterMeta(val);
-    const chip = document.createElement('span');
-    chip.className = 'combo-token';
-    chip.style.color = meta.color;
-    chip.style.background = meta.bg;
-    chip.style.borderColor = meta.color + '55';
-    const labelNode = document.createTextNode(meta.label + ' ');
-    const xBtn = document.createElement('button');
-    xBtn.className = 'combo-token-x';
-    xBtn.innerHTML = '×';
-    xBtn.title = 'Remove';
-    xBtn.addEventListener('click', e => { e.stopPropagation(); removeAwardFilter(val); });
-    chip.appendChild(labelNode);
-    chip.appendChild(xBtn);
-    tokensEl.appendChild(chip);
-  }
+
+  filterGroups.forEach((group, gi) => {
+    // Render each token in this group
+    for (const val of group.tokens) {
+      const meta = getFilterMeta(val);
+      const chip = document.createElement('span');
+      chip.className = 'combo-token';
+      chip.style.color = meta.color;
+      chip.style.background = meta.bg;
+      chip.style.borderColor = meta.color + '55';
+      chip.appendChild(document.createTextNode(meta.label + ' '));
+      const xBtn = document.createElement('button');
+      xBtn.className = 'combo-token-x';
+      xBtn.innerHTML = '×';
+      xBtn.title = 'Remove';
+      xBtn.addEventListener('click', e => { e.stopPropagation(); removeAwardFilter(val); });
+      chip.appendChild(xBtn);
+      tokensEl.appendChild(chip);
+    }
+
+    // Render operator badge between this group and the next
+    if (gi < filterGroups.length - 1) {
+      const opBtn = document.createElement('button');
+      opBtn.type = 'button';
+      opBtn.className = 'combo-op-badge' + (group.op === 'OR' ? ' op-or' : '');
+      opBtn.textContent = group.op;
+      opBtn.title = 'Click to toggle AND / OR';
+      opBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        group.op = group.op === 'AND' ? 'OR' : 'AND';
+        renderAwardTokens();
+        applyFilters();
+      });
+      tokensEl.appendChild(opBtn);
+    }
+  });
+
   const addBtn = document.createElement('button');
   addBtn.type = 'button';
   addBtn.className = 'combo-add-btn';
   addBtn.id = 'award-add-btn';
-  addBtn.textContent = filterSet.size === 0 ? '+ Add filter' : '+ More';
+  addBtn.textContent = totalTokenCount() === 0 ? '+ Add filter' : '+ More';
   addBtn.addEventListener('click', e => { e.stopPropagation(); openAwardCombo(e); });
   tokensEl.appendChild(addBtn);
 }
 
 function toggleAwardFilter(val) {
-  if (filterSet.has(val)) filterSet.delete(val); else filterSet.add(val);
+  const key = tokenGroupKey(val);
+  const existing = filterGroups.find(g => g.key === key);
+  if (existing) {
+    if (existing.tokens.has(val)) {
+      existing.tokens.delete(val);
+      if (existing.tokens.size === 0) {
+        // Remove empty group and merge operators
+        const idx = filterGroups.indexOf(existing);
+        filterGroups.splice(idx, 1);
+        // If we removed a middle group, no operator fixup needed (previous group's op still valid)
+      }
+    } else {
+      existing.tokens.add(val);
+    }
+  } else {
+    // New group — default operator connecting to previous group is AND
+    filterGroups.push({ key, tokens: new Set([val]), op: 'AND' });
+  }
   buildAwardPicker();
   renderAwardTokens();
   applyFilters();
 }
 
 function removeAwardFilter(val) {
-  filterSet.delete(val);
+  const key = tokenGroupKey(val);
+  const group = filterGroups.find(g => g.key === key);
+  if (!group) return;
+  group.tokens.delete(val);
+  if (group.tokens.size === 0) {
+    filterGroups.splice(filterGroups.indexOf(group), 1);
+  }
   buildAwardPicker();
   renderAwardTokens();
   applyFilters();
 }
 
 function clearAwardFilters() {
-  filterSet.clear();
+  filterGroups = [];
   document.getElementById('award-combo').classList.remove('open');
   buildAwardPicker();
   renderAwardTokens();
@@ -2214,22 +2311,15 @@ function applyFilters() {
 
     const hasSrc = s => p.sources.includes(s);
 
-    // Award filter — additive OR: pin must match at least one selected token
-    if (filterSet.size > 0) {
-      const match = [...filterSet].some(t => {
-        if (t === 'jbf:Winner')        return hasSrc('jbf') && p.jbf === 'Winner';
-        if (t === 'jbf:Semifinalist')  return hasSrc('jbf') && p.jbf === 'Semifinalist';
-        if (t === 'jbf:Nominee')       return hasSrc('jbf') && p.jbf === 'Nominee';
-        if (t.startsWith('jbf-cat:'))  return (p.cats||[]).includes(t.slice(8));
-        if (t.startsWith('src:'))      return hasSrc(t.slice(4));
-        if (t.startsWith('m:'))        return p.ma === t.slice(2);
-        if (t.startsWith('ta:'))       return p.ta === t.slice(3);
-        if (t.startsWith('aa:'))       return p.aa === parseInt(t.slice(3));
-        if (t.startsWith('ra:'))       return p.ra === t.slice(3);
-        if (t.startsWith('w50:'))      return p.wa === t.slice(4);
-        return false;
-      });
-      if (!match) return false;
+    // Award filter — groups are AND/OR'd per junction; tokens within a group are OR'd
+    if (filterGroups.length > 0) {
+      const matchGroup = g => [...g.tokens].some(t => matchToken(t, p));
+      let result = matchGroup(filterGroups[0]);
+      for (let i = 1; i < filterGroups.length; i++) {
+        const gm = matchGroup(filterGroups[i]);
+        result = filterGroups[i - 1].op === 'AND' ? result && gm : result || gm;
+      }
+      if (!result) return false;
     }
 
     // Year filter — matches JBF years or TM years
