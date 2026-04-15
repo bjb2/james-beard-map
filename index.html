@@ -434,6 +434,7 @@
     .badge-tabelog   { background: #C0392B; color: #fff; }
     .badge-aarosette { background: #1B3A6B; color: #fff; }
     .badge-repsol    { background: #D4870A; color: #fff; }
+    .badge-w50best   { background: #0096C7; color: #fff; }
 
     .result-loc {
       font-size: 0.68rem;
@@ -957,6 +958,7 @@
             <option value="tabelog">Tabelog Award Only</option>
             <option value="aarosette">AA Rosettes Only</option>
             <option value="repsol">Guía Repsol Only</option>
+            <option value="w50best">W50 Best Bars Only</option>
           </select>
         </div>
 
@@ -1671,6 +1673,10 @@ function initMap() {
         <div class="legend-item"><div style="width:13px;height:13px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 3 Soles</div>
         <div class="legend-item"><div style="width:10px;height:10px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 2 Soles</div>
         <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 1 Sol</div>
+        <div class="legend-section" style="margin-top:6px;">W50 Best Bars</div>
+        <div class="legend-item"><div style="width:13px;height:13px;border-radius:50%;background:#0096C7;flex-shrink:0;"></div> Top 10</div>
+        <div class="legend-item"><div style="width:10px;height:10px;border-radius:50%;background:#0096C7;flex-shrink:0;"></div> Top 50</div>
+        <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:#0096C7;flex-shrink:0;"></div> 51–100</div>
       </div>
     `;
     div.addEventListener('click', () => div.classList.toggle('open'));
@@ -1789,6 +1795,22 @@ function markerIcon(status, michelinTier) {
     });
   }
 
+  // W50Best Bars pin: ocean-blue circle, sized by rank tier
+  if (status === 'w50best') {
+    const tierSizes = { 'Top 10': 13, 'Top 50': 10, '51-100': 8 };
+    const s = tierSizes[michelinTier] || 8;
+    const outer = Math.round(s * 1.6);
+    return L.divIcon({
+      html: `<div style="width:${outer}px;height:${outer}px;display:flex;align-items:center;justify-content:center;">
+        <div style="width:${s}px;height:${s}px;background:#0096C7;border:1.5px solid #005f80;border-radius:50%;
+          box-shadow:0 0 6px #0096C790;"></div>
+      </div>`,
+      className: '',
+      iconSize: [outer, outer],
+      iconAnchor: [outer / 2, outer / 2],
+    });
+  }
+
   // JBF pin: coloured circle
   const colors = {
     'Winner':      { fill: '#FEA219', stroke: '#b07000' },
@@ -1826,22 +1848,32 @@ async function loadData() {
     { file: './data/awards-p5.json', label: 'Tabelog Award (Japan)',        optional: true },
     { file: './data/awards-p6.json', label: 'AA Rosettes (UK)',             optional: true },
     { file: './data/awards-p7.json', label: 'Guía Repsol Soles',           optional: true },
+    { file: './data/awards-p8.json', label: 'W50 Best Bars',               optional: true },
   ];
 
-  // Kick off all fetches immediately so slow connections download everything in parallel
-  const promises = chunks.map(chunk =>
-    fetch(chunk.file)
+  function fetchChunk(chunk) {
+    return fetch(chunk.file)
       .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status} on ${chunk.file}`); return res.json(); })
-      .catch(e => chunk.optional ? null : Promise.reject(e))
-  );
+      .catch(() => null); // all failures become null; required chunks handled below
+  }
 
+  const required = chunks.filter(c => !c.optional);
+  const optional  = chunks.filter(c =>  c.optional);
+
+  // Phase 1: required chunks in parallel (max 4 connections — safe for corporate proxies)
+  // Await in priority order so the map populates progressively as each resolves.
   let firstChunkLoaded = false;
 
-  for (let i = 0; i < chunks.length; i++) {
+  const requiredPromises = required.map(fetchChunk);
+  for (let i = 0; i < required.length; i++) {
     try {
-      loadingSub.textContent = `Loading ${chunks[i].label}…`;
-      const data = await promises[i];
-      if (data === null) continue; // optional chunk that failed
+      loadingSub.textContent = `Loading ${required[i].label}…`;
+      const data = await requiredPromises[i];
+      if (data === null) {
+        loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
+        loadingSub.textContent = `Could not load ${required[i].file}`;
+        return;
+      }
 
       allAwards = allAwards.concat(data);
 
@@ -1851,7 +1883,6 @@ async function loadData() {
         loadingEl.style.display = 'none';
         initFilters();
       } else {
-        // Refresh filters dropdowns with newly available data (years, states, etc.)
         initFilters();
       }
 
@@ -1869,6 +1900,17 @@ async function loadData() {
       loadingSub.textContent = e.message;
       return;
     }
+  }
+
+  // Phase 2: optional chunks in parallel — only starts after required chunks complete,
+  // so corporate proxies with low connection limits always serve the core data first.
+  const optionalPromises = optional.map(fetchChunk);
+  for (let i = 0; i < optional.length; i++) {
+    const data = await optionalPromises[i];
+    if (data === null) continue;
+    allAwards = allAwards.concat(data);
+    initFilters();
+    applyFilters();
   }
 }
 
@@ -1989,6 +2031,7 @@ function applyFilters() {
     const isTabelog   = a.source === 'tabelog';
     const isAARosette = a.source === 'aarosette';
     const isRepsol    = a.source === 'repsol';
+    const isW50best   = a.source === 'w50best';
 
     // Source filter
     const isNonJbf = isMichelin || isTM || isTabelog || isAARosette || isRepsol;
@@ -1998,6 +2041,7 @@ function applyFilters() {
     if (source === 'tabelog'      && !isTabelog)      return false;
     if (source === 'aarosette'    && !isAARosette)    return false;
     if (source === 'repsol'       && !isRepsol)       return false;
+    if (source === 'w50best'      && !isW50best)      return false;
 
     // JBF-specific filters
     if (!isMichelin && !isTM && !isTabelog && !isAARosette && !isRepsol) {
@@ -2088,12 +2132,13 @@ function updateMap() {
 
   markers = [];
   for (const [, loc] of locationMap) {
-    const NON_JBF    = ['michelin','texasmonthly','tabelog','aarosette','repsol'];
+    const NON_JBF    = ['michelin','texasmonthly','tabelog','aarosette','repsol','w50best'];
     const hasJBF     = loc.awards.some(a => !NON_JBF.includes(a.source));
     const hasTM      = loc.awards.some(a => a.source === 'texasmonthly');
     const hasTabelog = loc.awards.some(a => a.source === 'tabelog');
     const hasRosette = loc.awards.some(a => a.source === 'aarosette');
     const hasRepsol  = loc.awards.some(a => a.source === 'repsol');
+    const hasW50best = loc.awards.some(a => a.source === 'w50best');
 
     let bestStatus, michelinTier;
     if (hasJBF) {
@@ -2118,6 +2163,10 @@ function updateMap() {
       const repsolTierOrder = ['3 Soles', '2 Soles', '1 Sol', 'Recommended'];
       michelinTier = repsolTierOrder.find(t => loc.awards.some(a => a.repsolAward === t)) || null;
       bestStatus = 'repsol';
+    } else if (hasW50best) {
+      const w50Tiers = ['Top 10', 'Top 50', '51-100'];
+      michelinTier = w50Tiers.find(t => loc.awards.some(a => a.w50bestAward === t)) || null;
+      bestStatus = 'w50best';
     } else {
       // Michelin-only — pick highest tier present
       const tierOrder = ['3 Stars','2 Stars','1 Star','Bib Gourmand','Selected'];
@@ -2173,11 +2222,12 @@ function tabelogBadge(tier) {
 
 function buildPopup(loc) {
   const awards = loc.awards;
-  const isMichelinOnly = awards.every(a => a.source === 'michelin');
-  const isTMOnly       = awards.every(a => a.source === 'texasmonthly');
+  const isMichelinOnly  = awards.every(a => a.source === 'michelin');
+  const isTMOnly        = awards.every(a => a.source === 'texasmonthly');
   const isTabelogOnly   = awards.every(a => a.source === 'tabelog');
   const isAARosetteOnly = awards.every(a => a.source === 'aarosette');
   const isRepsolOnly    = awards.every(a => a.source === 'repsol');
+  const isW50bestOnly   = awards.every(a => a.source === 'w50best');
 
   // ── Michelin-only popup ────────────────────────────────────────────────────
   if (isMichelinOnly) {
@@ -2453,13 +2503,54 @@ function buildPopup(loc) {
     return html;
   }
 
+  // ── W50 Best Bars-only popup ───────────────────────────────────────────────
+  if (isW50bestOnly) {
+    const a = awards[0];
+    const location = [a.city, a.country].filter(Boolean).join(', ');
+    const mapsUrl  = buildFallbackMapsUrl(a);
+    const photo    = a.googlePhoto || null;
+    let html = `<div class="jb-popup">`;
+    if (photo) {
+      html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+        <img src="${escHtml(photo)}" onerror="this.parentElement.style.minHeight='0';this.remove()" style="width:100%;height:110px;object-fit:cover;display:block;">
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+          <div class="popup-name">${escHtml(a.restaurant)}</div>
+          <div class="popup-restaurant">${escHtml(location)}</div>
+        </div></div>`;
+    } else {
+      html += `<div class="popup-header"><div class="popup-name">${escHtml(a.restaurant)}</div><div class="popup-restaurant">${escHtml(location)}</div></div>`;
+    }
+    html += `<div class="popup-body"><div class="popup-tabs">
+      <button class="popup-tab-btn active" data-tab="info" onclick="switchPopupTab('info')">Info</button>
+      <button class="popup-tab-btn" data-tab="community" onclick="switchPopupTab('community')">Community</button>
+    </div>`;
+    html += `<div class="popup-tab-content active" data-tab="info">`;
+    const rankLabel = { 'Top 10': `🍸 #${a.w50bestRank} — Top 10`, 'Top 50': `🍸 #${a.w50bestRank} — Top 50`, '51-100': `🍸 #${a.w50bestRank}` };
+    html += `<div style="margin-bottom:8px;font-family:sans-serif;font-size:0.8rem;font-weight:700;color:#0096C7;">${rankLabel[a.w50bestAward] || `🍸 #${a.w50bestRank}`} W50 Best Bars</div>`;
+    const meta = [];
+    if (a.price)          meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
+    if (a.cuisineCategory) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisineCategory)}</span>`);
+    if (meta.length) html += `<div style="font-family:sans-serif;font-size:0.78rem;margin-bottom:8px;">${meta.join(' · ')}</div>`;
+    const links = [];
+    if (mapsUrl)          links.push(`<a href="${escHtml(mapsUrl)}"          target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
+    if (a.website)        links.push(`<a href="${escHtml(a.website)}"        target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+    if (a.w50bestUrl)     links.push(`<a href="${escHtml(a.w50bestUrl)}"     target="_blank" rel="noopener" style="color:#0096C7;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🍸 W50 Best</a>`);
+    if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;">${links.join('')}</div>`;
+    html += `</div><div class="popup-tab-content" data-tab="community">
+      <div id="comm-section" style="min-height:60px;"><div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div></div>
+    </div>`;
+    html += buildCommButtons(favKey(a));
+    html += `</div></div>`;
+    return html;
+  }
+
   // ── JBF (or mixed JBF+Michelin) popup ─────────────────────────────────────
   const city = awards[0].city;
   const state = awards[0].state;
 
   // Group by restaurant
   const byRestaurant = new Map();
-  const NON_JBF_SOURCES = ['michelin','texasmonthly','tabelog','aarosette','repsol'];
+  const NON_JBF_SOURCES = ['michelin','texasmonthly','tabelog','aarosette','repsol','w50best'];
   for (const a of awards) {
     if (NON_JBF_SOURCES.includes(a.source)) continue; // show JBF entries only
     const key = a.restaurant || a.name || '?';
@@ -2482,10 +2573,14 @@ function buildPopup(loc) {
   const tabelogRecord   = awards.find(a => a.source === 'tabelog');
   const aaRecord        = awards.find(a => a.source === 'aarosette');
   const repsolRecord    = awards.find(a => a.source === 'repsol');
+  const w50bestRecord   = awards.find(a => a.source === 'w50best');
   const aaRosettes      = aaRecord?.aaRosettes    || null;
   const aaRosetteUrl    = aaRecord?.aaRosetteUrl  || null;
   const repsolAwardJbf  = repsolRecord?.repsolAward || null;
   const repsolUrlJbf    = repsolRecord?.repsolUrl   || null;
+  const w50bestRankJbf  = w50bestRecord?.w50bestRank  || null;
+  const w50bestAwardJbf = w50bestRecord?.w50bestAward || null;
+  const w50bestUrlJbf   = w50bestRecord?.w50bestUrl   || null;
   const tabelogAward    = firstMeta.tabelogAward  || tabelogRecord?.tabelogAward  || null;
   const tabelogUrl      = firstMeta.tabelogUrl    || tabelogRecord?.tabelogUrl    || null;
   const tabelogScore    = firstMeta.tabelogScore  || tabelogRecord?.tabelogScore  || null;
@@ -2548,6 +2643,7 @@ function buildPopup(loc) {
   }
   if (aaRosettes) html += `<div style="margin-bottom:8px;">${aaRosetteBadge(aaRosettes)}</div>`;
   if (repsolAwardJbf) html += `<div style="margin-bottom:8px;">${repsolBadge(repsolAwardJbf)}</div>`;
+  if (w50bestRankJbf) html += `<div style="margin-bottom:8px;font-family:sans-serif;font-size:0.8rem;font-weight:700;color:#0096C7;">🍸 #${w50bestRankJbf} W50 Best Bars</div>`;
 
   if (businessStatus === 'CLOSED_PERMANENTLY' || yelpDetail?.isClosed) {
     html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
@@ -2571,6 +2667,7 @@ function buildPopup(loc) {
   if (tabelogUrl)    links.push(`<a href="${escHtml(tabelogUrl)}"    target="_blank" rel="noopener" style="color:#C0392B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Tabelog</a>`);
   if (aaRosetteUrl)  links.push(`<a href="${escHtml(aaRosetteUrl)}"  target="_blank" rel="noopener" style="color:#8BABD8;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">✦ AA Rosettes</a>`);
   if (repsolUrlJbf)  links.push(`<a href="${escHtml(repsolUrlJbf)}"  target="_blank" rel="noopener" style="color:#D4870A;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">☀ Repsol</a>`);
+  if (w50bestUrlJbf) links.push(`<a href="${escHtml(w50bestUrlJbf)}" target="_blank" rel="noopener" style="color:#0096C7;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🍸 W50 Best</a>`);
   if (links.length) html += `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;">${links.join('')}</div>`;
 
   html += `<div class="popup-awards-list">`;
@@ -2665,6 +2762,7 @@ function updateSidebar() {
       : isTabelog   ? 'badge-tabelog'
       : isAARosette ? 'badge-aarosette'
       : isRepsol    ? 'badge-repsol'
+      : isW50best   ? 'badge-w50best'
       : a.status === 'Winner' ? 'badge-winner'
       : a.status === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
     const badgeText = isMichelin
@@ -2673,6 +2771,7 @@ function updateSidebar() {
       : isTabelog   ? `★ Tabelog ${a.tabelogAward || 'Award'}`
       : isAARosette ? `✦ AA ${a.aaRosettes || ''} Rosettes`
       : isRepsol    ? `☀ Repsol ${a.repsolAward || 'Sol'}`
+      : isW50best   ? `🍸 #${a.w50bestRank} W50 Best Bars`
       : a.status === 'Winner' ? '🥇 Winner' : a.status === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
     const displayName = a.restaurant || a.name || '?';
     const displayRest = (!isMichelin && !isTM && !isTabelog && !isAARosette && !isRepsol) && a.name && a.name !== a.restaurant ? a.restaurant : '';

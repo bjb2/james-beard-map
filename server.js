@@ -258,7 +258,7 @@ app.post('/api/admin/git-push', (req, res) => {
     'data/awards.json',
     'data/awards-p1.json', 'data/awards-p2.json', 'data/awards-p3.json',
     'data/awards-p4.json', 'data/awards-p5.json', 'data/awards-p6.json',
-    'data/awards-p7.json',
+    'data/awards-p7.json', 'data/awards-p8.json',
   ];
 
   function run(cmd, args) {

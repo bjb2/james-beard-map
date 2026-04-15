@@ -143,6 +143,7 @@ function buildRestaurant(entry, key) {
     tabelog_url:      entry.tabelogUrl    || null,
     aarosette_url:    entry.aaRosetteUrl  || null,
     repsol_url:       entry.repsolUrl     || null,
+    w50best_url:      entry.w50bestUrl    || null,
     price:            entry.price || yelp.price || null,
     updated_at:       new Date().toISOString(),
   };
@@ -197,6 +198,7 @@ async function main() {
         if (!existing.tabelog_url   && update.tabelog_url)   existing.tabelog_url   = update.tabelog_url;
         if (!existing.aarosette_url && update.aarosette_url) existing.aarosette_url = update.aarosette_url;
         if (!existing.repsol_url    && update.repsol_url)    existing.repsol_url    = update.repsol_url;
+        if (!existing.w50best_url   && update.w50best_url)   existing.w50best_url   = update.w50best_url;
         if (!existing.cuisine_tags     && update.cuisine_tags)     existing.cuisine_tags     = update.cuisine_tags;
         if (!existing.cuisine_category && update.cuisine_category) existing.cuisine_category = update.cuisine_category;
       }
@@ -235,6 +237,14 @@ async function main() {
         source:         'repsol',
         award_type:     entry.repsolAward || 'Sol',
         award_detail:   'Guía Repsol 2025',
+        year:           2025,
+      });
+    } else if (entry.source === 'w50best') {
+      awardRows.push({
+        restaurant_key: key,
+        source:         'w50best',
+        award_type:     entry.w50bestAward || '51-100',
+        award_detail:   `World's 50 Best Bars North America #${entry.w50bestRank}`,
         year:           2025,
       });
     } else {

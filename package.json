@@ -16,7 +16,7 @@
     "fetch:repsol": "node fetch-repsol.js",
     "merge:aarosette": "node merge-aarosette.js && node normalize-cuisine.js && node split-data.js",
     "merge:repsol": "node merge-repsol.js && node normalize-cuisine.js && node split-data.js",
-    "merge:all": "node merge-aarosette.js && node merge-repsol.js && node normalize-cuisine.js && node split-data.js",
+    "merge:all": "node merge-aarosette.js && node merge-repsol.js && node merge-w50best.js && node normalize-cuisine.js && node split-data.js",
     "fetch:w50best": "node fetch-w50best.js",
     "fetch:w50best:listing": "node fetch-w50best.js --listing-only",
     "fetch:w50best:nocoords": "node fetch-w50best.js --skip-geocode",

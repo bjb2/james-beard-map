@@ -208,12 +208,35 @@ async function scrapeDetailPage(bar, cache) {
 
 // ── Phase 3: Google Places geocoding ─────────────────────────────────────────
 
+const PRICE_MAP = {
+  PRICE_LEVEL_FREE:           '$',
+  PRICE_LEVEL_INEXPENSIVE:    '$',
+  PRICE_LEVEL_MODERATE:       '$$',
+  PRICE_LEVEL_EXPENSIVE:      '$$$',
+  PRICE_LEVEL_VERY_EXPENSIVE: '$$$$',
+};
+
+async function resolvePhoto(photoName) {
+  try {
+    const res = await axios.get(
+      `https://places.googleapis.com/v1/${photoName}/media`,
+      {
+        params: { maxHeightPx: 800, key: GOOGLE_KEY, skipHttpRedirect: true },
+        timeout: 10000,
+      }
+    );
+    return res.data?.photoUri || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 async function googlePlaces(query, geoCache, wantEnrich) {
   if (geoCache[query] !== undefined) return geoCache[query];
 
-  const fieldMask = wantEnrich
-    ? 'places.location,places.formattedAddress,places.internationalPhoneNumber,places.websiteUri'
-    : 'places.location,places.formattedAddress';
+  const baseMask   = 'places.location,places.formattedAddress,places.businessStatus,places.priceLevel,places.photos';
+  const enrichMask = 'places.internationalPhoneNumber,places.websiteUri';
+  const fieldMask  = wantEnrich ? `${baseMask},${enrichMask}` : baseMask;
 
   try {
     await sleep(RATE_MS);
@@ -232,11 +255,15 @@ async function googlePlaces(query, geoCache, wantEnrich) {
     if (!place?.location) { geoCache[query] = null; return null; }
 
     const result = {
-      lat:     place.location.latitude,
-      lng:     place.location.longitude,
-      address: place.formattedAddress || null,
-      phone:   wantEnrich ? (place.internationalPhoneNumber || null) : null,
-      website: wantEnrich ? (place.websiteUri || null) : null,
+      lat:            place.location.latitude,
+      lng:            place.location.longitude,
+      address:        place.formattedAddress  || null,
+      phone:          wantEnrich ? (place.internationalPhoneNumber || null) : null,
+      website:        wantEnrich ? (place.websiteUri || null) : null,
+      businessStatus: place.businessStatus    || null,
+      price:          PRICE_MAP[place.priceLevel] || null,
+      photoName:      place.photos?.[0]?.name || null,
+      googlePhoto:    null, // resolved separately after this call
     };
 
     geoCache[query] = result;
@@ -256,7 +283,8 @@ function buildRecord(raw, detail, geo) {
   const address = detail?.address || geo?.address || null;
   const phone   = detail?.phone   || geo?.phone   || null;
   const website = detail?.website || geo?.website || null;
-  const image   = detail?.image   || raw.imgSrc   || null;
+  // W50B image takes priority; Google photo is the fallback
+  const photo   = detail?.image   || raw.imgSrc   || geo?.googlePhoto || null;
 
   // Country: derive from city/address heuristic for common locations
   const country = deriveCountry(city, address);
@@ -275,13 +303,14 @@ function buildRecord(raw, detail, geo) {
     w50bestUrl:      raw.href || `${BASE_URL}/lists/${raw.rank <= 50 ? '1-50' : '51-100'}`,
     website,
     phone,
-    googlePhoto:     image,
-    instagram:       detail?.instagram || null,
-    facebook:        detail?.facebook  || null,
+    googlePhoto:     photo,
+    businessStatus:  geo?.businessStatus || null,
+    price:           geo?.price          || null,
+    instagram:       detail?.instagram   || null,
+    facebook:        detail?.facebook    || null,
     description:     detail?.description || null,
     cuisineCategory: 'Bars & Cocktails',
     cuisineTags:     ['Bar', 'Cocktails'],
-    price:           null,
   };
 }
 
@@ -405,6 +434,16 @@ async function main() {
       // 51–100 (or 1–50 missing address): enrich from Google Places by name + city
       const query = `${raw.name} bar, ${raw.city}`;
       geo = await googlePlaces(query, geoCache, true);
+    }
+
+    // Resolve Google photo URL (separate call; cached on geo object)
+    if (geo && geo.photoName && !geo.googlePhoto) {
+      geo.googlePhoto = await resolvePhoto(geo.photoName);
+      // Persist resolved URL back into cache entry
+      const cacheKey = detail?.address
+        ? `${detail.address}, ${detail.city || raw.city}`
+        : `${raw.name} bar, ${raw.city}`;
+      if (geoCache[cacheKey]) geoCache[cacheKey].googlePhoto = geo.googlePhoto;
     }
 
     if (geo?.lat) { geocoded++; process.stdout.write('ok\n'); }
