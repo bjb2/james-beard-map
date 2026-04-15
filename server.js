@@ -244,6 +244,58 @@ app.post('/api/admin/seed', (req, res) => {
 // Cuisine category list for admin UI
 app.get('/api/admin/cuisine-categories', (req, res) => res.json(CUISINE_CATEGORIES));
 
+// Commit data files and push to GitHub
+app.post('/api/admin/git-push', (req, res) => {
+  const msg = (req.body?.message || 'Update restaurant data via admin').trim();
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.flushHeaders();
+
+  const send = line => res.write(`data: ${JSON.stringify(line)}\n\n`);
+
+  const DATA_FILES = [
+    'data/awards.json',
+    'data/awards-p1.json', 'data/awards-p2.json', 'data/awards-p3.json',
+    'data/awards-p4.json', 'data/awards-p5.json', 'data/awards-p6.json',
+    'data/awards-p7.json',
+  ];
+
+  function run(cmd, args) {
+    return new Promise((resolve, reject) => {
+      const proc = spawn(cmd, args, { cwd: __dirname });
+      proc.stdout.on('data', d => d.toString().trim().split('\n').forEach(send));
+      proc.stderr.on('data', d => d.toString().trim().split('\n').forEach(l => send('[err] ' + l)));
+      proc.on('close', code => code === 0 ? resolve() : reject(new Error(`${cmd} exited ${code}`)));
+    });
+  }
+
+  (async () => {
+    try {
+      send('> git add data/awards*.json');
+      await run('git', ['add', ...DATA_FILES]);
+
+      send('> git commit');
+      await run('git', ['commit', '-m', msg]);
+
+      send('> git push');
+      await run('git', ['push']);
+
+      send('__DONE__');
+    } catch (e) {
+      // "nothing to commit" is not a real error
+      if (e.message.includes('exited 1') && e.message.includes('commit')) {
+        send('Nothing to commit — working tree clean.');
+        send('__DONE__');
+      } else {
+        send('Error: ' + e.message);
+        send('__FAILED__');
+      }
+    }
+    res.end();
+  })();
+});
+
 app.listen(PORT, () => {
   console.log(`\n🍽  James Beard Awards Map`);
   console.log(`   http://localhost:${PORT}`);
