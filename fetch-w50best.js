@@ -72,107 +72,64 @@ function tier(rank) {
 }
 
 // ── Phase 1: Playwright listing scrape ───────────────────────────────────────
+// Confirmed DOM structure (from debug-w50best.js inspection):
+//
+// <div class="list-item">
+//   <a class="item-img-container" href="/bars/northamerica/the-list/[slug].html">  ← 1-50 only; div for 51-100
+//     <img src="//...filestore/jpg/[Name]-hero_NA50BB25-website.jpg" />
+//   </a>
+//   <div class="list-item-contents">
+//     <div class="item-top">
+//       <p class="rank ">1</p>
+//     </div>
+//     <div class="item-bottom">
+//       <a href="/bars/northamerica/the-list/[slug].html"><h2>Name</h2></a>  ← 1-50 only; plain h2 for 51-100
+//       <p>City</p>
+//     </div>
+//   </div>
+// </div>
 
 async function scrapeListingPage(page, url, rankRange) {
   console.log(`  → ${url}`);
   await page.goto(url, { waitUntil: 'networkidle', timeout: 60000 });
-  // Extra settle time for the webpuzzleapp CMS to finish rendering
   await sleep(3000);
 
   const [minRank, maxRank] = rankRange;
 
-  const entries = await page.evaluate((args) => {
-    const { BASE, minRank, maxRank } = args;
+  const entries = await page.evaluate(({ minRank, maxRank }) => {
     const results = [];
 
-    // ── Strategy A: linked entries (have /the-list/ hrefs) ──
-    const linkedEntries = new Map(); // rank → entry
+    document.querySelectorAll('div.list-item').forEach(item => {
+      // Rank
+      const rankEl = item.querySelector('p.rank');
+      if (!rankEl) return;
+      const rank = parseInt(rankEl.textContent.trim());
+      if (!rank || rank < minRank || rank > maxRank) return;
 
-    document.querySelectorAll('a[href*="/the-list/"]').forEach(link => {
-      const href = link.getAttribute('href');
-      const slug = href.replace(/.*\/the-list\//, '').replace(/\.html$/, '');
-
-      // Pull all text nodes
-      const lines = link.innerText.trim().split('\n').map(l => l.trim()).filter(Boolean);
-      const rankLine = lines.find(l => /^\d+$/.test(l));
-      if (!rankLine) return;
-      const rank = parseInt(rankLine);
-      if (rank < minRank || rank > maxRank) return;
-
-      const nonRank = lines.filter(l => !/^\d+$/.test(l));
-      const name = nonRank[0] || null;
-      const city = nonRank[1] || null;
+      // Name — inside h2 (wrapped in <a> for 1-50, bare for 51-100)
+      const name = item.querySelector('div.item-bottom h2')?.textContent?.trim();
       if (!name) return;
 
-      // Image: check element and nearest parent container for <img>
-      const container = link.closest('[class]') || link.parentElement?.parentElement || link.parentElement;
-      let imgSrc = null;
-      if (container) {
-        const img = container.querySelector('img:not([src*="svg"]):not([src*="logo"]):not([src*="icon"])');
-        if (img) imgSrc = img.src || img.dataset?.src || img.dataset?.lazySrc || null;
-      }
-      // Fallback: check the link itself
-      if (!imgSrc) {
-        const img = link.querySelector('img');
-        if (img) imgSrc = img.src || img.dataset?.src || null;
-      }
-      // Only keep absolute image URLs pointing to the site filestore
-      if (imgSrc && !imgSrc.startsWith('http')) imgSrc = null;
-      if (imgSrc && imgSrc.includes('svg'))      imgSrc = null;
-      if (imgSrc && imgSrc.includes('logo'))     imgSrc = null;
+      // City — <p> immediately after h2 in item-bottom
+      const city = item.querySelector('div.item-bottom p')?.textContent?.trim() || null;
 
-      const fullHref = href.startsWith('http') ? href : `https://www.theworlds50best.com${href}`;
+      // Detail page href — <a class="item-img-container"> for 1-50, absent for 51-100
+      const imgContainerLink = item.querySelector('a.item-img-container');
+      const nameLinkHref     = item.querySelector('div.item-bottom a')?.getAttribute('href');
+      const rawHref          = imgContainerLink?.getAttribute('href') || nameLinkHref || null;
+      const href    = rawHref ? `https://www.theworlds50best.com${rawHref}` : null;
+      const slug    = rawHref ? rawHref.replace(/.*\/the-list\//, '').replace(/\.html$/i, '') : null;
 
-      linkedEntries.set(rank, { rank, name, city, href: fullHref, slug, imgSrc });
+      // Image — src is set by Playwright after lazy-load
+      const img    = item.querySelector('.item-img-container img');
+      const rawSrc = img?.getAttribute('src') || img?.getAttribute('data-src') || null;
+      const imgSrc = rawSrc ? (rawSrc.startsWith('//') ? 'https:' + rawSrc : rawSrc) : null;
+
+      results.push({ rank, name, city, href, slug, imgSrc });
     });
 
-    linkedEntries.forEach(e => results.push(e));
-
-    // ── Strategy B: unlinked entries (51-100, no detail pages) ──
-    // Look for elements that appear to be list items with rank numbers
-    // in the expected range but no /the-list/ link.
-    const seen = new Set(results.map(r => r.rank));
-
-    // Walk all elements looking for isolated rank numbers
-    const allEls = [...document.querySelectorAll('*')];
-    for (const el of allEls) {
-      // Only leaf-ish nodes with just a number
-      if (el.children.length > 3) continue;
-      const text = (el.innerText || '').trim();
-      if (!/^\d+$/.test(text)) continue;
-      const rank = parseInt(text);
-      if (rank < minRank || rank > maxRank || seen.has(rank)) continue;
-
-      // Check this isn't inside a /the-list/ link (already captured)
-      if (el.closest('a[href*="/the-list/"]')) continue;
-
-      // Try to get name and city from surrounding elements
-      const parent = el.parentElement;
-      if (!parent) continue;
-      const siblings = [...parent.children].map(c => (c.innerText || '').trim()).filter(Boolean);
-
-      // Find rank position, take the next two non-empty siblings as name/city
-      const rankIdx = siblings.findIndex(s => s === text);
-      const name = rankIdx >= 0 ? siblings[rankIdx + 1] : null;
-      const city = rankIdx >= 0 ? siblings[rankIdx + 2] : null;
-      if (!name || name.length < 2 || /^\d+$/.test(name)) continue;
-
-      // Image: check parent container
-      let imgSrc = null;
-      const container = parent.closest('[class]') || parent;
-      if (container) {
-        const img = container.querySelector('img:not([src*="svg"]):not([src*="logo"])');
-        if (img) imgSrc = img.src || img.dataset?.src || null;
-        if (imgSrc && !imgSrc.startsWith('http')) imgSrc = null;
-        if (imgSrc && (imgSrc.includes('svg') || imgSrc.includes('logo'))) imgSrc = null;
-      }
-
-      seen.add(rank);
-      results.push({ rank, name, city: city || null, href: null, slug: null, imgSrc });
-    }
-
     return results;
-  }, { BASE: BASE_URL, minRank, maxRank });
+  }, { minRank, maxRank });
 
   return entries;
 }
