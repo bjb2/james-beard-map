@@ -315,6 +315,15 @@
       margin-bottom: 6px;
     }
 
+    .filter-source-hint {
+      font-size: 0.58rem;
+      letter-spacing: 0.05em;
+      font-weight: 500;
+      color: var(--white-faint);
+      text-transform: uppercase;
+      margin-left: 5px;
+    }
+
     .filter-group select {
       width: 100%;
       background: var(--black-light);
@@ -334,29 +343,122 @@
 
     .filter-group select:focus { border-color: var(--orange); }
 
-    /* Status toggles */
-    .status-toggles { display: flex; gap: 6px; }
-
-    .status-toggle {
-      flex: 1;
-      padding: 8px 4px;
-      border-radius: 2px;
+    /* Award filter combobox */
+    .combo-filter {
       border: 1px solid var(--border-light);
+      border-radius: 4px;
+      background: var(--black-light);
+      position: relative;
+      transition: border-color 0.15s;
+    }
+    .combo-filter.open,
+    .combo-filter:focus-within { border-color: var(--orange); }
+
+    .combo-tokens {
+      min-height: 38px;
+      padding: 5px 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-items: center;
       cursor: pointer;
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      transition: all 0.2s;
-      background: transparent;
-      color: var(--white-dim);
     }
 
-    .status-toggle.winner.active { background: var(--orange); border-color: var(--orange); color: var(--white); }
-    .status-toggle.semifinalist.active { background: #fff; border-color: #fff; color: #000; }
-    .status-toggle.nominee.active { background: var(--border-light); border-color: var(--border-light); color: var(--white); }
-    .status-toggle:not(.active):hover { border-color: var(--white-faint); color: var(--white); }
+    .combo-token {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px 3px 9px;
+      border-radius: 3px;
+      border: 1px solid transparent;
+      font-size: 0.71rem;
+      font-weight: 600;
+      line-height: 1.4;
+      white-space: nowrap;
+      cursor: default;
+    }
+    .combo-token-x {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0 0 0 2px;
+      font-size: 1rem;
+      line-height: 1;
+      opacity: 0.55;
+      color: inherit;
+      display: flex;
+      align-items: center;
+    }
+    .combo-token-x:hover { opacity: 1; }
+
+    .combo-add-btn {
+      background: none;
+      border: 1px dashed var(--border-light);
+      color: var(--white-faint);
+      padding: 3px 10px;
+      border-radius: 3px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    .combo-add-btn:hover { border-color: var(--white-dim); color: var(--white-dim); }
+
+    .combo-picker {
+      display: none;
+      position: fixed;
+      background: var(--black-mid);
+      border: 1px solid var(--orange);
+      border-radius: 4px;
+      z-index: 700;
+      max-height: 340px;
+      overflow-y: auto;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .combo-filter.open .combo-picker { display: block; }
+
+    .cp-group { padding: 10px 10px 6px; }
+    .cp-group + .cp-group { border-top: 1px solid var(--border); }
+
+    .cp-group-title {
+      font-size: 0.58rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--white-faint);
+      margin-bottom: 6px;
+    }
+
+    .cp-opts { display: flex; flex-wrap: wrap; gap: 5px; }
+
+    .cp-opt {
+      padding: 4px 10px;
+      border-radius: 3px;
+      border: 1px solid var(--border-light);
+      background: transparent;
+      color: var(--white-dim);
+      font-size: 0.73rem;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.1s, color 0.1s, background 0.1s;
+    }
+    .cp-opt:hover { border-color: var(--white-dim); color: var(--white); }
+    .cp-opt.sel { font-weight: 700; }
+
+    .combo-clear-row {
+      padding: 6px 10px 8px;
+      border-top: 1px solid var(--border);
+      text-align: right;
+    }
+    .combo-clear-btn {
+      background: none;
+      border: none;
+      font-size: 0.7rem;
+      color: var(--white-faint);
+      cursor: pointer;
+      padding: 0;
+    }
+    .combo-clear-btn:hover { color: var(--white); }
 
     /* Results list */
     #results-panel {
@@ -696,6 +798,10 @@
       #sidebar.open { transform: translateX(0); }
 
       .jb-popup { min-width: 200px; max-width: 260px; }
+
+      /* Larger touch targets on mobile */
+      .cp-opt { padding: 8px 12px; font-size: 0.78rem; }
+      .combo-add-btn { padding: 7px 12px; font-size: 0.78rem; }
     }
 
     /* Legend */
@@ -918,17 +1024,22 @@
     <div class="sidebar-section collapsible" id="section-filters">
       <h3>Filters</h3>
       <div class="section-body">
+
         <div class="filter-group">
-          <label>Year</label>
-          <select id="filter-year">
-            <option value="">All Years</option>
-          </select>
+          <label>Award <span class="filter-source-hint">select any combination</span></label>
+          <div class="combo-filter" id="award-combo">
+            <div class="combo-tokens" id="award-tokens">
+              <button type="button" class="combo-add-btn" id="award-add-btn"
+                onclick="openAwardCombo(event)">+ Add filter</button>
+            </div>
+            <div class="combo-picker" id="award-picker"><!-- built by JS --></div>
+          </div>
         </div>
 
         <div class="filter-group">
-          <label>Award Category</label>
-          <select id="filter-category">
-            <option value="">All Categories</option>
+          <label>Year <span class="filter-source-hint">JBF · TM</span></label>
+          <select id="filter-year">
+            <option value="">All Years</option>
           </select>
         </div>
 
@@ -939,45 +1050,10 @@
           </select>
         </div>
 
-        <div class="filter-group">
-          <label>Designation</label>
-          <div class="status-toggles">
-            <button class="status-toggle winner active" data-status="Winner">🥇 Winner</button>
-            <button class="status-toggle semifinalist active" data-status="Semifinalist">🥈 Semi</button>
-            <button class="status-toggle nominee active" data-status="Nominee">🥉 Nominee</button>
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <label>Source</label>
-          <select id="filter-source">
-            <option value="">All Sources</option>
-            <option value="jbf">James Beard Only</option>
-            <option value="michelin">Michelin Only</option>
-            <option value="texasmonthly">Texas Monthly Only</option>
-            <option value="tabelog">Tabelog Award Only</option>
-            <option value="aarosette">AA Rosettes Only</option>
-            <option value="repsol">Guía Repsol Only</option>
-            <option value="w50best">W50 Best Bars Only</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label>Michelin Tier</label>
-          <select id="filter-michelin">
-            <option value="">All Tiers</option>
-            <option value="3 Stars">★★★ 3 Stars</option>
-            <option value="2 Stars">★★ 2 Stars</option>
-            <option value="1 Star">★ 1 Star</option>
-            <option value="Bib Gourmand">Bib Gourmand</option>
-            <option value="Selected">Michelin Selected</option>
-          </select>
-        </div>
-
         <div class="filter-group" style="flex-direction:row;align-items:center;gap:8px;">
           <input type="checkbox" id="filter-hide-closed" checked
             style="accent-color:var(--orange);width:14px;height:14px;cursor:pointer;flex-shrink:0;">
-          <label for="filter-hide-closed" style="cursor:pointer;margin:0;">Hide permanently closed</label>
+          <label for="filter-hide-closed" style="cursor:pointer;margin:0;">Hide Closed</label>
         </div>
       </div>
     </div>
@@ -1602,8 +1678,209 @@ function favKey(a) {
   return `${a.restaurant || a.name || ''}|${a.city || ''}|${a.state || a.country || ''}`;
 }
 
-// Active status filters
-const activeStatuses = new Set(['Winner', 'Semifinalist', 'Nominee']);
+// ── Award combobox filter ──────────────────────────────────────────────────
+// filterSet holds values like 'jbf:Winner', 'm:1 Star', 'src:tabelog', etc.
+// Empty = no restriction = show everything.
+const filterSet = new Set();
+
+const FILTER_OPTS = [
+  { group: 'James Beard', items: [
+    { val: 'jbf:Winner',        label: '🥇 Winners',        color: '#FEA219', bg: 'rgba(254,162,25,0.15)' },
+    { val: 'jbf:Semifinalist',  label: '🥈 Semifinalists',  color: '#d0d0d0', bg: 'rgba(200,200,200,0.12)' },
+    { val: 'jbf:Nominee',       label: '🥉 Nominees',       color: '#cd7f32', bg: 'rgba(205,127,50,0.15)' },
+  ]},
+  { group: 'Michelin Guide', items: [
+    { val: 'src:michelin',      label: 'All Michelin',      color: '#E4002B', bg: 'rgba(228,0,43,0.1)' },
+    { val: 'm:3 Stars',         label: '★★★ 3 Stars',       color: '#E4002B', bg: 'rgba(228,0,43,0.1)' },
+    { val: 'm:2 Stars',         label: '★★ 2 Stars',        color: '#E4002B', bg: 'rgba(228,0,43,0.1)' },
+    { val: 'm:1 Star',          label: '★ 1 Star',          color: '#E4002B', bg: 'rgba(228,0,43,0.1)' },
+    { val: 'm:Bib Gourmand',    label: 'Ⓑ Bib Gourmand',   color: '#E8611A', bg: 'rgba(232,97,26,0.1)' },
+    { val: 'm:Selected',        label: '◆ Selected',        color: '#9B3050', bg: 'rgba(155,48,80,0.12)' },
+  ]},
+  { group: 'Tabelog Award', items: [
+    { val: 'src:tabelog',       label: 'All Tabelog',       color: '#D4AF37', bg: 'rgba(212,175,55,0.12)' },
+    { val: 'ta:Gold',           label: '★ Gold',            color: '#D4AF37', bg: 'rgba(212,175,55,0.12)' },
+    { val: 'ta:Silver',         label: '★ Silver',          color: '#9BA7B4', bg: 'rgba(155,167,180,0.12)' },
+    { val: 'ta:Bronze',         label: '★ Bronze',          color: '#C47A35', bg: 'rgba(196,122,53,0.12)' },
+    { val: 'ta:Special Award',  label: '★ Special Award',   color: '#E8357E', bg: 'rgba(232,53,126,0.12)' },
+  ]},
+  { group: 'AA Rosettes', items: [
+    { val: 'src:aarosette',     label: 'All AA',            color: '#8BABD8', bg: 'rgba(139,171,216,0.12)' },
+    { val: 'aa:5',              label: '✦✦✦✦✦ 5',          color: '#8BABD8', bg: 'rgba(139,171,216,0.12)' },
+    { val: 'aa:4',              label: '✦✦✦✦ 4',           color: '#8BABD8', bg: 'rgba(139,171,216,0.12)' },
+    { val: 'aa:3',              label: '✦✦✦ 3',            color: '#8BABD8', bg: 'rgba(139,171,216,0.12)' },
+    { val: 'aa:2',              label: '✦✦ 2',             color: '#8BABD8', bg: 'rgba(139,171,216,0.12)' },
+    { val: 'aa:1',              label: '✦ 1',              color: '#8BABD8', bg: 'rgba(139,171,216,0.12)' },
+  ]},
+  { group: 'Guía Repsol', items: [
+    { val: 'src:repsol',        label: 'All Repsol',        color: '#D4870A', bg: 'rgba(212,135,10,0.12)' },
+    { val: 'ra:3 Soles',        label: '☀☀☀ 3 Soles',      color: '#D4870A', bg: 'rgba(212,135,10,0.12)' },
+    { val: 'ra:2 Soles',        label: '☀☀ 2 Soles',       color: '#D4870A', bg: 'rgba(212,135,10,0.12)' },
+    { val: 'ra:1 Sol',          label: '☀ 1 Sol',           color: '#D4870A', bg: 'rgba(212,135,10,0.12)' },
+    { val: 'ra:Recommended',    label: '◈ Recommended',     color: '#D4870A', bg: 'rgba(212,135,10,0.12)' },
+  ]},
+  { group: 'W50 Best Bars NA', items: [
+    { val: 'src:w50best',       label: 'All W50',           color: '#0096C7', bg: 'rgba(0,150,199,0.12)' },
+    { val: 'w50:Top 10',        label: '🍸 Top 10',         color: '#0096C7', bg: 'rgba(0,150,199,0.12)' },
+    { val: 'w50:Top 50',        label: '🍸 Top 50',         color: '#0096C7', bg: 'rgba(0,150,199,0.12)' },
+    { val: 'w50:51-100',        label: '🍸 51–100',         color: '#0096C7', bg: 'rgba(0,150,199,0.12)' },
+  ]},
+  { group: 'Texas Monthly', items: [
+    { val: 'src:texasmonthly',  label: '🔥 Top 50 BBQ',    color: '#1a6fa8', bg: 'rgba(26,111,168,0.15)' },
+  ]},
+];
+
+// Flat lookup map for quick meta access
+const FILTER_META = {};
+for (const g of FILTER_OPTS) for (const item of g.items) FILTER_META[item.val] = item;
+
+function getFilterMeta(val) {
+  if (FILTER_META[val]) return FILTER_META[val];
+  if (val.startsWith('jbf-cat:')) return { label: val.slice(8), color: '#FEA219', bg: 'rgba(254,162,25,0.12)' };
+  return { label: val, color: '#aaa', bg: 'rgba(255,255,255,0.08)' };
+}
+
+function buildAwardPicker() {
+  const picker = document.getElementById('award-picker');
+  picker.innerHTML = '';
+
+  for (const group of FILTER_OPTS) {
+    const grp = document.createElement('div');
+    grp.className = 'cp-group';
+
+    const title = document.createElement('div');
+    title.className = 'cp-group-title';
+    title.textContent = group.group;
+    grp.appendChild(title);
+
+    const opts = document.createElement('div');
+    opts.className = 'cp-opts';
+    for (const item of group.items) {
+      opts.appendChild(makeCpOpt(item.val, item.label, item.color, item.bg));
+    }
+    grp.appendChild(opts);
+    picker.appendChild(grp);
+  }
+
+  // JBF category section (dynamic)
+  const cats = [...new Set(allAwards.flatMap(p => p.cats || []))].sort();
+  if (cats.length) {
+    const grp = document.createElement('div');
+    grp.className = 'cp-group';
+    const title = document.createElement('div');
+    title.className = 'cp-group-title';
+    title.textContent = 'James Beard Category';
+    grp.appendChild(title);
+    const opts = document.createElement('div');
+    opts.className = 'cp-opts';
+    for (const c of cats) {
+      opts.appendChild(makeCpOpt(`jbf-cat:${c}`, c, '#FEA219', 'rgba(254,162,25,0.12)'));
+    }
+    grp.appendChild(opts);
+    picker.appendChild(grp);
+  }
+
+  if (filterSet.size > 0) {
+    const row = document.createElement('div');
+    row.className = 'combo-clear-row';
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'combo-clear-btn';
+    btn.textContent = 'Clear all filters';
+    btn.addEventListener('click', e => { e.stopPropagation(); clearAwardFilters(); });
+    row.appendChild(btn);
+    picker.appendChild(row);
+  }
+}
+
+function makeCpOpt(val, label, color, bg) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'cp-opt' + (filterSet.has(val) ? ' sel' : '');
+  btn.textContent = label;
+  btn.dataset.val = val;
+  if (filterSet.has(val)) {
+    btn.style.color = color;
+    btn.style.borderColor = color;
+    btn.style.background = bg;
+  }
+  btn.addEventListener('click', e => { e.stopPropagation(); toggleAwardFilter(val); });
+  return btn;
+}
+
+function renderAwardTokens() {
+  const tokensEl = document.getElementById('award-tokens');
+  tokensEl.innerHTML = '';
+  for (const val of filterSet) {
+    const meta = getFilterMeta(val);
+    const chip = document.createElement('span');
+    chip.className = 'combo-token';
+    chip.style.color = meta.color;
+    chip.style.background = meta.bg;
+    chip.style.borderColor = meta.color + '55';
+    const labelNode = document.createTextNode(meta.label + ' ');
+    const xBtn = document.createElement('button');
+    xBtn.className = 'combo-token-x';
+    xBtn.innerHTML = '×';
+    xBtn.title = 'Remove';
+    xBtn.addEventListener('click', e => { e.stopPropagation(); removeAwardFilter(val); });
+    chip.appendChild(labelNode);
+    chip.appendChild(xBtn);
+    tokensEl.appendChild(chip);
+  }
+  const addBtn = document.createElement('button');
+  addBtn.type = 'button';
+  addBtn.className = 'combo-add-btn';
+  addBtn.id = 'award-add-btn';
+  addBtn.textContent = filterSet.size === 0 ? '+ Add filter' : '+ More';
+  addBtn.addEventListener('click', e => { e.stopPropagation(); openAwardCombo(e); });
+  tokensEl.appendChild(addBtn);
+}
+
+function toggleAwardFilter(val) {
+  if (filterSet.has(val)) filterSet.delete(val); else filterSet.add(val);
+  buildAwardPicker();
+  renderAwardTokens();
+  applyFilters();
+}
+
+function removeAwardFilter(val) {
+  filterSet.delete(val);
+  buildAwardPicker();
+  renderAwardTokens();
+  applyFilters();
+}
+
+function clearAwardFilters() {
+  filterSet.clear();
+  document.getElementById('award-combo').classList.remove('open');
+  buildAwardPicker();
+  renderAwardTokens();
+  applyFilters();
+}
+
+function openAwardCombo(e) {
+  if (e) e.stopPropagation();
+  const combo = document.getElementById('award-combo');
+  if (combo.classList.contains('open')) return;
+  buildAwardPicker();
+  combo.classList.add('open');
+  // Picker is position:fixed — anchor it to the combo's screen position
+  const picker = document.getElementById('award-picker');
+  const rect = combo.getBoundingClientRect();
+  picker.style.top  = (rect.bottom + 6) + 'px';
+  picker.style.left = rect.left + 'px';
+  picker.style.right = (window.innerWidth - rect.right) + 'px';
+  picker.style.width = '';  // let left/right constrain it
+  setTimeout(() => {
+    document.addEventListener('click', function onOut(ev) {
+      if (!combo.contains(ev.target)) {
+        combo.classList.remove('open');
+        document.removeEventListener('click', onOut);
+      }
+    });
+  }, 0);
+}
 
 // ── Map init ───────────────────────────────────────────────────────────────
 function initMap() {
@@ -1639,8 +1916,9 @@ function initMap() {
   // Track which restaurant's popup is open for community tab lazy-load
   map.on('popupopen', (e) => {
     const marker = e.popup._source;
-    if (!marker?.options?.loc) return;
-    currentPopupKey = favKey(marker.options.loc.awards[0]);
+    if (!marker?.options?.pin && !marker?.options?.loc) return;
+    currentPopupKey = marker.options?.pin?.key
+      || (marker.options?.loc ? favKey(marker.options.loc.awards[0]) : null);
   });
 
   // Legend
@@ -1673,7 +1951,7 @@ function initMap() {
         <div class="legend-item"><div style="width:13px;height:13px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 3 Soles</div>
         <div class="legend-item"><div style="width:10px;height:10px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 2 Soles</div>
         <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:#D4870A;flex-shrink:0;"></div> 1 Sol</div>
-        <div class="legend-section" style="margin-top:6px;">W50 Best Bars</div>
+        <div class="legend-section" style="margin-top:6px;">W50 Best Bars NA</div>
         <div class="legend-item"><div style="width:13px;height:13px;border-radius:50%;background:#0096C7;flex-shrink:0;"></div> Top 10</div>
         <div class="legend-item"><div style="width:10px;height:10px;border-radius:50%;background:#0096C7;flex-shrink:0;"></div> Top 50</div>
         <div class="legend-item"><div style="width:8px;height:8px;border-radius:50%;background:#0096C7;flex-shrink:0;"></div> 51–100</div>
@@ -1836,90 +2114,30 @@ function markerIcon(status, michelinTier) {
 
 // ── Data loading ────────────────────────────────────────────────────────────
 async function loadData() {
-  const loadingEl = document.getElementById('loading');
+  const loadingEl  = document.getElementById('loading');
   const loadingSub = loadingEl.querySelector('.loading-sub');
-
-  // Files in priority order: high-value Michelin first, then JBF, then 1★ last
-  const chunks = [
-    { file: './data/awards-p1.json', label: 'Michelin 2★ & 3★' },
-    { file: './data/awards-p2.json', label: 'James Beard awards' },
-    { file: './data/awards-p3.json', label: 'Michelin 1★ & Bib Gourmand' },
-    { file: './data/awards-p4.json', label: 'Michelin Selected' },
-    { file: './data/awards-p5.json', label: 'Tabelog Award (Japan)',        optional: true },
-    { file: './data/awards-p6.json', label: 'AA Rosettes (UK)',             optional: true },
-    { file: './data/awards-p7.json', label: 'Guía Repsol Soles',           optional: true },
-    { file: './data/awards-p8.json', label: 'W50 Best Bars',               optional: true },
-  ];
-
-  function fetchChunk(chunk) {
-    return fetch(chunk.file)
-      .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status} on ${chunk.file}`); return res.json(); })
-      .catch(() => null); // all failures become null; required chunks handled below
-  }
-
-  const required = chunks.filter(c => !c.optional);
-  const optional  = chunks.filter(c =>  c.optional);
-
-  // Phase 1: required chunks in parallel (max 4 connections — safe for corporate proxies)
-  // Await in priority order so the map populates progressively as each resolves.
-  let firstChunkLoaded = false;
-
-  const requiredPromises = required.map(fetchChunk);
-  for (let i = 0; i < required.length; i++) {
-    try {
-      loadingSub.textContent = `Loading ${required[i].label}…`;
-      const data = await requiredPromises[i];
-      if (data === null) {
-        loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
-        loadingSub.textContent = `Could not load ${required[i].file}`;
-        return;
-      }
-
-      allAwards = allAwards.concat(data);
-
-      const isFirst = !firstChunkLoaded;
-      if (!firstChunkLoaded) {
-        firstChunkLoaded = true;
-        loadingEl.style.display = 'none';
-        initFilters();
-      } else {
-        initFilters();
-      }
-
-      applyFilters();
-
-      if (isFirst) {
-        const params = new URLSearchParams(window.location.search);
-        const popupKey = params.get('popup');
-        const popupLat = parseFloat(params.get('lat'));
-        const popupLng = parseFloat(params.get('lng'));
-        if (popupKey) handlePopupDeepLink(popupKey, popupLat, popupLng);
-      }
-    } catch (e) {
-      loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
-      loadingSub.textContent = e.message;
-      return;
-    }
-  }
-
-  // Phase 2: optional chunks in parallel — only starts after required chunks complete,
-  // so corporate proxies with low connection limits always serve the core data first.
-  const optionalPromises = optional.map(fetchChunk);
-  for (let i = 0; i < optional.length; i++) {
-    const data = await optionalPromises[i];
-    if (data === null) continue;
-    allAwards = allAwards.concat(data);
+  try {
+    loadingSub.textContent = 'Loading map data…';
+    const res = await fetch('./data/pins.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    allAwards = await res.json();
+    loadingEl.style.display = 'none';
     initFilters();
     applyFilters();
+    const params   = new URLSearchParams(window.location.search);
+    const popupKey = params.get('popup');
+    if (popupKey) handlePopupDeepLink(popupKey, parseFloat(params.get('lat')), parseFloat(params.get('lng')));
+  } catch (e) {
+    loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
+    loadingEl.querySelector('.loading-sub').textContent  = e.message;
   }
 }
 
 function handlePopupDeepLink(restaurantKey, lat, lng) {
-  // Use a short delay so markers have rendered after applyFilters
   setTimeout(() => {
     const marker = markerCluster.getLayers().find(layer => {
-      const awards = layer.options?.loc?.awards || [];
-      return awards.some(a => favKey(a) === restaurantKey);
+      const pin = layer.options?.pin;
+      return pin && favKey(pin) === restaurantKey;
     });
     if (!marker) return;
     markerCluster.zoomToShowLayer(marker, () => {
@@ -1933,16 +2151,13 @@ function handlePopupDeepLink(restaurantKey, lat, lng) {
 let filtersInitialized = false;
 
 function initFilters() {
-  // Rebuild dropdown options with latest data on every chunk load
   const yearSel    = document.getElementById('filter-year');
-  const catSel     = document.getElementById('filter-category');
   const cuisineSel = document.getElementById('filter-cuisine');
-  const savedYear    = yearSel.value;
-  const savedCat     = catSel.value;
+  const savedYear  = yearSel.value;
 
   // Year filter (most recent first, covers JBF + TM years)
-  const years = [...new Set(allAwards.map(a => a.year || (a.tmYear ? String(a.tmYear) : null)).filter(Boolean))].sort((a, b) => b - a);
-  yearSel.innerHTML = '<option value="">All years</option>';
+  const years = [...new Set(allAwards.flatMap(p => [...(p.yrs||[]), ...(p.tmy||[]).map(String)]))].sort((a, b) => b - a);
+  yearSel.innerHTML = '<option value="">All Years</option>';
   years.forEach(y => {
     const opt = document.createElement('option');
     opt.value = y; opt.textContent = y;
@@ -1950,15 +2165,9 @@ function initFilters() {
   });
   yearSel.value = savedYear;
 
-  // Award category filter
-  const cats = [...new Set(allAwards.map(a => a.category).filter(Boolean))].sort();
-  catSel.innerHTML = '<option value="">All categories</option>';
-  cats.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c; opt.textContent = c;
-    catSel.appendChild(opt);
-  });
-  catSel.value = savedCat;
+  // Rebuild combo picker with fresh JBF category list (keeps any active selections)
+  buildAwardPicker();
+  renderAwardTokens();
 
   // Cuisine filter — static list, only populate once
   if (!cuisineSel.children.length || cuisineSel.children.length === 1) {
@@ -1982,93 +2191,68 @@ function initFilters() {
   filtersInitialized = true;
 
   yearSel.addEventListener('change', applyFilters);
-  catSel.addEventListener('change', applyFilters);
   cuisineSel.addEventListener('change', applyFilters);
-  document.getElementById('filter-source').addEventListener('change', applyFilters);
-  document.getElementById('filter-michelin').addEventListener('change', applyFilters);
   document.getElementById('filter-hide-closed').addEventListener('change', applyFilters);
   document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 200));
-
-  // Status toggles
-  document.querySelectorAll('.status-toggle').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const s = btn.dataset.status;
-      if (activeStatuses.has(s)) {
-        if (activeStatuses.size === 1) return; // keep at least one active
-        activeStatuses.delete(s);
-        btn.classList.remove('active');
-      } else {
-        activeStatuses.add(s);
-        btn.classList.add('active');
-      }
-      applyFilters();
-    });
-  });
 }
 
 function updateHeaderCounts() {
-  const preciseLocations = new Set(
-    allAwards.filter(a => a.lat && a.lng)
-             .map(a => `${a.lat.toFixed(4)},${a.lng.toFixed(4)}`)
-  ).size;
-  document.getElementById('precise-count').textContent = preciseLocations.toLocaleString();
+  const isFiltered = filteredAwards.length !== allAwards.length;
+  document.getElementById('precise-count').textContent = filteredAwards.length.toLocaleString();
+  const label = document.querySelector('#precise-count + .stat-label');
+  if (label) label.textContent = isFiltered ? 'Results' : 'Locations';
 }
 
 function applyFilters() {
-  const year          = document.getElementById('filter-year').value;
-  const category      = document.getElementById('filter-category').value;
-  const cuisine       = document.getElementById('filter-cuisine').value;
-  const source        = document.getElementById('filter-source').value;
-  const michelinTier  = document.getElementById('filter-michelin').value;
-  const hideClosed    = document.getElementById('filter-hide-closed').checked;
-  const search        = document.getElementById('search-input').value.toLowerCase().trim();
+  const year       = document.getElementById('filter-year').value;
+  const cuisine    = document.getElementById('filter-cuisine').value;
+  const hideClosed = document.getElementById('filter-hide-closed').checked;
+  const search     = document.getElementById('search-input').value.toLowerCase().trim();
 
-  filteredAwards = allAwards.filter(a => {
-    // Hide permanently closed
-    if (hideClosed && (a.businessStatus === 'CLOSED_PERMANENTLY' || a.yelpDetail?.isClosed)) return false;
-    const isMichelin = a.source === 'michelin';
-    const isTM       = a.source === 'texasmonthly';
-    const isTabelog   = a.source === 'tabelog';
-    const isAARosette = a.source === 'aarosette';
-    const isRepsol    = a.source === 'repsol';
-    const isW50best   = a.source === 'w50best';
+  filteredAwards = allAwards.filter(p => {
+    if (hideClosed && p.bs === 'CLOSED_PERMANENTLY') return false;
 
-    // Source filter
-    const isNonJbf = isMichelin || isTM || isTabelog || isAARosette || isRepsol;
-    if (source === 'jbf'          && isNonJbf)       return false;
-    if (source === 'michelin'     && !isMichelin)     return false;
-    if (source === 'texasmonthly' && !isTM)           return false;
-    if (source === 'tabelog'      && !isTabelog)      return false;
-    if (source === 'aarosette'    && !isAARosette)    return false;
-    if (source === 'repsol'       && !isRepsol)       return false;
-    if (source === 'w50best'      && !isW50best)      return false;
+    const hasSrc = s => p.sources.includes(s);
 
-    // JBF-specific filters
-    if (!isMichelin && !isTM && !isTabelog && !isAARosette && !isRepsol) {
-      if (year     && a.year     !== year)     return false;
-      if (category && a.category !== category) return false;
-      if (!activeStatuses.has(a.status))       return false;
+    // Award filter — additive OR: pin must match at least one selected token
+    if (filterSet.size > 0) {
+      const match = [...filterSet].some(t => {
+        if (t === 'jbf:Winner')        return hasSrc('jbf') && p.jbf === 'Winner';
+        if (t === 'jbf:Semifinalist')  return hasSrc('jbf') && p.jbf === 'Semifinalist';
+        if (t === 'jbf:Nominee')       return hasSrc('jbf') && p.jbf === 'Nominee';
+        if (t.startsWith('jbf-cat:'))  return (p.cats||[]).includes(t.slice(8));
+        if (t.startsWith('src:'))      return hasSrc(t.slice(4));
+        if (t.startsWith('m:'))        return p.ma === t.slice(2);
+        if (t.startsWith('ta:'))       return p.ta === t.slice(3);
+        if (t.startsWith('aa:'))       return p.aa === parseInt(t.slice(3));
+        if (t.startsWith('ra:'))       return p.ra === t.slice(3);
+        if (t.startsWith('w50:'))      return p.wa === t.slice(4);
+        return false;
+      });
+      if (!match) return false;
     }
 
-    // Texas Monthly filters
-    if (isTM) {
-      if (year && String(a.tmYear) !== year) return false;
+    // Year filter — matches JBF years or TM years
+    if (year) {
+      const hasYear = (p.yrs||[]).includes(year) || (p.tmy||[]).map(String).includes(year);
+      if (!hasYear) return false;
     }
 
-    // Michelin tier filter (applies to any record with michelinAward)
-    if (michelinTier && a.michelinAward !== michelinTier) return false;
+    // Cuisine filter
+    if (cuisine && p.cu !== cuisine) return false;
 
-    // Shared filters
-    if (cuisine && a.cuisineCategory !== cuisine) return false;
+    // Search
     if (search) {
-      const haystack = `${a.name||''} ${a.restaurant||''} ${a.city||''} ${a.state||''}`.toLowerCase();
+      const haystack = `${p.name||''} ${p.city||''} ${p.state||''}`.toLowerCase();
       if (!haystack.includes(search)) return false;
     }
+
+    // Nearby mode
     if (nearbyMode && userLat !== null) {
-      if (!a.lat || !a.lng) return false;
-      const dist = distanceMiles(userLat, userLng, a.lat, a.lng);
+      const dist = distanceMiles(userLat, userLng, p.lat, p.lng);
       if (dist > radiusMiles) return false;
     }
+
     return true;
   });
 
@@ -2079,11 +2263,10 @@ function applyFilters() {
 
   // Zoom map to matching pins when search is active
   if (search) {
-    const pts = filteredAwards.filter(a => a.lat && a.lng);
-    if (pts.length === 1) {
-      map.setView([pts[0].lat, pts[0].lng], 14, { animate: true });
-    } else if (pts.length > 1) {
-      const lats = pts.map(a => a.lat), lngs = pts.map(a => a.lng);
+    if (filteredAwards.length === 1) {
+      map.setView([filteredAwards[0].lat, filteredAwards[0].lng], 14, { animate: true });
+    } else if (filteredAwards.length > 1) {
+      const lats = filteredAwards.map(p => p.lat), lngs = filteredAwards.map(p => p.lng);
       map.fitBounds(
         [[Math.min(...lats), Math.min(...lngs)], [Math.max(...lats), Math.max(...lngs)]],
         { padding: [40, 40], maxZoom: 13, animate: true }
@@ -2095,95 +2278,16 @@ function applyFilters() {
 // ── Map rendering ────────────────────────────────────────────────────────────
 function updateMap() {
   markerCluster.clearLayers();
-
-  // Group by lat/lng to create combined popups
-  const locationMap = new Map();
-  for (const award of filteredAwards) {
-    if (!award.lat || !award.lng) continue;
-    const key = `${award.lat.toFixed(4)},${award.lng.toFixed(4)}`;
-    if (!locationMap.has(key)) {
-      locationMap.set(key, { lat: award.lat, lng: award.lng, awards: [] });
-    }
-    locationMap.get(key).awards.push(award);
-  }
-
-  // Second pass: merge groups that represent the same restaurant across sources
-  // (slightly different coords from different data providers — e.g. TM vs JBF)
-  const normName = s => (s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-  const nameCity = a => normName(a.restaurant) + '|' + normName(a.city);
-  const nameCityIndex = new Map(); // nameCity → coord key
-  for (const [coordKey, loc] of locationMap) {
-    for (const a of loc.awards) {
-      const nc = nameCity(a);
-      if (!nc || nc === '|') continue;
-      if (nameCityIndex.has(nc)) {
-        const canonKey = nameCityIndex.get(nc);
-        if (canonKey !== coordKey) {
-          // Merge this group into the canonical one
-          const canon = locationMap.get(canonKey);
-          canon.awards.push(...loc.awards);
-          locationMap.delete(coordKey);
-        }
-      } else {
-        nameCityIndex.set(nc, coordKey);
-      }
-    }
-  }
-
   markers = [];
-  for (const [, loc] of locationMap) {
-    const NON_JBF    = ['michelin','texasmonthly','tabelog','aarosette','repsol','w50best'];
-    const hasJBF     = loc.awards.some(a => !NON_JBF.includes(a.source));
-    const hasTM      = loc.awards.some(a => a.source === 'texasmonthly');
-    const hasTabelog = loc.awards.some(a => a.source === 'tabelog');
-    const hasRosette = loc.awards.some(a => a.source === 'aarosette');
-    const hasRepsol  = loc.awards.some(a => a.source === 'repsol');
-    const hasW50best = loc.awards.some(a => a.source === 'w50best');
-
-    let bestStatus, michelinTier;
-    if (hasJBF) {
-      bestStatus = loc.awards.some(a => a.status === 'Winner') ? 'Winner'
-        : loc.awards.some(a => a.status === 'Semifinalist') ? 'Semifinalist'
-        : 'Nominee';
-      michelinTier = null;
-    } else if (hasTM) {
-      bestStatus   = 'texasmonthly';
-      michelinTier = null;
-    } else if (hasTabelog) {
-      const tabelogTierOrder = ['Gold', 'Silver', 'Bronze', 'Special Award'];
-      michelinTier = tabelogTierOrder.find(t => loc.awards.some(a => a.tabelogAward === t)) || null;
-      bestStatus = 'tabelog';
-    } else if (hasRosette) {
-      michelinTier = loc.awards.reduce((best, a) => {
-        if (a.source !== 'aarosette') return best;
-        return (!best || a.aaRosettes > best) ? a.aaRosettes : best;
-      }, null);
-      bestStatus = 'aarosette';
-    } else if (hasRepsol) {
-      const repsolTierOrder = ['3 Soles', '2 Soles', '1 Sol', 'Recommended'];
-      michelinTier = repsolTierOrder.find(t => loc.awards.some(a => a.repsolAward === t)) || null;
-      bestStatus = 'repsol';
-    } else if (hasW50best) {
-      const w50Tiers = ['Top 10', 'Top 50', '51-100'];
-      michelinTier = w50Tiers.find(t => loc.awards.some(a => a.w50bestAward === t)) || null;
-      bestStatus = 'w50best';
-    } else {
-      // Michelin-only — pick highest tier present
-      const tierOrder = ['3 Stars','2 Stars','1 Star','Bib Gourmand','Selected'];
-      michelinTier = tierOrder.find(t => loc.awards.some(a => a.michelinAward === t)) || 'Selected';
-      bestStatus = 'michelin';
-    }
-
-    const marker = L.marker([loc.lat, loc.lng], {
-      icon: markerIcon(bestStatus, michelinTier),
-      awardStatus: bestStatus,
-      loc,
+  for (const pin of filteredAwards) {
+    const marker = L.marker([pin.lat, pin.lng], {
+      icon: markerIcon(pin.status, pin.tier),
+      awardStatus: pin.status,
+      pin,
     });
-
-    marker.bindPopup(() => buildPopup(loc), { maxWidth: 320, maxHeight: 480 });
+    marker.bindPopup(() => buildPopup(pin), { maxWidth: 320, maxHeight: 480 });
     markers.push(marker);
   }
-
   markerCluster.addLayers(markers);
 }
 
@@ -2220,7 +2324,192 @@ function tabelogBadge(tier) {
   return `<span style="font-family:sans-serif;font-size:0.75rem;color:rgba(255,255,255,0.85);"><span style="color:${color};font-weight:700;">${icon}</span> Tabelog ${escHtml(tier)}</span>`;
 }
 
-function buildPopup(loc) {
+function buildPopup(pin) {
+  const location = (pin.country && !pin.state)
+    ? [pin.city, pin.country].filter(Boolean).join(', ')
+    : [pin.city, pin.state].filter(Boolean).join(', ');
+  const mapsUrl = buildFallbackMapsUrl(pin);
+  const photo   = pin.photo;
+
+  let html = `<div class="jb-popup">`;
+
+  // ── Header ──────────────────────────────────────────────────────────────────
+  if (photo) {
+    html += `<div class="popup-header" style="padding:0;position:relative;overflow:hidden;min-height:90px;">
+      <img src="${escHtml(photo)}" onerror="this.parentElement.style.minHeight='0';this.remove()"
+        style="width:100%;height:110px;object-fit:cover;display:block;">
+      <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(26,9,0,0.9));padding:8px 14px 6px;">
+        <div class="popup-name">${escHtml(pin.name)}</div>
+        <div class="popup-restaurant">${escHtml(location)}</div>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="popup-header">
+      <div class="popup-name">${escHtml(pin.name)}</div>
+      <div class="popup-restaurant">${escHtml(location)}</div>
+    </div>`;
+  }
+
+  html += `<div class="popup-body">
+    <div class="popup-tabs">
+      <button class="popup-tab-btn active" data-tab="info"      onclick="switchPopupTab('info')">Info</button>
+      <button class="popup-tab-btn"        data-tab="community" onclick="switchPopupTab('community')">Community</button>
+    </div>`;
+
+  html += `<div class="popup-tab-content active" data-tab="info">`;
+
+  // ── Business status ──────────────────────────────────────────────────────────
+  if (pin.bs === 'CLOSED_PERMANENTLY') {
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
+  } else if (pin.bs === 'CLOSED_TEMPORARILY') {
+    html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#f0a500;margin-bottom:6px;">⚠ Temporarily closed</div>`;
+  }
+
+  // ── Award badges (from pin data — no network call) ───────────────────────────
+  if (pin.sources.includes('michelin') && pin.ma) {
+    html += `<div style="margin-bottom:8px;">${michelinBadge(pin.ma)}</div>`;
+  }
+  if (pin.sources.includes('texasmonthly')) {
+    html += `<div style="margin-bottom:8px;">
+      <span style="font-family:sans-serif;font-size:0.75rem;background:#1a6fa8;color:#fff;padding:2px 8px;border-radius:4px;">🔥 Texas Monthly Top 50 BBQ</span>
+    </div>`;
+    if (pin.tmy?.length) {
+      html += `<div style="font-family:sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.6);margin-bottom:8px;">Listed: ${pin.tmy.join(', ')}</div>`;
+    }
+  }
+  if (pin.sources.includes('tabelog') && pin.ta) {
+    html += `<div style="margin-bottom:8px;">${tabelogBadge(pin.ta)}`;
+    if (pin.ts) html += ` <span style="font-family:sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.5);">${escHtml(String(pin.ts))}</span>`;
+    html += `</div>`;
+  }
+  if (pin.sources.includes('aarosette') && pin.aa) {
+    html += `<div style="margin-bottom:8px;">${aaRosetteBadge(pin.aa)}</div>`;
+  }
+  if (pin.sources.includes('repsol') && pin.ra) {
+    html += `<div style="margin-bottom:8px;">${repsolBadge(pin.ra)}</div>`;
+  }
+  if (pin.sources.includes('w50best') && pin.wr) {
+    const rankLabel = pin.wa === 'Top 10' ? `🍸 #${pin.wr} — Top 10`
+      : pin.wa === 'Top 50' ? `🍸 #${pin.wr} — Top 50`
+      : `🍸 #${pin.wr}`;
+    html += `<div style="margin-bottom:8px;font-family:sans-serif;font-size:0.8rem;font-weight:700;color:#0096C7;">${rankLabel} W50 Best Bars NA</div>`;
+  }
+
+  // ── Cuisine ─────────────────────────────────────────────────────────────────
+  if (pin.cu) {
+    html += `<div style="font-family:sans-serif;font-size:0.78rem;color:rgba(255,255,255,0.6);margin-bottom:8px;">${escHtml(pin.cu)}</div>`;
+  }
+
+  // ── Detail placeholder — immediately shows Maps link, async fills the rest ──
+  const pdId = `pd-${Math.random().toString(36).slice(2,9)}`;
+  html += `<div id="${pdId}">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>
+      <span style="font-family:sans-serif;font-size:0.72rem;color:rgba(255,255,255,0.25);">Loading details…</span>
+    </div>
+  </div>`;
+
+  html += `</div>`;  // info tab
+
+  // ── Community tab ─────────────────────────────────────────────────────────
+  html += `<div class="popup-tab-content" data-tab="community">
+    <div id="comm-section" style="min-height:60px;">
+      <div style="font-family:sans-serif;font-size:0.72rem;color:var(--white-faint);padding:12px 0;">Tap to load community notes…</div>
+    </div>
+  </div>`;
+
+  html += buildCommButtons(pin.key);
+  html += `</div></div>`;
+
+  // Fire async Supabase detail load after this HTML is rendered
+  setTimeout(() => loadPopupDetail(pin, pdId, mapsUrl), 0);
+
+  return html;
+}
+
+async function loadPopupDetail(pin, containerId, mapsUrl) {
+  const el = document.getElementById(containerId);
+  if (!el) return;  // popup already closed/replaced
+
+  try {
+    const { data, error } = await Promise.race([
+      sb.from('restaurants').select('*, restaurant_awards(*)').eq('key', pin.key).single(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+    ]);
+
+    const el2 = document.getElementById(containerId);
+    if (!el2) return;  // popup closed while fetching
+
+    if (error || !data) {
+      el2.innerHTML = `<div style="display:flex;gap:12px;flex-wrap:wrap;"><a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a></div>`;
+      return;
+    }
+
+    el2.innerHTML = buildSupabaseDetail(data, pin, mapsUrl);
+  } catch (_) {
+    const el3 = document.getElementById(containerId);
+    if (el3) el3.innerHTML = `<div style="display:flex;gap:12px;flex-wrap:wrap;"><a href="${escHtml(mapsUrl)}" target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a></div>`;
+  }
+}
+
+function buildSupabaseDetail(r, pin, mapsUrl) {
+  let html = '';
+
+  // Price (from Supabase — not in pins.json)
+  if (r.price) {
+    html += `<div style="font-family:sans-serif;font-size:0.78rem;color:rgba(255,255,255,0.7);margin-bottom:8px;">${escHtml(r.price)}</div>`;
+  }
+
+  // Links
+  const links = [];
+  if (mapsUrl)         links.push(`<a href="${escHtml(mapsUrl)}"         target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">📍 Maps</a>`);
+  if (r.website)       links.push(`<a href="${escHtml(r.website)}"       target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🌐 Website</a>`);
+  if (r.michelin_url)  links.push(`<a href="${escHtml(r.michelin_url)}"  target="_blank" rel="noopener" style="color:#E4002B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">◆ Michelin</a>`);
+  if (r.tabelog_url)   links.push(`<a href="${escHtml(r.tabelog_url)}"   target="_blank" rel="noopener" style="color:#C0392B;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Tabelog</a>`);
+  if (r.aarosette_url) links.push(`<a href="${escHtml(r.aarosette_url)}" target="_blank" rel="noopener" style="color:#8BABD8;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">✦ AA Rosettes</a>`);
+  if (r.repsol_url)    links.push(`<a href="${escHtml(r.repsol_url)}"    target="_blank" rel="noopener" style="color:#D4870A;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">☀ Repsol</a>`);
+  if (r.w50best_url)   links.push(`<a href="${escHtml(r.w50best_url)}"   target="_blank" rel="noopener" style="color:#0096C7;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">🍸 W50 Best</a>`);
+  if (r.yelp_url)      links.push(`<a href="${escHtml(r.yelp_url)}"      target="_blank" rel="noopener" style="color:#FEA219;font-size:0.75rem;font-family:sans-serif;text-decoration:none;">⭐ Yelp</a>`);
+
+  if (links.length) {
+    const hasSep = pin.sources.includes('jbf') && r.restaurant_awards?.some(a => a.source === 'jbf');
+    html += `<div style="display:flex;gap:12px;flex-wrap:wrap;${hasSep ? 'margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #3a2510;' : ''}">${links.join('')}</div>`;
+  }
+
+  // JBF award detail list (from restaurant_awards)
+  if (pin.sources.includes('jbf') && r.restaurant_awards?.length) {
+    const jbfAwards = r.restaurant_awards.filter(a => a.source === 'jbf');
+    if (jbfAwards.length) {
+      const groups = new Map();
+      for (const a of jbfAwards) {
+        const gk = `${a.award_type}||${a.award_detail || ''}`;
+        if (!groups.has(gk)) groups.set(gk, { type: a.award_type, detail: a.award_detail, years: new Set() });
+        if (a.year) groups.get(gk).years.add(String(a.year));
+      }
+      html += `<div class="popup-awards-list">`;
+      for (const g of groups.values()) {
+        const badge = g.type === 'Winner' ? '🥇' : g.type === 'Semifinalist' ? '🥈' : '🥉';
+        const years = [...g.years].sort((a, b) => b - a);
+        const yearStr = years.length > 1
+          ? (Number(years[0]) - Number(years[years.length - 1]) === years.length - 1
+              ? `${years[years.length - 1]}–${years[0]}`
+              : years.join(', '))
+          : (years[0] || '');
+        html += `<div class="popup-award-item"><div class="popup-award-meta">
+          <span>${badge} ${escHtml(g.type)}</span>
+          <span>${escHtml(g.detail || '')}</span>
+          ${yearStr ? `<span>${escHtml(yearStr)}</span>` : ''}
+        </div></div>`;
+      }
+      html += `</div>`;
+    }
+  }
+
+  return html;
+}
+
+// Legacy stub — kept in case old code paths reference it
+function _buildPopupLegacy(loc) {
   const awards = loc.awards;
   const isMichelinOnly  = awards.every(a => a.source === 'michelin');
   const isTMOnly        = awards.every(a => a.source === 'texasmonthly');
@@ -2503,7 +2792,7 @@ function buildPopup(loc) {
     return html;
   }
 
-  // ── W50 Best Bars-only popup ───────────────────────────────────────────────
+  // ── W50 Best Bars NA-only popup ───────────────────────────────────────────────
   if (isW50bestOnly) {
     const a = awards[0];
     const location = [a.city, a.country].filter(Boolean).join(', ');
@@ -2526,7 +2815,7 @@ function buildPopup(loc) {
     </div>`;
     html += `<div class="popup-tab-content active" data-tab="info">`;
     const rankLabel = { 'Top 10': `🍸 #${a.w50bestRank} — Top 10`, 'Top 50': `🍸 #${a.w50bestRank} — Top 50`, '51-100': `🍸 #${a.w50bestRank}` };
-    html += `<div style="margin-bottom:8px;font-family:sans-serif;font-size:0.8rem;font-weight:700;color:#0096C7;">${rankLabel[a.w50bestAward] || `🍸 #${a.w50bestRank}`} W50 Best Bars</div>`;
+    html += `<div style="margin-bottom:8px;font-family:sans-serif;font-size:0.8rem;font-weight:700;color:#0096C7;">${rankLabel[a.w50bestAward] || `🍸 #${a.w50bestRank}`} W50 Best Bars NA</div>`;
     const meta = [];
     if (a.price)          meta.push(`<span style="color:rgba(255,255,255,0.7);">${escHtml(a.price)}</span>`);
     if (a.cuisineCategory) meta.push(`<span style="color:rgba(255,255,255,0.6);">${escHtml(a.cuisineCategory)}</span>`);
@@ -2643,7 +2932,7 @@ function buildPopup(loc) {
   }
   if (aaRosettes) html += `<div style="margin-bottom:8px;">${aaRosetteBadge(aaRosettes)}</div>`;
   if (repsolAwardJbf) html += `<div style="margin-bottom:8px;">${repsolBadge(repsolAwardJbf)}</div>`;
-  if (w50bestRankJbf) html += `<div style="margin-bottom:8px;font-family:sans-serif;font-size:0.8rem;font-weight:700;color:#0096C7;">🍸 #${w50bestRankJbf} W50 Best Bars</div>`;
+  if (w50bestRankJbf) html += `<div style="margin-bottom:8px;font-family:sans-serif;font-size:0.8rem;font-weight:700;color:#0096C7;">🍸 #${w50bestRankJbf} W50 Best Bars NA</div>`;
 
   if (businessStatus === 'CLOSED_PERMANENTLY' || yelpDetail?.isClosed) {
     html += `<div style="font-family:sans-serif;font-size:0.72rem;color:#ff6b6b;margin-bottom:6px;">⚠ Permanently closed</div>`;
@@ -2726,8 +3015,8 @@ function buildPopup(loc) {
 
 function buildFallbackMapsUrl(a) {
   if (!a) return null;
-  const name = a.restaurant || a.name || '';
-  const q = encodeURIComponent(`${name} ${a.city || ''} ${a.state || ''}`.trim());
+  const name = a.name || a.restaurant || '';
+  const q = encodeURIComponent(`${name} ${a.city || ''} ${a.state || a.country || ''}`.trim());
   return `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
 
@@ -2735,7 +3024,7 @@ function buildFallbackMapsUrl(a) {
 function updateSidebar() {
   const panel = document.getElementById('results-panel');
 
-  const statusOrder = { Winner: 0, Semifinalist: 1, Nominee: 2 };
+  const jbfOrder = { Winner: 0, Semifinalist: 1, Nominee: 2 };
 
   const sorted = [...filteredAwards].sort((a, b) => {
     if (nearbyMode && userLat !== null) {
@@ -2743,48 +3032,59 @@ function updateSidebar() {
       const db = distanceMiles(userLat, userLng, b.lat, b.lng);
       if (Math.abs(da - db) > 0.5) return da - db;
     }
-    const s = (statusOrder[a.status] || 2) - (statusOrder[b.status] || 2);
-    if (s !== 0) return s;
-    return parseInt(b.year) - parseInt(a.year);
+    // Sort JBF pins by best status, then most-recent year; non-JBF last
+    const aIsJbf = a.sources.includes('jbf');
+    const bIsJbf = b.sources.includes('jbf');
+    if (aIsJbf !== bIsJbf) return aIsJbf ? -1 : 1;
+    if (aIsJbf && bIsJbf) {
+      const s = (jbfOrder[a.jbf] ?? 2) - (jbfOrder[b.jbf] ?? 2);
+      if (s !== 0) return s;
+      return (b.yrs?.[0] ?? 0) - (a.yrs?.[0] ?? 0);
+    }
+    return 0;
   });
 
   // Show max 300 in sidebar
   const display = sorted.slice(0, 300);
 
-  const items = display.map(a => {
-    const isMichelin  = a.source === 'michelin';
-    const isTM        = a.source === 'texasmonthly';
-    const isTabelog   = a.source === 'tabelog';
-    const isAARosette = a.source === 'aarosette';
-    const isRepsol    = a.source === 'repsol';
-    const badgeClass = isMichelin  ? 'badge-michelin'
-      : isTM        ? 'badge-tm'
-      : isTabelog   ? 'badge-tabelog'
-      : isAARosette ? 'badge-aarosette'
-      : isRepsol    ? 'badge-repsol'
-      : isW50best   ? 'badge-w50best'
-      : a.status === 'Winner' ? 'badge-winner'
-      : a.status === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
-    const badgeText = isMichelin
-      ? ({ '3 Stars':'★★★ 3 Stars','2 Stars':'★★ 2 Stars','1 Star':'★ 1 Star','Bib Gourmand':'Ⓑ Bib Gourmand','Selected':'◆ Selected' }[a.michelinAward] || '◆ Michelin')
-      : isTM        ? '🔥 TX Top 50 BBQ'
-      : isTabelog   ? `★ Tabelog ${a.tabelogAward || 'Award'}`
-      : isAARosette ? `✦ AA ${a.aaRosettes || ''} Rosettes`
-      : isRepsol    ? `☀ Repsol ${a.repsolAward || 'Sol'}`
-      : isW50best   ? `🍸 #${a.w50bestRank} W50 Best Bars`
-      : a.status === 'Winner' ? '🥇 Winner' : a.status === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
-    const displayName = a.restaurant || a.name || '?';
-    const displayRest = (!isMichelin && !isTM && !isTabelog && !isAARosette && !isRepsol) && a.name && a.name !== a.restaurant ? a.restaurant : '';
-    const locText = (isMichelin || isTabelog || isAARosette || isRepsol)
-      ? [a.city, a.country].filter(Boolean).join(', ')
-      : [a.city, a.state].filter(Boolean).join(', ');
-    const yearText = isTM ? a.tmYear : a.year;
-    const distText = (nearbyMode && userLat !== null)
-      ? ` · ${distanceMiles(userLat, userLng, a.lat, a.lng).toFixed(1)} mi` : '';
+  const items = display.map(p => {
+    const hasSrc   = s => p.sources.includes(s);
+    const isJbf    = hasSrc('jbf');
+    const isMich   = hasSrc('michelin')     && !isJbf;
+    const isTM     = hasSrc('texasmonthly') && !isJbf;
+    const isTab    = hasSrc('tabelog')      && !isJbf && !isMich;
+    const isAAR    = hasSrc('aarosette')    && !isJbf && !isMich && !isTab;
+    const isRep    = hasSrc('repsol')       && !isJbf && !isMich && !isTab && !isAAR;
+    const isW50    = hasSrc('w50best')      && !isJbf && !isMich && !isTab && !isAAR && !isRep;
 
-    return `<div class="result-item" data-lat="${a.lat}" data-lng="${a.lng}">
-      <div class="result-name">${escHtml(displayName)}</div>
-      ${displayRest ? `<div class="result-restaurant">${escHtml(displayRest)}</div>` : ''}
+    const badgeClass = isMich ? 'badge-michelin'
+      : isTM   ? 'badge-tm'
+      : isTab  ? 'badge-tabelog'
+      : isAAR  ? 'badge-aarosette'
+      : isRep  ? 'badge-repsol'
+      : isW50  ? 'badge-w50best'
+      : p.jbf === 'Winner' ? 'badge-winner'
+      : p.jbf === 'Semifinalist' ? 'badge-semifinalist' : 'badge-nominee';
+
+    const badgeText = isMich
+      ? ({ '3 Stars':'★★★ 3 Stars','2 Stars':'★★ 2 Stars','1 Star':'★ 1 Star','Bib Gourmand':'Ⓑ Bib Gourmand','Selected':'◆ Selected' }[p.ma] || '◆ Michelin')
+      : isTM  ? '🔥 TX Top 50 BBQ'
+      : isTab ? `★ Tabelog ${p.ta || 'Award'}`
+      : isAAR ? `✦ AA ${p.aa || ''} Rosettes`
+      : isRep ? `☀ Repsol ${p.ra || 'Sol'}`
+      : isW50 ? `🍸 #${p.wr} W50 Best Bars NA`
+      : p.jbf === 'Winner' ? '🥇 Winner' : p.jbf === 'Semifinalist' ? '🥈 Semifinalist' : '🥉 Nominee';
+
+    const locText = (isMich || isTab || isAAR || isRep || isW50)
+      ? [p.city, p.country].filter(Boolean).join(', ')
+      : [p.city, p.state].filter(Boolean).join(', ');
+
+    const yearText = isTM ? p.tmy?.[0] : p.yrs?.[0];
+    const distText = (nearbyMode && userLat !== null)
+      ? ` · ${distanceMiles(userLat, userLng, p.lat, p.lng).toFixed(1)} mi` : '';
+
+    return `<div class="result-item" data-lat="${p.lat}" data-lng="${p.lng}">
+      <div class="result-name">${escHtml(p.name)}</div>
       <div class="result-meta">
         <span class="result-badge ${badgeClass}">${badgeText}</span>
         <span class="result-loc">${escHtml(locText)}${distText}</span>
