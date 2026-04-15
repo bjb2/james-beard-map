@@ -1828,14 +1828,21 @@ async function loadData() {
     { file: './data/awards-p7.json', label: 'Guía Repsol Soles',           optional: true },
   ];
 
+  // Kick off all fetches immediately so slow connections download everything in parallel
+  const promises = chunks.map(chunk =>
+    fetch(chunk.file)
+      .then(res => { if (!res.ok) throw new Error(`HTTP ${res.status} on ${chunk.file}`); return res.json(); })
+      .catch(e => chunk.optional ? null : Promise.reject(e))
+  );
+
   let firstChunkLoaded = false;
 
-  for (const chunk of chunks) {
+  for (let i = 0; i < chunks.length; i++) {
     try {
-      loadingSub.textContent = `Loading ${chunk.label}…`;
-      const res = await fetch(chunk.file);
-      if (!res.ok) throw new Error(`HTTP ${res.status} on ${chunk.file}`);
-      const data = await res.json();
+      loadingSub.textContent = `Loading ${chunks[i].label}…`;
+      const data = await promises[i];
+      if (data === null) continue; // optional chunk that failed
+
       allAwards = allAwards.concat(data);
 
       const isFirst = !firstChunkLoaded;
@@ -1858,8 +1865,6 @@ async function loadData() {
         if (popupKey) handlePopupDeepLink(popupKey, popupLat, popupLng);
       }
     } catch (e) {
-      // Optional chunks (e.g. Tabelog) may not exist yet — skip silently
-      if (chunk.optional) continue;
       loadingEl.querySelector('.loading-text').textContent = 'Failed to load data';
       loadingSub.textContent = e.message;
       return;
