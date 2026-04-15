@@ -93,6 +93,233 @@
       letter-spacing: 0.02em;
     }
 
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .header-nav-link {
+      background: none;
+      border: none;
+      color: var(--white-dim);
+      font-size: 0.72rem;
+      font-family: sans-serif;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 3px;
+      text-decoration: none;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .header-nav-link:hover { color: var(--white); background: rgba(255,255,255,0.06); }
+
+    /* ── Awards / info modal ── */
+    .info-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 900;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+    .info-overlay.open { display: flex; }
+
+    .info-modal {
+      background: var(--black-mid);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      max-width: 620px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 32px 36px;
+      position: relative;
+    }
+
+    .info-modal-close {
+      position: absolute;
+      top: 14px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: var(--white-dim);
+      font-size: 1.3rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 3px;
+    }
+    .info-modal-close:hover { color: var(--white); background: rgba(255,255,255,0.06); }
+
+    .info-modal h2 {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 24px;
+    }
+
+    .award-entry {
+      display: flex;
+      gap: 16px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .award-entry:last-child { border-bottom: none; }
+
+    .award-entry-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .award-entry-body { flex: 1; }
+
+    .award-entry-name {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .award-entry-country {
+      font-size: 0.65rem;
+      color: var(--white-faint);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .award-entry-desc {
+      font-size: 0.75rem;
+      color: var(--white-dim);
+      line-height: 1.6;
+    }
+
+    .award-entry-tiers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .award-tier-pill {
+      font-size: 0.65rem;
+      padding: 2px 8px;
+      border-radius: 3px;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+      .info-modal { padding: 24px 20px; }
+    }
+
+    /* ── Contact modal ── */
+    .contact-modal {
+      background: var(--black-mid);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      max-width: 440px;
+      width: 100%;
+      padding: 32px 36px;
+      position: relative;
+    }
+
+    .contact-modal h2 {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 6px;
+    }
+
+    .contact-modal p {
+      font-size: 0.75rem;
+      color: var(--white-faint);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .contact-field {
+      margin-bottom: 14px;
+    }
+
+    .contact-field label {
+      display: block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--white-dim);
+      margin-bottom: 5px;
+    }
+
+    .contact-field input,
+    .contact-field textarea {
+      width: 100%;
+      background: var(--black);
+      border: 1px solid var(--border-light);
+      border-radius: 3px;
+      color: var(--white);
+      font-family: sans-serif;
+      font-size: 0.8rem;
+      padding: 9px 12px;
+      box-sizing: border-box;
+      transition: border-color 0.15s;
+      outline: none;
+      resize: vertical;
+    }
+    .contact-field input:focus,
+    .contact-field textarea:focus { border-color: var(--orange); }
+
+    .contact-field textarea { min-height: 100px; }
+
+    .contact-submit {
+      width: 100%;
+      background: var(--orange);
+      border: none;
+      border-radius: 3px;
+      color: #000;
+      font-family: sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      padding: 11px;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: opacity 0.15s;
+    }
+    .contact-submit:hover { opacity: 0.88; }
+    .contact-submit:disabled { opacity: 0.45; cursor: default; }
+
+    .contact-success {
+      text-align: center;
+      padding: 24px 0 8px;
+    }
+    .contact-success .success-icon { font-size: 2rem; margin-bottom: 12px; }
+    .contact-success p { font-size: 0.82rem; color: var(--white-dim); margin: 0; }
+
+    .contact-error {
+      font-size: 0.72rem;
+      color: #ff6b6b;
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .contact-modal { padding: 24px 20px; }
+    }
+
     .header-stat {
       margin-left: auto;
       display: flex;
@@ -787,6 +1014,8 @@
       .header-sub,
       .header-stat { display: none; }
 
+      .header-nav { display: none; }
+
       .header-wordmark .brand { display: none; }
       .header-wordmark h1 { font-size: 1.1rem; }
 
@@ -964,7 +1193,10 @@
     <h1>Delectable</h1>
   </div>
   <div class="header-divider"></div>
-  <span class="header-sub">James Beard &nbsp;·&nbsp; Michelin Guide</span>
+  <nav class="header-nav">
+    <button class="header-nav-link" onclick="openInfoModal()">Awards</button>
+    <button class="header-nav-link" onclick="openContactModal()">Contact</button>
+  </nav>
   <div class="header-stat">
     <div class="stat-num" id="precise-count">—</div>
     <div class="stat-label">Locations</div>
@@ -1978,6 +2210,66 @@ function openAwardCombo(e) {
     });
   }, 0);
 }
+
+// ── Contact modal ──────────────────────────────────────────────────────────
+function openContactModal() {
+  document.getElementById('contact-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeContactModal(e) {
+  if (e && e.target !== document.getElementById('contact-overlay') && !e.target.classList.contains('info-modal-close')) return;
+  document.getElementById('contact-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+async function submitContact(e) {
+  e.preventDefault();
+  const btn = document.getElementById('contact-submit-btn');
+  const errEl = document.getElementById('contact-error');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  errEl.style.display = 'none';
+  try {
+    const res = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_key: '0687cb60-6010-4e59-bd1a-1b258e36c4d5',
+        subject: 'Delectable.guide — Contact Form',
+        name:    document.getElementById('cf-name').value,
+        email:   document.getElementById('cf-email').value,
+        message: document.getElementById('cf-message').value,
+      }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('contact-form-wrap').innerHTML = `
+        <div class="contact-success">
+          <div class="success-icon">✓</div>
+          <p>Message sent! We'll get back to you soon.</p>
+        </div>`;
+    } else {
+      throw new Error('failed');
+    }
+  } catch (_) {
+    btn.disabled = false;
+    btn.textContent = 'Send Message';
+    errEl.style.display = 'block';
+  }
+}
+
+// ── Awards info modal ──────────────────────────────────────────────────────
+function openInfoModal() {
+  document.getElementById('info-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeInfoModal(e) {
+  if (e && e.target !== document.getElementById('info-overlay') && !e.target.classList.contains('info-modal-close')) return;
+  document.getElementById('info-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeInfoModal(); closeContactModal(); }
+});
 
 // ── Map init ───────────────────────────────────────────────────────────────
 function initMap() {
@@ -3714,8 +4006,146 @@ function escHtmlInline(s) {
 }
 </script>
 
+<!-- Contact modal -->
+<div class="info-overlay" id="contact-overlay" onclick="closeContactModal(event)">
+  <div class="contact-modal" role="dialog" aria-label="Contact">
+    <button class="info-modal-close" onclick="closeContactModal()" aria-label="Close">×</button>
+    <h2>Contact</h2>
+    <p>Have a suggestion, correction, or just want to say hi?</p>
+    <div id="contact-form-wrap">
+      <form id="contact-form" onsubmit="submitContact(event)">
+        <div class="contact-field">
+          <label for="cf-name">Name</label>
+          <input type="text" id="cf-name" name="name" placeholder="Your name" required>
+        </div>
+        <div class="contact-field">
+          <label for="cf-email">Email</label>
+          <input type="email" id="cf-email" name="email" placeholder="your@email.com" required>
+        </div>
+        <div class="contact-field">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" placeholder="What's on your mind?" required></textarea>
+        </div>
+        <button type="submit" class="contact-submit" id="contact-submit-btn">Send Message</button>
+        <div class="contact-error" id="contact-error">Something went wrong — please try again.</div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script data-goatcounter="https://delectable.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
+
+<!-- Awards info modal -->
+<div class="info-overlay" id="info-overlay" onclick="closeInfoModal(event)">
+  <div class="info-modal" role="dialog" aria-label="Award guides">
+    <button class="info-modal-close" onclick="closeInfoModal()" aria-label="Close">×</button>
+    <h2>Award Guides</h2>
+
+    <div class="award-entry">
+      <div class="award-entry-dot" style="background:#FEA219;"></div>
+      <div class="award-entry-body">
+        <div class="award-entry-name">James Beard Foundation Awards</div>
+        <div class="award-entry-country">🇺🇸 United States</div>
+        <div class="award-entry-desc">Often called the "Oscars of the food world," the James Beard Awards have recognized chefs, restaurateurs, and food media since 1991. This map includes restaurant nominees, semifinalists, and winners across all culinary categories.</div>
+        <div class="award-entry-tiers">
+          <span class="award-tier-pill" style="color:#FEA219;border-color:rgba(254,162,25,0.4);background:rgba(254,162,25,0.1);">🥇 Winner</span>
+          <span class="award-tier-pill" style="color:#d0d0d0;border-color:rgba(200,200,200,0.3);background:rgba(200,200,200,0.08);">🥈 Semifinalist</span>
+          <span class="award-tier-pill" style="color:#cd7f32;border-color:rgba(205,127,50,0.4);background:rgba(205,127,50,0.1);">🥉 Nominee</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="award-entry">
+      <div class="award-entry-dot" style="background:#E4002B;"></div>
+      <div class="award-entry-body">
+        <div class="award-entry-name">Michelin Guide</div>
+        <div class="award-entry-country">🌍 Worldwide</div>
+        <div class="award-entry-desc">The world's most iconic restaurant rating system, published annually since 1900. Inspectors award up to three stars for exceptional cuisine, with Bib Gourmand recognizing great quality at a reasonable price.</div>
+        <div class="award-entry-tiers">
+          <span class="award-tier-pill" style="color:#E4002B;border-color:rgba(228,0,43,0.4);background:rgba(228,0,43,0.08);">★★★ 3 Stars</span>
+          <span class="award-tier-pill" style="color:#E4002B;border-color:rgba(228,0,43,0.4);background:rgba(228,0,43,0.08);">★★ 2 Stars</span>
+          <span class="award-tier-pill" style="color:#E4002B;border-color:rgba(228,0,43,0.4);background:rgba(228,0,43,0.08);">★ 1 Star</span>
+          <span class="award-tier-pill" style="color:#E8611A;border-color:rgba(232,97,26,0.4);background:rgba(232,97,26,0.08);">Ⓑ Bib Gourmand</span>
+          <span class="award-tier-pill" style="color:#9B3050;border-color:rgba(155,48,80,0.4);background:rgba(155,48,80,0.08);">◆ Selected</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="award-entry">
+      <div class="award-entry-dot" style="background:#D4AF37;"></div>
+      <div class="award-entry-body">
+        <div class="award-entry-name">Tabelog Award</div>
+        <div class="award-entry-country">🇯🇵 Japan</div>
+        <div class="award-entry-desc">Japan's most trusted restaurant review platform, with over 100 million monthly users. The annual Tabelog Award recognizes the top-rated restaurants nationwide based on verified diner reviews and scores.</div>
+        <div class="award-entry-tiers">
+          <span class="award-tier-pill" style="color:#D4AF37;border-color:rgba(212,175,55,0.4);background:rgba(212,175,55,0.1);">★ Gold</span>
+          <span class="award-tier-pill" style="color:#9BA7B4;border-color:rgba(155,167,180,0.4);background:rgba(155,167,180,0.08);">★ Silver</span>
+          <span class="award-tier-pill" style="color:#C47A35;border-color:rgba(196,122,53,0.4);background:rgba(196,122,53,0.1);">★ Bronze</span>
+          <span class="award-tier-pill" style="color:#E8357E;border-color:rgba(232,53,126,0.4);background:rgba(232,53,126,0.1);">★ Special Award</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="award-entry">
+      <div class="award-entry-dot" style="background:#8BABD8;"></div>
+      <div class="award-entry-body">
+        <div class="award-entry-name">AA Rosettes</div>
+        <div class="award-entry-country">🇬🇧 United Kingdom</div>
+        <div class="award-entry-desc">The AA (Automobile Association) has rated UK restaurants since 1956. Rosettes are awarded from 1 (skillfully prepared food) to the rare 5 (world-class, among the best dining experiences globally).</div>
+        <div class="award-entry-tiers">
+          <span class="award-tier-pill" style="color:#8BABD8;border-color:rgba(139,171,216,0.4);background:rgba(139,171,216,0.08);">✦✦✦✦✦ 5 Rosettes</span>
+          <span class="award-tier-pill" style="color:#8BABD8;border-color:rgba(139,171,216,0.4);background:rgba(139,171,216,0.08);">✦✦✦✦ 4 Rosettes</span>
+          <span class="award-tier-pill" style="color:#8BABD8;border-color:rgba(139,171,216,0.4);background:rgba(139,171,216,0.08);">✦✦✦ 3 Rosettes</span>
+          <span class="award-tier-pill" style="color:#8BABD8;border-color:rgba(139,171,216,0.4);background:rgba(139,171,216,0.08);">✦✦ 2 Rosettes</span>
+          <span class="award-tier-pill" style="color:#8BABD8;border-color:rgba(139,171,216,0.4);background:rgba(139,171,216,0.08);">✦ 1 Rosette</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="award-entry">
+      <div class="award-entry-dot" style="background:#D4870A;"></div>
+      <div class="award-entry-body">
+        <div class="award-entry-name">Guía Repsol</div>
+        <div class="award-entry-country">🇵🇹 Portugal</div>
+        <div class="award-entry-desc">Spain's most authoritative restaurant guide, published since 1979. This map currently includes the Portugal edition only. Inspectors award up to three Soles (Suns) to the finest restaurants, with Recommended status for excellent everyday dining.</div>
+        <div class="award-entry-tiers">
+          <span class="award-tier-pill" style="color:#D4870A;border-color:rgba(212,135,10,0.4);background:rgba(212,135,10,0.1);">☀☀☀ 3 Soles</span>
+          <span class="award-tier-pill" style="color:#D4870A;border-color:rgba(212,135,10,0.4);background:rgba(212,135,10,0.1);">☀☀ 2 Soles</span>
+          <span class="award-tier-pill" style="color:#D4870A;border-color:rgba(212,135,10,0.4);background:rgba(212,135,10,0.1);">☀ 1 Sol</span>
+          <span class="award-tier-pill" style="color:#D4870A;border-color:rgba(212,135,10,0.4);background:rgba(212,135,10,0.1);">◈ Recommended</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="award-entry">
+      <div class="award-entry-dot" style="background:#0096C7;"></div>
+      <div class="award-entry-body">
+        <div class="award-entry-name">World's 50 Best Bars — North America</div>
+        <div class="award-entry-country">🌎 North America</div>
+        <div class="award-entry-desc">The North American edition of the World's 50 Best Bars ranking, voted on by an international academy of over 700 drinks industry experts, bartenders, and cocktail enthusiasts.</div>
+        <div class="award-entry-tiers">
+          <span class="award-tier-pill" style="color:#0096C7;border-color:rgba(0,150,199,0.4);background:rgba(0,150,199,0.1);">🍸 Top 10</span>
+          <span class="award-tier-pill" style="color:#0096C7;border-color:rgba(0,150,199,0.4);background:rgba(0,150,199,0.1);">🍸 Top 50</span>
+          <span class="award-tier-pill" style="color:#0096C7;border-color:rgba(0,150,199,0.4);background:rgba(0,150,199,0.1);">🍸 51–100</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="award-entry">
+      <div class="award-entry-dot" style="background:#1a6fa8;"></div>
+      <div class="award-entry-body">
+        <div class="award-entry-name">Texas Monthly Top 50 BBQ</div>
+        <div class="award-entry-country">🇺🇸 Texas, USA</div>
+        <div class="award-entry-desc">Texas Monthly's definitive ranking of the best BBQ in Texas, updated every few years by a team of dedicated tasters who travel the state to find the finest brisket, ribs, sausage, and more.</div>
+        <div class="award-entry-tiers">
+          <span class="award-tier-pill" style="color:#1a6fa8;border-color:rgba(26,111,168,0.4);background:rgba(26,111,168,0.1);">🔥 Top 50 BBQ</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 </body>
 </html>
