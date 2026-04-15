@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Delectable Guide</title>
+  <style>
+    :root {
+      --black:      #111111;
+      --black-mid:  #1a1a1a;
+      --black-light:#222222;
+      --orange:     #FEA219;
+      --orange-dim: rgba(254,162,25,0.15);
+      --white:      #f5f5f5;
+      --white-dim:  rgba(245,245,245,0.55);
+      --border:     rgba(255,255,255,0.09);
+      --border-light: rgba(255,255,255,0.18);
+      --green:      #4caf7d;
+      --red:        #e05252;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 13px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 20px;
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      background: var(--black-mid);
+      flex-shrink: 0;
+    }
+    .logo {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      white-space: nowrap;
+    }
+    .search-row {
+      display: flex;
+      gap: 8px;
+      flex: 1;
+      align-items: center;
+    }
+    .search-row input[type=text] {
+      flex: 1;
+      background: var(--black-light);
+      border: 1px solid var(--border-light);
+      color: var(--white);
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 2px;
+      outline: none;
+    }
+    .search-row input[type=text]:focus { border-color: var(--orange); }
+    .search-row select {
+      background: var(--black-light);
+      border: 1px solid var(--border-light);
+      color: var(--white);
+      padding: 6px 8px;
+      font-size: 13px;
+      border-radius: 2px;
+      cursor: pointer;
+      outline: none;
+    }
+    .search-row select:focus { border-color: var(--orange); }
+    .toggle-missing {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 12px;
+      color: var(--white-dim);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .toggle-missing input { accent-color: var(--orange); cursor: pointer; }
+    .btn {
+      padding: 6px 14px;
+      border: 1px solid var(--border-light);
+      background: transparent;
+      color: var(--white);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      border-radius: 2px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn:hover { border-color: var(--orange); color: var(--orange); }
+    .btn.primary { background: var(--orange); border-color: var(--orange); color: #000; }
+    .btn.primary:hover { background: #ffb733; border-color: #ffb733; }
+    .btn:disabled { opacity: 0.4; cursor: default; }
+
+    /* ── Main layout ── */
+    main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Results panel ── */
+    #results-panel {
+      width: 360px;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #results-meta {
+      padding: 10px 14px;
+      font-size: 11px;
+      color: var(--white-dim);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #results-list {
+      overflow-y: auto;
+      flex: 1;
+    }
+    #results-list::-webkit-scrollbar { width: 4px; }
+    #results-list::-webkit-scrollbar-track { background: transparent; }
+    #results-list::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+    .result-item {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .result-item:hover { background: var(--black-light); }
+    .result-item.active { background: var(--orange-dim); border-left: 2px solid var(--orange); padding-left: 12px; }
+    .result-thumb {
+      width: 40px;
+      height: 40px;
+      border-radius: 2px;
+      object-fit: cover;
+      background: var(--black-light);
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    .result-thumb.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--border-light);
+    }
+    .result-info { flex: 1; min-width: 0; }
+    .result-name {
+      font-weight: 600;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .result-location {
+      font-size: 11px;
+      color: var(--white-dim);
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .result-badges {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 1px 5px;
+      border-radius: 2px;
+      background: var(--black-light);
+      border: 1px solid var(--border-light);
+      color: var(--white-dim);
+    }
+    .badge.michelin  { border-color: #E4002B44; color: #E4002B; }
+    .badge.jbf       { border-color: var(--orange); color: var(--orange); }
+    .badge.tabelog   { border-color: #D4AF3744; color: #D4AF37; }
+    .badge.aarosette { border-color: #8BABD844; color: #8BABD8; }
+    .badge.repsol    { border-color: #D4870A44; color: #D4870A; }
+
+    #empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--white-dim);
+      gap: 8px;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    #empty-state .hint { font-size: 28px; }
+    #empty-state p { font-size: 12px; line-height: 1.6; }
+
+    /* ── Edit panel ── */
+    #edit-panel {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+      display: none;
+    }
+    #edit-panel::-webkit-scrollbar { width: 4px; }
+    #edit-panel::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+    #edit-panel.visible { display: block; }
+
+    #no-selection {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white-dim);
+      font-size: 12px;
+    }
+
+    .edit-header { margin-bottom: 24px; }
+    .edit-header h2 { font-size: 18px; font-weight: 700; line-height: 1.2; }
+    .edit-header .edit-sub {
+      font-size: 12px;
+      color: var(--white-dim);
+      margin-top: 5px;
+    }
+    .edit-header .edit-badges { margin-top: 8px; display: flex; gap: 5px; flex-wrap: wrap; }
+
+    .field-group { margin-bottom: 20px; }
+    .field-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--white-dim);
+      margin-bottom: 6px;
+    }
+    .field-group input[type=text],
+    .field-group input[type=number],
+    .field-group select,
+    .field-group textarea {
+      width: 100%;
+      background: var(--black-mid);
+      border: 1px solid var(--border-light);
+      color: var(--white);
+      padding: 8px 10px;
+      font-size: 13px;
+      border-radius: 2px;
+      outline: none;
+      font-family: inherit;
+    }
+    .field-group input:focus,
+    .field-group select:focus,
+    .field-group textarea:focus { border-color: var(--orange); }
+    .field-row { display: flex; gap: 12px; }
+    .field-row .field-group { flex: 1; }
+
+    .photo-preview {
+      margin-top: 8px;
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+      display: none;
+      background: var(--black-mid);
+    }
+    .photo-preview.visible { display: block; }
+
+    .field-hint {
+      font-size: 11px;
+      color: var(--white-dim);
+      margin-top: 4px;
+    }
+
+    .edit-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .save-status {
+      font-size: 12px;
+      display: none;
+    }
+    .save-status.ok  { display: inline; color: var(--green); }
+    .save-status.err { display: inline; color: var(--red); }
+    .save-status.loading { display: inline; color: var(--white-dim); }
+
+    /* ── Supabase seed modal ── */
+    #seed-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #seed-overlay.visible { display: flex; }
+    #seed-modal {
+      background: var(--black-mid);
+      border: 1px solid var(--border-light);
+      border-radius: 4px;
+      width: 560px;
+      max-height: 70vh;
+      display: flex;
+      flex-direction: column;
+    }
+    #seed-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 14px;
+    }
+    #seed-modal-header button {
+      background: none;
+      border: none;
+      color: var(--white-dim);
+      font-size: 18px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0 2px;
+    }
+    #seed-modal-header button:hover { color: var(--white); }
+    #seed-log {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      line-height: 1.7;
+      color: var(--white-dim);
+    }
+    #seed-log .log-done { color: var(--green); font-weight: 700; }
+    #seed-log .log-err  { color: var(--red); }
+    #seed-modal-footer {
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    #seed-status { font-size: 12px; color: var(--white-dim); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">◆ Delectable Guide — Admin</div>
+  <div class="search-row">
+    <input type="text" id="search-input" placeholder="Search by restaurant name or city…" autocomplete="off" />
+    <select id="source-filter">
+      <option value="">All sources</option>
+      <option value="michelin">Michelin</option>
+      <option value="jbf">James Beard</option>
+      <option value="tabelog">Tabelog</option>
+      <option value="aarosette">AA Rosettes</option>
+      <option value="repsol">Guía Repsol</option>
+      <option value="texasmonthly">Texas Monthly</option>
+    </select>
+    <label class="toggle-missing">
+      <input type="checkbox" id="missing-photo-filter" />
+      Missing photo
+    </label>
+  </div>
+  <button class="btn" id="sync-btn">Sync to Supabase</button>
+</header>
+
+<main>
+  <div id="results-panel">
+    <div id="results-meta"></div>
+    <div id="results-list">
+      <div id="empty-state">
+        <div class="hint">🔍</div>
+        <p>Search for a restaurant by name or city,<br/>or filter by source to browse records.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="no-selection">Select a restaurant to edit</div>
+  <div id="edit-panel">
+    <div class="edit-header">
+      <h2 id="edit-name"></h2>
+      <div class="edit-sub" id="edit-location"></div>
+      <div class="edit-badges" id="edit-badges"></div>
+    </div>
+
+    <div class="field-group">
+      <label>Photo URL</label>
+      <input type="text" id="field-googlePhoto" placeholder="https://…" />
+      <img id="photo-preview" class="photo-preview" alt="Photo preview" />
+      <div class="field-hint">Paste any image URL — Google, Yelp, or direct link. Updates all entries for this restaurant.</div>
+    </div>
+
+    <div class="field-group">
+      <label>Website</label>
+      <input type="text" id="field-website" placeholder="https://…" />
+    </div>
+
+    <div class="field-group">
+      <label>Address</label>
+      <input type="text" id="field-address" placeholder="123 Main St, City, State, ZIP" />
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label>Phone</label>
+        <input type="text" id="field-phone" placeholder="+1 555 000 0000" />
+      </div>
+      <div class="field-group">
+        <label>Business Status</label>
+        <select id="field-businessStatus">
+          <option value="">Unknown</option>
+          <option value="OPERATIONAL">Operational</option>
+          <option value="CLOSED_TEMPORARILY">Closed Temporarily</option>
+          <option value="CLOSED_PERMANENTLY">Closed Permanently</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label>Latitude</label>
+        <input type="number" id="field-lat" step="any" placeholder="37.7749" />
+      </div>
+      <div class="field-group">
+        <label>Longitude</label>
+        <input type="number" id="field-lng" step="any" placeholder="-122.4194" />
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Cuisine Category</label>
+      <select id="field-cuisineCategory">
+        <option value="">— None —</option>
+      </select>
+    </div>
+
+    <div class="field-group">
+      <label>Cuisine Tags</label>
+      <input type="text" id="field-cuisineTags" placeholder="Italian, Seafood, Contemporary" />
+      <div class="field-hint">Comma-separated. These are the raw tags from the source data.</div>
+    </div>
+
+    <div class="edit-actions">
+      <button class="btn primary" id="save-btn">Save Changes</button>
+      <span class="save-status" id="save-status"></span>
+    </div>
+  </div>
+</main>
+
+<!-- Supabase seed modal -->
+<div id="seed-overlay">
+  <div id="seed-modal">
+    <div id="seed-modal-header">
+      <span>Sync to Supabase</span>
+      <button id="seed-close">×</button>
+    </div>
+    <div id="seed-log"></div>
+    <div id="seed-modal-footer">
+      <span id="seed-status">Ready</span>
+      <button class="btn primary" id="seed-run-btn">Run Seed</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── State ────────────────────────────────────────────────────────────────────
+  let results = [];
+  let selected = null;
+  let cuisineCategories = [];
+  let searchTimeout = null;
+
+  // ── Init ─────────────────────────────────────────────────────────────────────
+  fetch('/api/admin/cuisine-categories')
+    .then(r => r.json())
+    .then(cats => {
+      cuisineCategories = cats;
+      const sel = document.getElementById('field-cuisineCategory');
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c; opt.textContent = c;
+        sel.appendChild(opt);
+      });
+    });
+
+  // ── Search ───────────────────────────────────────────────────────────────────
+  function triggerSearch() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(doSearch, 250);
+  }
+
+  async function doSearch() {
+    const q      = document.getElementById('search-input').value.trim();
+    const source = document.getElementById('source-filter').value;
+    const missing = document.getElementById('missing-photo-filter').checked ? '1' : '';
+
+    const params = new URLSearchParams();
+    if (q)       params.set('q', q);
+    if (source)  params.set('source', source);
+    if (missing) params.set('missingPhoto', missing);
+
+    const res = await fetch('/api/admin/records?' + params);
+    const data = await res.json();
+    results = data.records;
+    renderResults(data.total);
+  }
+
+  document.getElementById('search-input').addEventListener('input', triggerSearch);
+  document.getElementById('source-filter').addEventListener('change', doSearch);
+  document.getElementById('missing-photo-filter').addEventListener('change', doSearch);
+
+  // ── Results rendering ─────────────────────────────────────────────────────────
+  function renderResults(total) {
+    const list = document.getElementById('results-list');
+    const meta = document.getElementById('results-meta');
+
+    if (!results.length) {
+      list.innerHTML = '<div id="empty-state"><div class="hint">🍽</div><p>No matching restaurants found.</p></div>';
+      meta.textContent = '';
+      return;
+    }
+
+    meta.textContent = `${results.length} of ${total} restaurants${total > 100 ? ' — refine your search to see more' : ''}`;
+
+    list.innerHTML = '';
+    for (const r of results) {
+      const item = document.createElement('div');
+      item.className = 'result-item' + (selected?._key === r._key ? ' active' : '');
+      item.dataset.key = r._key;
+
+      const thumb = r.googlePhoto
+        ? `<img class="result-thumb" src="${escHtml(r.googlePhoto)}" onerror="this.style.display='none';this.nextSibling.style.display='flex'" alt="" /><div class="result-thumb placeholder" style="display:none">🍽</div>`
+        : `<div class="result-thumb placeholder">🍽</div>`;
+
+      const loc = [r.city, r.state || r.country].filter(Boolean).join(', ');
+      const badges = r.sources.map(s => `<span class="badge ${s}">${s}</span>`).join('');
+
+      item.innerHTML = `
+        ${thumb}
+        <div class="result-info">
+          <div class="result-name">${escHtml(r.name)}</div>
+          <div class="result-location">${escHtml(loc)}</div>
+          <div class="result-badges">${badges}</div>
+        </div>
+      `;
+      item.addEventListener('click', () => selectRecord(r));
+      list.appendChild(item);
+    }
+  }
+
+  // ── Record selection & edit form ──────────────────────────────────────────────
+  function selectRecord(r) {
+    selected = r;
+
+    // Update active state in list
+    document.querySelectorAll('.result-item').forEach(el => {
+      el.classList.toggle('active', el.dataset.key === r._key);
+    });
+
+    // Populate header
+    document.getElementById('edit-name').textContent = r.name;
+    const loc = [r.city, r.state || r.country].filter(Boolean).join(', ');
+    document.getElementById('edit-location').textContent = loc;
+    document.getElementById('edit-badges').innerHTML = r.sources.map(s => `<span class="badge ${s}">${s}</span>`).join('');
+
+    // Populate fields
+    setField('googlePhoto', r.googlePhoto || '');
+    setField('website',     r.website     || '');
+    setField('address',     r.address     || '');
+    setField('phone',       r.phone       || '');
+    setField('lat',         r.lat  != null ? r.lat  : '');
+    setField('lng',         r.lng  != null ? r.lng  : '');
+    setField('businessStatus',   r.businessStatus   || '');
+    setField('cuisineCategory',  r.cuisineCategory  || '');
+    setField('cuisineTags', Array.isArray(r.cuisineTags) ? r.cuisineTags.join(', ') : (r.cuisineTags || ''));
+
+    updatePhotoPreview(r.googlePhoto || '');
+
+    // Show panel
+    document.getElementById('no-selection').style.display = 'none';
+    const panel = document.getElementById('edit-panel');
+    panel.classList.add('visible');
+    clearSaveStatus();
+  }
+
+  function setField(id, value) {
+    const el = document.getElementById('field-' + id);
+    if (el) el.value = value ?? '';
+  }
+
+  // ── Photo preview ────────────────────────────────────────────────────────────
+  document.getElementById('field-googlePhoto').addEventListener('input', e => {
+    updatePhotoPreview(e.target.value.trim());
+  });
+
+  function updatePhotoPreview(url) {
+    const img = document.getElementById('photo-preview');
+    if (url) {
+      img.src = url;
+      img.classList.add('visible');
+      img.onerror = () => img.classList.remove('visible');
+      img.onload  = () => img.classList.add('visible');
+    } else {
+      img.classList.remove('visible');
+      img.src = '';
+    }
+  }
+
+  // ── Save ──────────────────────────────────────────────────────────────────────
+  document.getElementById('save-btn').addEventListener('click', saveRecord);
+
+  async function saveRecord() {
+    if (!selected) return;
+
+    const fields = {
+      googlePhoto:     getField('googlePhoto'),
+      website:         getField('website'),
+      address:         getField('address'),
+      phone:           getField('phone'),
+      businessStatus:  getField('businessStatus'),
+      cuisineCategory: getField('cuisineCategory'),
+      lat:  parseCoord(getField('lat')),
+      lng:  parseCoord(getField('lng')),
+      cuisineTags: getField('cuisineTags')
+        ? getField('cuisineTags').split(',').map(s => s.trim()).filter(Boolean)
+        : null,
+    };
+
+    setSaveStatus('loading', 'Saving…');
+    document.getElementById('save-btn').disabled = true;
+
+    try {
+      const res = await fetch('/api/admin/records', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _key: selected._key, fields }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Save failed');
+
+      // Update local copy
+      Object.assign(selected, fields);
+      setSaveStatus('ok', `Saved — ${data.updated} entr${data.updated === 1 ? 'y' : 'ies'} updated, splits regenerated`);
+    } catch (e) {
+      setSaveStatus('err', e.message);
+    } finally {
+      document.getElementById('save-btn').disabled = false;
+    }
+  }
+
+  function getField(id) {
+    const el = document.getElementById('field-' + id);
+    return el ? el.value.trim() : '';
+  }
+
+  function parseCoord(v) {
+    const n = parseFloat(v);
+    return isNaN(n) ? null : n;
+  }
+
+  function setSaveStatus(type, msg) {
+    const el = document.getElementById('save-status');
+    el.className = 'save-status ' + type;
+    el.textContent = msg;
+  }
+
+  function clearSaveStatus() {
+    const el = document.getElementById('save-status');
+    el.className = 'save-status';
+    el.textContent = '';
+  }
+
+  // ── Supabase seed modal ───────────────────────────────────────────────────────
+  document.getElementById('sync-btn').addEventListener('click', () => {
+    document.getElementById('seed-overlay').classList.add('visible');
+    document.getElementById('seed-log').innerHTML = '';
+    document.getElementById('seed-status').textContent = 'Ready';
+    document.getElementById('seed-run-btn').disabled = false;
+    document.getElementById('seed-run-btn').textContent = 'Run Seed';
+  });
+
+  document.getElementById('seed-close').addEventListener('click', () => {
+    document.getElementById('seed-overlay').classList.remove('visible');
+  });
+
+  document.getElementById('seed-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('seed-overlay')) {
+      document.getElementById('seed-overlay').classList.remove('visible');
+    }
+  });
+
+  document.getElementById('seed-run-btn').addEventListener('click', () => {
+    const log    = document.getElementById('seed-log');
+    const status = document.getElementById('seed-status');
+    const btn    = document.getElementById('seed-run-btn');
+
+    log.innerHTML = '';
+    btn.disabled = true;
+    btn.textContent = 'Running…';
+    status.textContent = 'Seeding Supabase…';
+
+    const es = new EventSource('/api/admin/seed', { method: 'POST' });
+
+    // EventSource doesn't support POST natively — use fetch instead
+    es.close();
+
+    fetch('/api/admin/seed', { method: 'POST' }).then(res => {
+      if (!res.ok) {
+        return res.json().then(d => { throw new Error(d.error || 'Seed failed'); });
+      }
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = '';
+
+      function pump() {
+        return reader.read().then(({ done, value }) => {
+          if (done) return;
+          buf += decoder.decode(value, { stream: true });
+          const lines = buf.split('\n');
+          buf = lines.pop();
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            let msg;
+            try { msg = JSON.parse(line.slice(6)); } catch { msg = line.slice(6); }
+            if (msg === '__DONE__') {
+              status.textContent = 'Sync complete';
+              btn.textContent = 'Done';
+              appendLog(log, '✓ Sync complete', 'log-done');
+              return;
+            }
+            if (msg === '__FAILED__') {
+              status.textContent = 'Seed failed';
+              btn.disabled = false;
+              btn.textContent = 'Retry';
+              appendLog(log, '✗ Seed failed', 'log-err');
+              return;
+            }
+            const cls = msg.startsWith('[err]') ? 'log-err' : '';
+            appendLog(log, msg, cls);
+          }
+          return pump();
+        });
+      }
+      return pump();
+    }).catch(err => {
+      status.textContent = 'Error: ' + err.message;
+      btn.disabled = false;
+      btn.textContent = 'Retry';
+      appendLog(log, '✗ ' + err.message, 'log-err');
+    });
+  });
+
+  function appendLog(container, text, cls) {
+    const line = document.createElement('div');
+    if (cls) line.className = cls;
+    line.textContent = text;
+    container.appendChild(line);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────────
+  function escHtml(s) {
+    return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>

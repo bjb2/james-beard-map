@@ -1,12 +1,22 @@
+try { require('dotenv').config(); } catch(e) {}
+
 const express = require('express');
 const compression = require('compression');
 const path = require('path');
 const fs = require('fs');
+const { exec, spawn } = require('child_process');
 
 const app = express();
 const PORT = 3000;
 const DATA = path.join(__dirname, 'data');
 const AWARDS_FILE = path.join(DATA, 'awards.json');
+
+// In-memory cache for admin search (invalidated on file change)
+let awardsCache = null;
+function readAwards() {
+  if (!awardsCache) awardsCache = JSON.parse(fs.readFileSync(AWARDS_FILE, 'utf8'));
+  return awardsCache;
+}
 
 app.use(compression());
 app.use((req, res, next) => { console.log('[REQ]', req.method, req.url); next(); });
@@ -15,6 +25,16 @@ app.get('/profile', (req, res) => res.sendFile(path.join(__dirname, 'profile.htm
 app.get('/profile.html', (req, res) => res.sendFile(path.join(__dirname, 'profile.html')));
 app.get('/list', (req, res) => res.sendFile(path.join(__dirname, 'list.html')));
 app.get('/list.html', (req, res) => res.sendFile(path.join(__dirname, 'list.html')));
+
+// Block /admin from non-localhost before the static file handler can serve it
+function localOnly(req, res, next) {
+  const ip = req.socket.remoteAddress;
+  if (ip === '127.0.0.1' || ip === '::1' || ip === '::ffff:127.0.0.1') return next();
+  res.status(403).send('Forbidden');
+}
+app.use(['/admin', '/admin.html', '/api/admin'], localOnly);
+app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
+
 app.use('/data', express.static(path.join(__dirname, 'data')));
 app.use(express.static(__dirname));
 
@@ -62,7 +82,6 @@ app.get('/api/events', (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.flushHeaders();
 
-  // Send initial ping so browser knows it's connected
   res.write('event: connected\ndata: {}\n\n');
 
   sseClients.add(res);
@@ -80,19 +99,18 @@ function broadcastUpdate(payload) {
 let lastAwardCount = 0;
 fs.watch(DATA, (event, filename) => {
   if (filename !== 'awards.json') return;
+  awardsCache = null; // invalidate admin cache
   try {
     if (!fs.existsSync(AWARDS_FILE)) return;
     const awards = JSON.parse(fs.readFileSync(AWARDS_FILE, 'utf8'));
     const count = awards.length;
     if (count === lastAwardCount) return;
 
-    // Compute quick stats for the toast
     const added = count - lastAwardCount;
-    const newSlice = awards.slice(-Math.abs(added)); // approximate new entries
+    const newSlice = awards.slice(-Math.abs(added));
     const winners = newSlice.filter(a => a.status === 'Winner').length;
     const rests = new Set(newSlice.map(a => a.restaurant || a.name).filter(Boolean)).size;
 
-    // Get current phase for the toast progress bar
     function countCache(file) {
       try { return Object.keys(JSON.parse(fs.readFileSync(path.join(DATA, file), 'utf8'))).length; }
       catch { return 0; }
@@ -112,13 +130,123 @@ fs.watch(DATA, (event, filename) => {
   } catch (e) {}
 });
 
-// Init lastAwardCount on startup
 if (fs.existsSync(AWARDS_FILE)) {
   try { lastAwardCount = JSON.parse(fs.readFileSync(AWARDS_FILE, 'utf8')).length; } catch (e) {}
 }
 
+// ── Admin API ─────────────────────────────────────────────────────────────────
+app.use('/api/admin', express.json());
+
+const CUISINE_CATEGORIES = [
+  'BBQ & Smokehouse','Steakhouse','Japanese','Chinese','Italian','French','Korean',
+  'Thai','Indian','Southeast Asian','Mexican','Mediterranean','Middle Eastern',
+  'Latin American','Seafood','Southern & Soul','African','European','American',
+  'Farm to Table','Vegetarian / Vegan','Bakery & Café','Wine & Spirits',
+  'Bars & Cocktails','Contemporary',
+];
+
+// Search records grouped by unique restaurant (name + city)
+app.get('/api/admin/records', (req, res) => {
+  const q            = (req.query.q || '').toLowerCase().trim();
+  const source       = req.query.source || '';
+  const missingPhoto = req.query.missingPhoto === '1';
+
+  if (!q && !source && !missingPhoto) return res.json({ total: 0, records: [] });
+
+  const awards = readAwards();
+
+  const groups = new Map();
+  for (const a of awards) {
+    const name = (a.restaurant || a.name || '').trim();
+    const city = (a.city || '').trim();
+    const gk = `${name.toLowerCase()}|${city.toLowerCase()}`;
+    if (!groups.has(gk)) groups.set(gk, { name, city, entries: [] });
+    groups.get(gk).entries.push(a);
+  }
+
+  let results = [];
+  for (const [gk, g] of groups) {
+    const best    = g.entries.find(e => e.googlePhoto) || g.entries[0];
+    const sources = [...new Set(g.entries.map(e => e.source))];
+    results.push({
+      _key:           gk,
+      name:           g.name,
+      city:           g.city,
+      state:          best.state   || null,
+      country:        best.country || null,
+      sources,
+      googlePhoto:    best.googlePhoto || null,
+      website:        best.website  || g.entries.find(e => e.website)?.website || null,
+      address:        best.address  || null,
+      lat:            best.lat      || null,
+      lng:            best.lng      || null,
+      phone:          best.phone    || null,
+      businessStatus: best.businessStatus  || null,
+      cuisineCategory:best.cuisineCategory || null,
+      cuisineTags:    best.cuisineTags     || null,
+    });
+  }
+
+  if (q)            results = results.filter(r => r.name.toLowerCase().includes(q) || (r.city||'').toLowerCase().includes(q));
+  if (source)       results = results.filter(r => r.sources.includes(source));
+  if (missingPhoto) results = results.filter(r => !r.googlePhoto);
+
+  res.json({ total: results.length, records: results.slice(0, 100) });
+});
+
+// Update enrichment fields across all entries for a restaurant
+app.patch('/api/admin/records', (req, res) => {
+  const { _key, fields } = req.body || {};
+  if (!_key || !fields) return res.status(400).json({ error: 'Missing _key or fields' });
+
+  const ALLOWED = ['googlePhoto','website','address','lat','lng','phone','businessStatus','cuisineCategory','cuisineTags'];
+  const safe = {};
+  for (const [k, v] of Object.entries(fields)) {
+    if (ALLOWED.includes(k)) safe[k] = (v === '') ? null : v;
+  }
+  if (!Object.keys(safe).length) return res.status(400).json({ error: 'No valid fields provided' });
+
+  const awards = readAwards();
+  let updated = 0;
+  for (const a of awards) {
+    const name = (a.restaurant || a.name || '').trim().toLowerCase();
+    const city = (a.city || '').trim().toLowerCase();
+    if (`${name}|${city}` === _key) { Object.assign(a, safe); updated++; }
+  }
+  if (!updated) return res.status(404).json({ error: 'No records matched that key' });
+
+  const tmp = AWARDS_FILE + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(awards));
+  fs.renameSync(tmp, AWARDS_FILE);
+  awardsCache = awards;
+
+  exec('node split-data.js', { cwd: __dirname }, (err, stdout, stderr) => {
+    if (err) return res.status(500).json({ ok: false, error: stderr || err.message, updated });
+    res.json({ ok: true, updated });
+  });
+});
+
+// Supabase reseed — streams output as SSE
+app.post('/api/admin/seed', (req, res) => {
+  if (!process.env.SUPABASE_KEY) return res.status(400).json({ error: 'SUPABASE_KEY not set in environment' });
+
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.flushHeaders();
+
+  const proc = spawn('node', ['scripts/seed-restaurants.js'], { cwd: __dirname });
+  const send = line => res.write(`data: ${JSON.stringify(line)}\n\n`);
+  proc.stdout.on('data', d => d.toString().trim().split('\n').forEach(send));
+  proc.stderr.on('data', d => d.toString().trim().split('\n').forEach(l => send('[err] ' + l)));
+  proc.on('close', code => { send(code === 0 ? '__DONE__' : '__FAILED__'); res.end(); });
+});
+
+// Cuisine category list for admin UI
+app.get('/api/admin/cuisine-categories', (req, res) => res.json(CUISINE_CATEGORIES));
+
 app.listen(PORT, () => {
   console.log(`\n🍽  James Beard Awards Map`);
-  console.log(`   http://localhost:${PORT}\n`);
+  console.log(`   http://localhost:${PORT}`);
+  console.log(`   http://localhost:${PORT}/admin  (local only)\n`);
   if (lastAwardCount) console.log(`   ${lastAwardCount} awards currently loaded`);
 });
