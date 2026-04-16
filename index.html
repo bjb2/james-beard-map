@@ -928,6 +928,7 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes nudgeFadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
     .loading-text {
       font-size: 1rem;
@@ -1606,7 +1607,34 @@ async function saveVisitDate(restaurantKey) {
 }
 
 function showAuthNudge() {
-  // Flash the sign-in button to draw attention
+  // Inject an inline nudge into the popup comm-buttons area
+  const commRow = document.querySelector('#comm-visited-btn, #comm-wtg-btn, #comm-list-btn');
+  if (commRow) {
+    const row = commRow.closest('div');
+    // Don't double-inject
+    if (row && !row.querySelector('.auth-nudge')) {
+      const nudge = document.createElement('div');
+      nudge.className = 'auth-nudge';
+      nudge.innerHTML = `<span>Sign in to save places</span>
+        <button onclick="signInWithGoogle()" style="
+          background:var(--orange);border:none;border-radius:3px;
+          color:#000;font-family:sans-serif;font-size:0.7rem;font-weight:700;
+          padding:4px 10px;cursor:pointer;white-space:nowrap;">
+          Sign in
+        </button>`;
+      nudge.style.cssText = `
+        display:flex;align-items:center;justify-content:space-between;gap:10px;
+        width:100%;margin-top:8px;padding:8px 10px;box-sizing:border-box;
+        background:rgba(254,162,25,0.08);border:1px solid rgba(254,162,25,0.3);
+        border-radius:4px;font-family:sans-serif;font-size:0.72rem;
+        color:var(--white-dim);animation:nudgeFadeIn 0.2s ease;
+      `;
+      row.appendChild(nudge);
+      setTimeout(() => nudge.remove(), 4000);
+    }
+    return;
+  }
+  // Fallback: flash the header sign-in button
   const btn = document.getElementById('sign-in-btn');
   if (!btn) return;
   btn.style.borderColor = 'var(--orange)';
